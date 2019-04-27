@@ -15,5 +15,10 @@
         (eval-print-last-sexp)))
     (load bootstrap-file nil 'nomessage)))
 
+(defun bootstrap-package (pkgmgr)
+  (cond
+   ((string= pkgmgr "straight") (bootstrap-straight))
+   (t (bootstrap-straight))))
+
 (provide 'core-package)
 ;;; core-package.el ends here
