@@ -9,6 +9,7 @@
   "Directory of easy-emacs modules")
 
 (require 'core-package (concat easy-emacs-core-dir "/core-package"))
+(require 'core-modules (concat easy-emacs-core-dir "/core-modules"))
 
 (provide 'core)
 ;;; core.el ends here
