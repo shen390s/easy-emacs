@@ -10,7 +10,7 @@
 
 (require 'core-package (concat easy-emacs-core-dir "/core-package"))
 (require 'core-modules (concat easy-emacs-core-dir "/core-modules"))
-(require 'core-features (concat easy-emacs-core-dir "/core-feartures"))
+(require 'core-features (concat easy-emacs-core-dir "/core-features"))
 
 (provide 'core)
 ;;; core.el ends here

@@ -6,7 +6,8 @@
   "Enabled features")
 
 (defmacro enable! (feature)
-  
+	t)
+
 (defun enable-features (features)
   t)
 
