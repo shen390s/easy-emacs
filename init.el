@@ -6,5 +6,6 @@
 (bootstrap-package "straight")
 (load-modules easy-emacs-modules-dir)
 (enable-features features)
+(load custom-file t t)
 
 ;;; init.el ends here

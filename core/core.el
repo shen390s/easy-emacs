@@ -8,9 +8,17 @@
 (defvar easy-emacs-modules-dir (concat easy-emacs-dir "modules")
   "Directory of easy-emacs modules")
 
+(defvar easy-emacs-etc-dir (concat easy-emacs-dir ".local/etc/")
+  "Directory of customized easy-emacs settings")
+
+(unless (file-exists-p easy-emacs-etc-dir)
+  (make-directory easy-emacs-etc-dir t))
+
 (require 'core-package (concat easy-emacs-core-dir "/core-package"))
 (require 'core-modules (concat easy-emacs-core-dir "/core-modules"))
 (require 'core-features (concat easy-emacs-core-dir "/core-features"))
+
+(setq custom-file (concat easy-emacs-etc-dir "custom.el"))
 
 (provide 'core)
 ;;; core.el ends here

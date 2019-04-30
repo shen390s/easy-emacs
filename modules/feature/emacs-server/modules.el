@@ -7,11 +7,12 @@
 (defun deactivate-emacs-server ()
   (server-force-delete))
 
-(module!
+(package!
  emacs-server
  "Emacs Editor server"
  nil
  ((emacs-server
+   "Emacs Editor Server"
    #'emacs-server-check
    #'activate-emacs-server
    #'deactivate-emacs-server)))
