@@ -8,7 +8,7 @@
   (server-force-delete))
 
 (package!
- emacs-server
+  emacs-server
  "Emacs Editor server"
  nil
  ((emacs-server
@@ -16,4 +16,4 @@
    #'emacs-server-check
    #'activate-emacs-server
    #'deactivate-emacs-server)))
-   
+

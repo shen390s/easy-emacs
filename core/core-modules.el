@@ -1,42 +1,51 @@
 (require 'cl-lib)
 
-(cl-defstruct package name docstring pkg-info)
+(cl-defstruct xpackage name docstring pkg-info)
 
-(cl-defstruct feature name docstring pkgname check-fn on-fn off-fn)
+(cl-defstruct xfeature name docstring pkgname check-fn on-fn off-fn)
 
-(defvar all-packages (make-hash-table)
-  "All defined packages")
+(defvar all-xpackages (make-hash-table)
+  "All defined xpackages")
 
-(defvar all-features (make-hash-table)
-  "All defined features")
+(defvar all-xfeatures (make-hash-table)
+  "All defined xfeatures")
 
-(defun build-feature (pkgname name docstring check-fn on-fn off-fn)
-  (make-feature :name name
-		:docstring docstring
-		:pkgname pkgname
-		:check-fn check-fn
-		:on-fn on-fn
-		:off-fn off-fn))
+(defun build-xfeature (pkgname name docstring check-fn on-fn off-fn)
+  (let ((xfeature (make-xfeature :name `,name
+				                 :docstring docstring
+				                 :pkgname pkgname
+				                 :check-fn check-fn
+				                 :on-fn on-fn
+				                 :off-fn off-fn)))
+    xfeature))
 
-(defun build-features (pkgname features)
-  (cl-loop for feature in features
-	collect (apply #'build-feature (cons pkgname feature))))
+(defun build-xfeatures (pkgname xfeatures)
+  (cl-loop for xfeature in xfeatures
+	collect (apply #'build-xfeature (cons pkgname xfeature))))
 
-(defun add-package (package)
-  (puthash (package-name package) package all-packages))
+(defun add-xpackage (xpackage)
+  (puthash (xpackage-name xpackage) xpackage all-xpackages))
 
-(defun add-feature (feature)
-  (puthash (feature-name feature) feature all-features))
+(defun add-xfeature (xfeature)
+  (puthash (xfeature-name xfeature) xfeature all-xfeatures))
 
-(defmacro package! (name docstring pkginfo feature-list)
-  (let ((package (make-package :name `,name
-			       :docstring docstring
-			       :pkg-info pkginfo))
-	(features (build-features `,name feature-list)))
-    `(progn
-       (add-package ,package)
-       (cl-loop for feature in ,features
-		do (add-feature feature)))))
+(defun add-xfeatures (xfeatures)
+  (when xfeatures
+    (let ((xfeature (car xfeatures))
+	      (remain (cdr xfeatures)))
+      (progn
+	    (add-xfeature xfeature)
+	    (add-xfeatures remain)))))
+
+(defmacro package! (name docstring pkginfo xfeature-list)
+  (let ((xpackage (make-xpackage :name `,name
+				                 :docstring docstring
+				                 :pkg-info pkginfo))
+	(xfeatures (build-xfeatures `,name xfeature-list)))
+    (progn
+       (add-xpackage `,xpackage)
+       (add-xfeatures `,xfeatures))))
+
 
 (defun load-module-definition (module-file)
   (load-file module-file))
