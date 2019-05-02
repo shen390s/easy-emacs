@@ -5,18 +5,18 @@
 (cl-defstruct xfeature name docstring pkgname check-fn on-fn off-fn)
 
 (defvar all-xpackages (make-hash-table)
-  "All defined xpackages")
+  "All defined packages")
 
 (defvar all-xfeatures (make-hash-table)
-  "All defined xfeatures")
+  "All defined features")
 
 (defun build-xfeature (pkgname name docstring check-fn on-fn off-fn)
   (let ((xfeature (make-xfeature :name `,name
-				                 :docstring docstring
-				                 :pkgname pkgname
-				                 :check-fn check-fn
-				                 :on-fn on-fn
-				                 :off-fn off-fn)))
+				 :docstring docstring
+				 :pkgname pkgname
+				 :check-fn check-fn
+				 :on-fn on-fn
+				 :off-fn off-fn)))
     xfeature))
 
 (defun build-xfeatures (pkgname xfeatures)
@@ -39,8 +39,8 @@
 
 (defmacro package! (name docstring pkginfo xfeature-list)
   (let ((xpackage (make-xpackage :name `,name
-				                 :docstring docstring
-				                 :pkg-info pkginfo))
+				 :docstring docstring
+				 :pkg-info pkginfo))
 	(xfeatures (build-xfeatures `,name xfeature-list)))
     (progn
        (add-xpackage `,xpackage)
