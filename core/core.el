@@ -15,10 +15,17 @@
   (make-directory easy-emacs-etc-dir t))
 
 (require 'core-package (concat easy-emacs-core-dir "/core-package"))
-(require 'core-modules (concat easy-emacs-core-dir "/core-modules"))
 (require 'core-features (concat easy-emacs-core-dir "/core-features"))
+(require 'core-modules (concat easy-emacs-core-dir "/core-modules"))
 
 (setq custom-file (concat easy-emacs-etc-dir "custom.el"))
+
+;; create global scope
+;;
+(defvar global-scope-hook nil
+  "Hooks run when enter global scope")
+
+(scope! global (global-scope-hook) nil)
 
 (provide 'core)
 ;;; core.el ends here

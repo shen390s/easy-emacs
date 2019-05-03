@@ -9,4 +9,7 @@
 ;;(enable! )
 (load custom-file t t)
 
+;; Enter global scope
+(enter-scope 'global)
+
 ;;; init.el ends here
