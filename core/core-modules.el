@@ -1,4 +1,5 @@
 (require 'cl-lib)
+(require 'subr-x)
 
 (cl-defstruct xpackage name docstring pkg-info)
 
@@ -47,6 +48,21 @@
        (add-xfeatures `,xfeatures))))
 
 
+(defun actived-packages(activated-features)
+  (let ((feature-info (hash-table-values all-xfeatures)))
+    (let ((feature-pkg-map (mapcar #'(lambda (xfeature)
+				       (cons (xfeature-name xfeature)
+					     (xfeature-pkgname xfeature)))
+				   feature-info)))
+      (mapcar #'(lambda (feature-name)
+		  (cdr (assoc feature-name feature-pkg-map)))
+	      activated-features))))
+
+(defun pkglist-info (packages)
+  (cl-loop for pkg in packages
+	   collect (xpackage-pkg-info (gethash pkg all-xpackages))))
+		
+						      
 (defun load-module-definition (module-file)
   (load-file module-file))
 
