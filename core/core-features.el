@@ -1,6 +1,7 @@
 ;;
 
-(require  'cl-lib)
+(require 'cl-lib)
+(require 'subr-x)
 
 (defvar all-scope (make-hash-table)
   "All defined feature scope")
@@ -56,14 +57,12 @@
     (collect-lists (append acc (car lists))
 		   (cdr lists))))
 
-(defun all-used-features ()
-  (let ((referenced-feature-lists
-	 (maphash
-	  #'(lambda (scope xscope)
-	      (xfeature-scope-xfeatures xscope))
-	  all-scope)))
-    (let ((features (collect-lists nil referenced-feature-lists)))
-      (delete-dups features))))
+(defun actived-features ()
+  (delete-dups
+   (collect-lists nil
+		  (mapcar #'(lambda (xscope)
+			      (xfeature-scope-xfeatures xscope))
+			  (hash-table-values all-scope)))))
 
 (defun enter-scope (scope)
   (let ((xscope (gethash scope all-scope)))

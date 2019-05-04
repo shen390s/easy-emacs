@@ -9,6 +9,8 @@
 ;;(enable! )
 (load custom-file t t)
 
+(enable! emacs-server)
+
 ;; Enter global scope
 (enter-scope 'global)
 
