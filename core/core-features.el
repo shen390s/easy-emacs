@@ -9,19 +9,20 @@
 (cl-defstruct xfeature-scope name enter-hooks leave-hooks xfeatures)
 
 (defun enable-xfeature (scope feature)
-  ;;(message "enable-xfeature %s %s\n" scope feature)
   (let ((xscope (gethash scope all-scope)))
     (if xscope
-	(puthash scope (make-xfeature-scope :name scope
-					    :xfeatures (cons feature
-							     (xfeature-scope-xfeatures xscope))
-					    :enter-hooks nil
-					    :leave-hooks nil)
+	(puthash scope
+		 (make-xfeature-scope :name scope
+				      :xfeatures (cons feature
+						       (xfeature-scope-xfeatures xscope))
+				      :enter-hooks (xfeature-scope-enter-hooks xscope)
+				      :leave-hooks (xfeature-scope-leave-hooks xscope))
 		 all-scope)
-      (puthash scope (make-xfeature-scope :name scope
-					  :xfeatures (list feature)
-					  :enter-hooks nil
-					  :leave-hooks nil)
+      (puthash scope
+	       (make-xfeature-scope :name scope
+				    :xfeatures (list feature)
+				    :enter-hooks nil
+				    :leave-hooks nil)
 	       all-scope))))
 
 (defun enable-xfeatures (features)
@@ -70,5 +71,31 @@
       (let ((enter-hooks (xfeature-scope-enter-hooks xscope)))
 	(cl-loop for hook in enter-hooks
 		 do (run-hooks hook))))))
+
+(defun build-scope-hooks (scope xscope)
+  (let ((enter-hooks (xfeature-scope-enter-hooks xscope))
+	(leave-hooks (xfeature-scope-leave-hooks xscope)))
+    (cl-loop for feature in (xfeature-scope-xfeatures xscope)
+	     do (let ((xfeature (gethash feature all-xfeatures)))
+		  (when xfeature
+		    (let ((feature-on (xfeature-on-fn xfeature))
+			  (feature-off (xfeature-off-fn xfeature)))
+		      (progn
+			(when feature-on
+			  (cl-loop for hook in enter-hooks
+				   do (add-hook hook feature-on)))
+			(when feature-off
+			  (cl-loop for hook in leave-hooks
+				   do (add-hook hook feature-off))))))))))
+
+(defun build-hooks ()
+  (maphash #'build-scope-hooks all-scope))
+
+;; create global scope
+;;
+(defvar global-scope-hook nil
+  "Hooks run when enter global scope")
+
+(scope! global (global-scope-hook) nil)
 
 (provide 'core-features)

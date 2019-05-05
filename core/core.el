@@ -20,12 +20,5 @@
 
 (setq custom-file (concat easy-emacs-etc-dir "custom.el"))
 
-;; create global scope
-;;
-(defvar global-scope-hook nil
-  "Hooks run when enter global scope")
-
-(scope! global (global-scope-hook) nil)
-
 (provide 'core)
 ;;; core.el ends here

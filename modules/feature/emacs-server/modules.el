@@ -13,7 +13,7 @@
  nil
  ((emacs-server
    "Emacs Editor Server"
-   #'emacs-server-check
-   #'activate-emacs-server
-   #'deactivate-emacs-server)))
+   emacs-server-check
+   activate-emacs-server
+   deactivate-emacs-server)))
 

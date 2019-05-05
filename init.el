@@ -9,7 +9,18 @@
 ;;(enable! )
 (load custom-file t t)
 
-(enable! emacs-server)
+;; Enable features
+(enable! emacs-server
+	 (c-c++ lsp))
+
+;; Install actived packages
+
+(install-packages
+ (actived-packages
+  (actived-features)))
+
+;; build scope hooks
+(build-hooks)
 
 ;; Enter global scope
 (enter-scope 'global)
