@@ -14,6 +14,7 @@
 (unless (file-exists-p easy-emacs-etc-dir)
   (make-directory easy-emacs-etc-dir t))
 
+(require 'core-lib (concat easy-emacs-core-dir "/core-lib"))
 (require 'core-package (concat easy-emacs-core-dir "/core-package"))
 (require 'core-features (concat easy-emacs-core-dir "/core-features"))
 (require 'core-modules (concat easy-emacs-core-dir "/core-modules"))

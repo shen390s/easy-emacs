@@ -11,7 +11,7 @@
 
 ;; Enable features
 (enable! emacs-server
-	 (c-c++ lsp rainbow-delimiters
+	 (c-c++ cquery rainbow-delimiters
 		rainbow-identifiers)
 	 (elisp smartparens rainbow-delimiters
 		rainbow-identifiers))

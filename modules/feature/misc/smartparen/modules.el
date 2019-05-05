@@ -1,9 +1,13 @@
 (package!
  smartparen-module
  "smartparen in buffer"
+ smartparens)
+
+(feature!
  smartparens
- ((smartparens
-   "Enable smart parents"
-   nil
-   smartparens-mode
-   nil)))
+ "Enable smart parents"
+ (smartparen-module)
+ nil
+ smartparens-mode
+ nil)
+

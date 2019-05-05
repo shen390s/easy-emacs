@@ -1,9 +1,12 @@
 (package!
  lsp-module
  "Emacs lisp client to language server"
- lsp-mode
- ((lsp
-   "Enable lsp mode"
-   nil
-   nil
-   nil)))
+ lsp-mode)
+
+(feature!
+ lsp
+ "Enable lsp mode"
+ (lsp-module)
+ nil
+ nil ;; FIXME: add enable function later
+ nil)

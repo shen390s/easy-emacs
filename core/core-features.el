@@ -52,12 +52,6 @@
 	       all-scope))))
 		 
 
-(defun collect-lists (acc lists)
-  (if (null lists)
-      acc
-    (collect-lists (append acc (car lists))
-		   (cdr lists))))
-
 (defun actived-features ()
   (delete-dups
    (collect-lists nil

@@ -1,9 +1,13 @@
 (package!
  rainbow-delimiters
  "rainbow delimiters"
+ rainbow-delimiters)
+
+
+(feature!
  rainbow-delimiters
- ((rainbow-delimiters
-   "Enable rainbow delimiters"
-   nil
-   rainbow-delimiters-mode
-   nil)))
+ "Enable rainbow delimiters"
+ (rainbow-delimiters)
+ nil
+ rainbow-delimiters-mode
+ nil)
