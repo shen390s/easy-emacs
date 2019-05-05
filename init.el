@@ -11,6 +11,7 @@
 
 ;; Enable features
 (enable! emacs-server
+	 which-key
 	 (c-c++ cquery rainbow-delimiters
 		rainbow-identifiers)
 	 (elisp smartparens rainbow-delimiters
