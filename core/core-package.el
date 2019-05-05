@@ -13,12 +13,16 @@
            'silent 'inhibit-cookies)
         (goto-char (point-max))
         (eval-print-last-sexp)))
-    (load bootstrap-file nil 'nomessage)))
+    (load bootstrap-file nil 'nomessage)
+    (straight-use-package 'use-package)))
 
 (defun bootstrap-package (pkgmgr)
   (cond
    ((string= pkgmgr "straight") (bootstrap-straight))
    (t (bootstrap-straight))))
+
+(defun install-packages(pkginfo)
+  t)
 
 (provide 'core-package)
 ;;; core-package.el ends here
