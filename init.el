@@ -11,8 +11,10 @@
 
 ;; Enable features
 (enable! emacs-server
-	 (c-c++ lsp rainbow-delimiters)
-	 (elisp smartparens rainbow-delimiters))
+	 (c-c++ lsp rainbow-delimiters
+		rainbow-identifiers)
+	 (elisp smartparens rainbow-delimiters
+		rainbow-identifiers))
 
 ;; Install actived packages
 
