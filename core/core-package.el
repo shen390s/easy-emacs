@@ -23,9 +23,10 @@
 
 (defun install-packages(pkginfo)
   (cl-loop for pkg in pkginfo
-	   do (if (listp pkg)
-		  (funcall use-package pkg)
-		(straight-use-package pkg))))
+	   do (when pkg
+		(if (listp pkg)
+		    (funcall use-package pkg)
+		  (straight-use-package pkg)))))
 
 (provide 'core-package)
 ;;; core-package.el ends here

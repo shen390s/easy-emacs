@@ -11,13 +11,15 @@
 
 ;; Enable features
 (enable! emacs-server
-	 (c-c++ lsp))
+	 (c-c++ lsp rainbow-delimiters)
+	 (elisp smartparens rainbow-delimiters))
 
 ;; Install actived packages
 
 (install-packages
- (actived-packages
-  (actived-features)))
+ (pkglist-info
+  (actived-packages
+   (actived-features))))
 
 ;; build scope hooks
 (build-hooks)
