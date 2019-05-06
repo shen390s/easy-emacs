@@ -12,6 +12,7 @@
 	 undo-tree
 	 evil
 	 yasnippet
+	 magit
 	 (c-c++ smartparens cquery rainbow-delimiters
 		rainbow-identifiers
 		linum)
