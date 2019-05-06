@@ -13,12 +13,19 @@
 	 evil
 	 yasnippet
 	 magit
+	 rust
 	 (c-c++ smartparens cquery rainbow-delimiters
 		rainbow-identifiers
 		linum)
 	 (elisp smartparens rainbow-delimiters
 		rainbow-identifiers
-		linum))
+		linum)
+	 (python smartparens rainbow-delimiters
+		 rainbow-identifiers
+		 linum)
+	 (rust smartparens rainbow-delimiters
+	       rainbow-identifiers
+	       linum))
 
 ;; Install actived packages
 
