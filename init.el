@@ -15,7 +15,8 @@
 	 ivy
 	 undo-tree
 	 evil
-	 (c-c++ cquery rainbow-delimiters
+	 yasnippet
+	 (c-c++ smartparens cquery rainbow-delimiters
 		rainbow-identifiers
 		linum)
 	 (elisp smartparens rainbow-delimiters

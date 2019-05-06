@@ -16,8 +16,9 @@
     (if xscope
 	(puthash scope
 		 (make-xfeature-scope :name scope
-				      :xfeatures (cons feature
-						       (xfeature-scope-xfeatures xscope))
+				      :xfeatures (append
+						  (xfeature-scope-xfeatures xscope)
+						  (list feature))
 				      :enter-hooks (xfeature-scope-enter-hooks xscope)
 				      :leave-hooks (xfeature-scope-leave-hooks xscope))
 		 all-scope)
