@@ -3,7 +3,7 @@
 
 (cl-defstruct xpackage name docstring pkg-info)
 
-(cl-defstruct xfeature name docstring pkgs check-fn on-fn off-fn)
+(cl-defstruct xfeature name docstring pkgs config-fn on-fn off-fn)
 
 (defvar all-xpackages (make-hash-table)
   "All defined packages")
@@ -18,11 +18,11 @@
     (progn
       (puthash name xpackage all-xpackages))))
 
-(defmacro feature! (name docstring pkgs check-fn on-fn off-fn)
+(defmacro feature! (name docstring pkgs config-fn on-fn off-fn)
   (let ((xfeature (make-xfeature :name `,name
 				 :docstring docstring
 				 :pkgs pkgs
-				 :check-fn check-fn
+				 :config-fn config-fn
 				 :on-fn on-fn
 				 :off-fn off-fn)))
     (puthash name xfeature all-xfeatures)))

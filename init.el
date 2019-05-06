@@ -13,10 +13,14 @@
 (enable! emacs-server
 	 which-key
 	 ivy
+	 undo-tree
+	 evil
 	 (c-c++ cquery rainbow-delimiters
-		rainbow-identifiers)
+		rainbow-identifiers
+		linum)
 	 (elisp smartparens rainbow-delimiters
-		rainbow-identifiers))
+		rainbow-identifiers
+		linum))
 
 ;; Install actived packages
 

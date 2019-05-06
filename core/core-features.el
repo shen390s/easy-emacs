@@ -6,6 +6,9 @@
 (defvar all-scope (make-hash-table)
   "All defined feature scope")
 
+(defvar enabled-features nil
+  "All enabled features")
+
 (cl-defstruct xfeature-scope name enter-hooks leave-hooks xfeatures)
 
 (defun enable-xfeature (scope feature)
@@ -34,8 +37,9 @@
 			   do (enable-xfeature scope feature2))))))
 
 (defmacro enable! (&rest features)
-  (enable-xfeatures features))
-
+  (progn
+    (setf enabled-features features)
+    (enable-xfeatures features)))
 
 (defmacro scope! (scope enter-hooks leave-hooks)
   (let ((xscope (gethash scope all-scope)))
