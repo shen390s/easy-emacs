@@ -16,7 +16,7 @@
 	 rust
 	 (c-c++ smartparens cquery rainbow-delimiters
 		rainbow-identifiers
-		linum)
+		linum google-c-style)
 	 (elisp smartparens rainbow-delimiters
 		rainbow-identifiers
 		linum)
