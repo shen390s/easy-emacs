@@ -6,10 +6,6 @@
 (bootstrap-package "straight")
 (load-modules easy-emacs-modules-dir)
 ;; Enable features
-;;(enable! )
-(load custom-file t t)
-
-;; Enable features
 (enable! emacs-server
 	 which-key
 	 ivy
@@ -35,5 +31,8 @@
 
 ;; Enter global scope
 (enter-scope 'global)
+
+;; load customization
+(load custom-file t t)
 
 ;;; init.el ends here
