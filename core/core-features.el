@@ -57,6 +57,13 @@
 	       all-scope))))
 		 
 
+(defun feature-enabled (feature)
+  (let ((enabled-scope (cl-loop for scope in (hash-table-keys all-scope)
+				collect (let ((features-in-scope (xfeature-scope-xfeatures (gethash scope all-scope))))
+					  (when (member feature features-in-scope)
+					    scope)))))
+    (delq nil enabled-scope)))
+
 (defun actived-features ()
   (delete-dups
    (collect-lists nil

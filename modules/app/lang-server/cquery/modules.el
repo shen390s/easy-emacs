@@ -5,7 +5,11 @@
 
 (defun cquery-on ()
   (require 'cquery)
-  (lsp))
+  (progn
+    (if (feature-enabled 'yasnippet)
+	(setq lsp-enable-snippet t)
+      (setq lsp-enable-snippet nil))
+    (lsp)))
 
 (feature!
  cquery
