@@ -16,11 +16,13 @@
 	  evil
 	  yasnippet
 	  magit
-	  rust))
+	  rust
+	  golden-ratio))
 
 ;; features in c-c++ scope
 (enable!  c-c++
 	  (smartparens
+	   lsp-ui
 	   (cquery ((cquery-executable . "/usr/local/bin/cquery")))
 	   rainbow-delimiters
 	   rainbow-identifiers

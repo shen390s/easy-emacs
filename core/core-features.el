@@ -1,10 +1,14 @@
-;;
+;; -*- lexical-binding: t -*-
+;; enable lexical scope
 
 (require 'cl-lib)
 (require 'subr-x)
 
 (defvar all-scope (make-hash-table)
   "All defined feature scope")
+
+(defvar current-scope nil
+  "The current scope which will be activated")
 
 (cl-defstruct xfeature-scope name enter-hooks leave-hooks xfeatures)
 
@@ -25,35 +29,35 @@
 	(append (xfeature-scope-xfeatures xscope)
 		(list xfeature))))
 
-(defun extract-feature-name (feature)
-  (if (listp feature)
-      (car feature)
-    feature))
-
-(defun extract-before-activation (feature)
-  (if (listp feature)
-      (let ((activation (cdr feature)))
-	(if activation
-	    (car activation)
-	  nil))
-    nil))
-
-(defun extract-after-activation (feature)
-  (if (listp feature)
-      (let ((activation (cdr (cdr feature))))
-	(if activation
-	    (car activation)
-	  nil))
-    nil))
-
 (defun build-activation (activation)
   (cl-loop for item in activation
 	   collect `(setq ,(car item) ,(cdr item))))
 
 (defun make-scope-xfeature (feature)
-  (let ((feature-name (extract-feature-name feature))
-	(before-activation (extract-before-activation feature))
-	(after-activation (extract-after-activation feature)))
+  (defun extract-feature-name ()
+    (if (listp feature)
+	(car feature)
+      feature))
+
+  (defun extract-before-activation ()
+    (if (listp feature)
+	(let ((activation (cdr feature)))
+	  (if activation
+	      (car activation)
+	    nil))
+      nil))
+
+  (defun extract-after-activation ()
+    (if (listp feature)
+	(let ((activation (cdr (cdr feature))))
+	  (if activation
+	      (car activation)
+	    nil))
+      nil))
+
+  (let ((feature-name (extract-feature-name))
+	(before-activation (extract-before-activation))
+	(after-activation (extract-after-activation)))
     (let ((xfeature (gethash feature-name all-xfeatures)))
       (when xfeature
 	(let ((feature-on (xfeature-on-fn xfeature))
@@ -113,25 +117,36 @@
 			  (hash-table-values all-scope)))))
 
 (defun enter-scope (scope)
-  (let ((xscope (gethash scope all-scope)))
-    (when xscope
-      (let ((enter-hooks (xfeature-scope-enter-hooks xscope)))
-	(cl-loop for hook in enter-hooks
-		 do (run-hooks hook))))))
+  (let ((current-scope scope))
+    (let ((xscope (gethash scope all-scope)))
+      (when xscope
+	(cl-loop for active-fn in (mapcar #'(lambda (x)
+					      (car (cdr x)))
+					  (xfeature-scope-xfeatures xscope))
+		 do (when active-fn
+		      (funcall active-fn)))))))
+
+(defun leave-scope (scope)
+  (let ((current-scope scope))
+    (let ((xscope (gethash scope all-scope)))
+      (when xscope
+	(cl-loop for leave-fn in (mapcar #'(lambda (x)
+					      (car (cdr (cdr x))))
+					 (xfeature-scope-xfeatures xscope))
+		 do (when leave-fn
+		      (funcall leave-fn)))))))
 
 (defun build-scope-hooks (scope xscope)
   (let ((enter-hooks (xfeature-scope-enter-hooks xscope))
 	(leave-hooks (xfeature-scope-leave-hooks xscope)))
-    (cl-loop for xfeature in (xfeature-scope-xfeatures xscope)
-	     do (let ((on-fn (car (cdr xfeature)))
-		      (off-fn (car (cdr (cdr xfeature)))))
-		  (progn
-		    (message "on-fn %s\n" on-fn)
-		    (message "off-fn %s\n" off-fn)
-		    (cl-loop for hook in enter-hooks
-			     do (add-hook hook on-fn))
-		    (cl-loop for hook in leave-hooks
-			     do (add-hook hook off-fn)))))))
+    (progn
+      (cl-loop for hook in enter-hooks
+	       do (add-hook hook
+			    #'(lambda ()
+				(enter-scope scope)))
+      (cl-loop for hook in leave-hooks
+	       do (add-hook hook #'(lambda ()
+				     (leave-scope scope))))))))
 
 (defun build-hooks ()
   (maphash #'build-scope-hooks all-scope))

@@ -1,4 +1,6 @@
-;;; core-package.el --- description -*- lexical-binding: t; -*-
+;; -*- lexical-binding: t -*-
+;; enable lexical scope
+;;; core-package.el 
 
 (defvar bootstrap-version)
 

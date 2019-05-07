@@ -1,3 +1,6 @@
+;; -*- lexical-binding: t -*-
+;; enable lexical scope
+
 (require 'cl-lib)
 (require 'subr-x)
 
