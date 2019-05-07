@@ -46,6 +46,7 @@
 ;; features in rust scope
 (enable! rust
 	 (smartparens
+	  rls
 	  rainbow-delimiters
 	  rainbow-identifiers
 	  linum))
