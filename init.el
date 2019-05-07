@@ -5,27 +5,41 @@
 
 (bootstrap-package "straight")
 (load-modules easy-emacs-modules-dir)
+
 ;; Enable features
-(enable! emacs-server
-	 which-key
-	 ivy
-	 undo-tree
-	 evil
-	 yasnippet
-	 magit
-	 rust
-	 (c-c++ smartparens cquery rainbow-delimiters
-		rainbow-identifiers
-		linum google-c-style)
-	 (elisp smartparens rainbow-delimiters
-		rainbow-identifiers
-		linum)
-	 (python smartparens rainbow-delimiters
-		 rainbow-identifiers
-		 linum)
-	 (rust smartparens rainbow-delimiters
-	       rainbow-identifiers
-	       linum))
+;;  features in global scope
+(enable! global
+	 (emacs-server which-key
+		       ivy
+		       undo-tree
+		       evil
+		       yasnippet
+		       magit
+		       rust))
+
+;; features in c-c++ scope
+(enable!  c-c++
+	  (smartparens cquery rainbow-delimiters
+		       rainbow-identifiers
+		       linum google-c-style))
+
+;; features in elisp scope
+(enable! elisp
+	 (smartparens rainbow-delimiters
+		      rainbow-identifiers
+		      linum))
+
+;; features in python scope
+(enable! python
+	 (smartparens rainbow-delimiters
+		      rainbow-identifiers
+		      linum))
+
+;; features in rust scope
+(enable! rust
+	 (smartparens rainbow-delimiters
+		      rainbow-identifiers
+		      linum))
 
 ;; Install actived packages
 

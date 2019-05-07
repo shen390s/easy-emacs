@@ -6,69 +6,104 @@
 (defvar all-scope (make-hash-table)
   "All defined feature scope")
 
-(defvar enabled-features nil
-  "All enabled features")
-
 (cl-defstruct xfeature-scope name enter-hooks leave-hooks xfeatures)
 
-(defun enable-xfeature (scope feature)
-  (let ((xscope (gethash scope all-scope)))
-    (if xscope
-	(puthash scope
-		 (make-xfeature-scope :name scope
-				      :xfeatures (append
-						  (xfeature-scope-xfeatures xscope)
-						  (list feature))
-				      :enter-hooks (xfeature-scope-enter-hooks xscope)
-				      :leave-hooks (xfeature-scope-leave-hooks xscope))
-		 all-scope)
-      (puthash scope
-	       (make-xfeature-scope :name scope
-				    :xfeatures (list feature)
-				    :enter-hooks nil
-				    :leave-hooks nil)
-	       all-scope))))
-
-(defun enable-xfeatures (features)
-  (cl-loop for feature in features
-	   do (if (not (listp feature))
-		  (enable-xfeature 'global feature)
-		(let ((scope (car feature)))
-		  (cl-loop for feature2 in (cdr feature)
-			   do (enable-xfeature scope feature2))))))
-
-(defmacro enable! (&rest features)
-  (progn
-    (setf enabled-features features)
-    (enable-xfeatures features)))
-
-(defmacro scope! (scope enter-hooks leave-hooks)
+(defun get-or-create-scope (scope)
   (let ((xscope (gethash scope all-scope)))
     (if (not xscope)
-	(puthash scope (make-xfeature-scope :name scope
-					    :xfeatures nil
-					    :enter-hooks enter-hooks
-					    :leave-hooks leave-hooks)
-		 all-scope)
-      (puthash scope (make-xfeature-scope :name scope
-					  :xfeatures (xfeature-scope-xfeatures xscope)
-					  :enter-hooks enter-hooks
-					  :leave-hooks leave-hooks)
-	       all-scope))))
-		 
+	(let ((xscope (make-xfeature-scope :name scope
+					   :xfeatures nil
+					   :enter-hooks nil
+					   :leave-hooks nil)))
+	  (progn
+	    (puthash scope xscope all-scope)
+	    xscope))
+      xscope)))
+
+(defun add-xfeature-to-scope (xscope xfeature)
+  (setf (xfeature-scope-xfeatures xscope)
+	(append (xfeature-scope-xfeatures xscope)
+		(list xfeature))))
+
+(defun extract-feature-name (feature)
+  (if (listp feature)
+      (car feature)
+    feature))
+
+(defun extract-before-activation (feature)
+  (if (listp feature)
+      (let ((activation (cdr feature)))
+	(if activation
+	    (car activation)
+	  nil))
+    nil))
+
+(defun extract-after-activation (feature)
+  (if (listp feature)
+      (let ((activation (cdr (cdr feature))))
+	(if activation
+	    (car activation)
+	  nil))
+    nil))
+
+(defun build-activation (activation)
+  (cl-loop for item in activation
+	   collect `(setq ,(car item) ,(cdr item))))
+
+(defun make-scope-xfeature (feature)
+  (let ((feature-name (extract-feature-name feature))
+	(before-activation (extract-before-activation feature))
+	(after-activation (extract-after-activation feature)))
+    (let ((xfeature (gethash feature-name all-xfeatures)))
+      (when xfeature
+	(let ((feature-on (xfeature-on-fn xfeature))
+	      (feature-off (xfeature-off-fn xfeature)))
+	  (list feature-name
+		(if feature-on
+		    `(lambda ()
+		       ,@(build-activation before-activation)
+		       (,feature-on))
+		  `(lambda ()
+		     ,@(build-activation before-activation)
+		     nil))
+		(if feature-off
+		    `(lambda ()
+		       (,feature-off)
+		       ,@(build-activation after-activation))
+		  `(lambda ()
+		     t
+		     ,@(build-activation after-activation)))))))))
+
+(defmacro enable! (scope features)
+  (let ((xscope (get-or-create-scope scope)))
+    (cl-loop for feature in features
+	     do (add-xfeature-to-scope
+		 xscope
+		 (make-scope-xfeature feature)))))
+
+(defmacro scope! (scope enter-hooks leave-hooks)
+  (let ((xscope (get-or-create-scope scope)))
+    (progn
+      (setf (xfeature-scope-enter-hooks xscope) enter-hooks)
+      (setf (xfeature-scope-leave-hooks xscope) leave-hooks))))
 
 (defun feature-enabled (feature)
-  (let ((enabled-scope (cl-loop for scope in (hash-table-keys all-scope)
-				collect (let ((features-in-scope (xfeature-scope-xfeatures (gethash scope all-scope))))
-					  (when (member feature features-in-scope)
-					    scope)))))
+  (let ((enabled-scope
+	 (cl-loop for scope in (hash-table-keys all-scope)
+		  collect (let ((features-in-scope
+				 (mapcar #'car
+					 (xfeature-scope-xfeatures
+					  (gethash scope all-scope)))))
+			    (when (member feature features-in-scope)
+			      scope)))))
     (delq nil enabled-scope)))
 
 (defun actived-features ()
   (delete-dups
    (collect-lists nil
 		  (mapcar #'(lambda (xscope)
-			      (xfeature-scope-xfeatures xscope))
+			      (mapcar #'car
+				      (xfeature-scope-xfeatures xscope)))
 			  (hash-table-values all-scope)))))
 
 (defun enter-scope (scope)
@@ -81,18 +116,16 @@
 (defun build-scope-hooks (scope xscope)
   (let ((enter-hooks (xfeature-scope-enter-hooks xscope))
 	(leave-hooks (xfeature-scope-leave-hooks xscope)))
-    (cl-loop for feature in (xfeature-scope-xfeatures xscope)
-	     do (let ((xfeature (gethash feature all-xfeatures)))
-		  (when xfeature
-		    (let ((feature-on (xfeature-on-fn xfeature))
-			  (feature-off (xfeature-off-fn xfeature)))
-		      (progn
-			(when feature-on
-			  (cl-loop for hook in enter-hooks
-				   do (add-hook hook feature-on)))
-			(when feature-off
-			  (cl-loop for hook in leave-hooks
-				   do (add-hook hook feature-off))))))))))
+    (cl-loop for xfeature in (xfeature-scope-xfeatures xscope)
+	     do (let ((on-fn (car (cdr xfeature)))
+		      (off-fn (car (cdr (cdr xfeature)))))
+		  (progn
+		    (message "on-fn %s\n" on-fn)
+		    (message "off-fn %s\n" off-fn)
+		    (cl-loop for hook in enter-hooks
+			     do (add-hook hook on-fn))
+		    (cl-loop for hook in leave-hooks
+			     do (add-hook hook off-fn)))))))
 
 (defun build-hooks ()
   (maphash #'build-scope-hooks all-scope))
