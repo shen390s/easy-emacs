@@ -74,6 +74,8 @@
 		     t
 		     ,@(build-activation after-activation)))))))))
 
+;; Enable features in scope
+;; (enable! scope feature1 (feature2 (preactive config) (post active config)) ...)
 (defmacro enable! (scope features)
   (let ((xscope (get-or-create-scope scope)))
     (cl-loop for feature in features
@@ -81,12 +83,15 @@
 		 xscope
 		 (make-scope-xfeature feature)))))
 
+;; Define a new scope
+;; (scope! scope (hooks to be called when enter scope) (hooks to be call when leave scope))
 (defmacro scope! (scope enter-hooks leave-hooks)
   (let ((xscope (get-or-create-scope scope)))
     (progn
       (setf (xfeature-scope-enter-hooks xscope) enter-hooks)
       (setf (xfeature-scope-leave-hooks xscope) leave-hooks))))
 
+;; Return a list of scopes when the feature has been activated
 (defun feature-enabled (feature)
   (let ((enabled-scope
 	 (cl-loop for scope in (hash-table-keys all-scope)
@@ -98,6 +103,7 @@
 			      scope)))))
     (delq nil enabled-scope)))
 
+;; All enabled features
 (defun actived-features ()
   (delete-dups
    (collect-lists nil
