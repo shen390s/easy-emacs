@@ -49,7 +49,10 @@
 
 ;; features in python scope
 (enable! python
-	 (smartparens
+	 ((lsp-python-ms
+	   (((setq lsp-python-ms-executable
+		   "/Users/rshen/bin/Microsoft.Python.LanguageServer"))))
+	  smartparens
 	  rainbow-delimiters
 	  rainbow-identifiers
 	  linum))
