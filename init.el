@@ -38,7 +38,7 @@
 	   rainbow-delimiters
 	   rainbow-identifiers
 	   linum
-	   google-c-style))
+	   (set-c-style (((c-set-style "stroustrup"))))))
 
 ;; features in elisp scope
 (enable! elisp

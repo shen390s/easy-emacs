@@ -18,4 +18,10 @@
  enable-google-c-style
  nil)
 
-
+(feature!
+ set-c-style
+ "set c/c++ style"
+ nil
+ nil
+ nil
+ nil)
