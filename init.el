@@ -18,7 +18,13 @@
 	  evil
 	  yasnippet
 	  magit
-	  rust
+	  (rust (((add-to-list 'auto-mode-alist
+			       '("\\.rs\\'" . rust-mode)))))
+	  (plantuml
+	   (((add-to-list 'auto-mode-alist
+			  '("\\.plantuml\\'" . plantuml-mode))
+	     (setq plantuml-jar-path
+		   "/Users/rshen/workenv/emacs/jars/plantuml.jar"))))
 	  golden-ratio))
 
 ;; features in c-c++ scope
