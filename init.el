@@ -11,7 +11,9 @@
 (enable! global
 	 (emacs-server
 	  which-key
-	  ivy
+	  (ivy ((t)
+		((setq ivy-use-virtual-buffers t)
+		 (setq ivy-count-format "(%d/%d) "))))
 	  undo-tree
 	  evil
 	  yasnippet
