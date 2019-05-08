@@ -23,7 +23,10 @@
 (enable!  c-c++
 	  (smartparens
 	   lsp-ui
-	   (cquery ((cquery-executable . "/usr/local/bin/cquery")))
+	   (cquery ((;; configuration code before featured actived
+		     (setq cquery-executable  "/usr/local/bin/cquery"))
+		    (;; configuration code after feature actived
+		     t)))
 	   rainbow-delimiters
 	   rainbow-identifiers
 	   linum

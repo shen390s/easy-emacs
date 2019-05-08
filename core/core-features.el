@@ -39,47 +39,44 @@
 	(car feature)
       feature))
 
-  (defun extract-before-activation ()
+  (defun extract-activation-config ()
     (if (listp feature)
-	(let ((activation (cdr feature)))
-	  (if activation
-	      (car activation)
-	    nil))
+	(nth-car 2 feature)
       nil))
 
-  (defun extract-after-activation ()
+  (defun extract-deactivation-config ()
     (if (listp feature)
-	(let ((activation (cdr (cdr feature))))
-	  (if activation
-	      (car activation)
-	    nil))
+	(nth-car 3 feature)
       nil))
 
+  (defun build-fn (fn config)
+    (let ((before-fn (nth-car 1 config))
+	  (after-fn (nth-car 2 config)))
+      `(lambda ()
+	 ,@before-fn
+	 (,fn)
+	 ,@after-fn)))
+  
   (let ((feature-name (extract-feature-name))
-	(before-activation (extract-before-activation))
-	(after-activation (extract-after-activation)))
+	(activation-config (extract-activation-config))
+	(deactivation-config (extract-deactivation-config)))
     (let ((xfeature (gethash feature-name all-xfeatures)))
       (when xfeature
 	(let ((feature-on (xfeature-on-fn xfeature))
 	      (feature-off (xfeature-off-fn xfeature)))
 	  (list feature-name
 		(if feature-on
-		    `(lambda ()
-		       ,@(build-activation before-activation)
-		       (,feature-on))
-		  `(lambda ()
-		     ,@(build-activation before-activation)
-		     nil))
+		    (build-fn feature-on activation-config)
+		  (build-fn (lambda () nil) activation-config))
 		(if feature-off
-		    `(lambda ()
-		       (,feature-off)
-		       ,@(build-activation after-activation))
-		  `(lambda ()
-		     t
-		     ,@(build-activation after-activation)))))))))
+		    (build-fn feature-off deactivation-config)
+		  (build-fn (lambda () nil) deactivation-config))))))))
 
 ;; Enable features in scope
-;; (enable! scope feature1 (feature2 (preactive config) (post active config)) ...)
+;; (enable! scope feature1
+;;                (feature2 ((code before activation) (code after activation))
+;;                          ((code before deactivation) (code after deactivation))
+;;                 ...)
 (defmacro enable! (scope features)
   (let ((xscope (get-or-create-scope scope)))
     (cl-loop for feature in features
