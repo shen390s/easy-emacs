@@ -25,6 +25,7 @@
 			  '("\\.plantuml\\'" . plantuml-mode))
 	     (setq plantuml-jar-path
 		   "/Users/rshen/workenv/emacs/jars/plantuml.jar"))))
+	  treemacs
 	  golden-ratio))
 
 ;; features in c-c++ scope
@@ -61,6 +62,14 @@
 (enable! rust
 	 (smartparens
 	  rls
+	  rainbow-delimiters
+	  rainbow-identifiers
+	  linum))
+
+;; features in java scope
+(enable! java
+	 (smartparens
+	  lsp-java
 	  rainbow-delimiters
 	  rainbow-identifiers
 	  linum))
