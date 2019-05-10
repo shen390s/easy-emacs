@@ -18,8 +18,13 @@
  "treemacs projectile integration"
  treemacs-projectile)
 
+(package!
+ treemacs-icons-dired
+ "treemacs with icons dired"
+ treemacs-icons-dired)
+
 (defun treemacs-pkgs ()
-  (let ((pkgs '(treemacs)))
+  (let ((pkgs '(treemacs treemacs-icons-dired)))
     (when (feature-enabled 'evil)
       (push 'treemacs-evil pkgs))
     (when (feature-enabled 'magit)
@@ -29,7 +34,9 @@
     pkgs))
 
 (defun enable-treemacs ()
-  (treemacs))
+  (treemacs)
+  (required 'dired)
+  (treemacs-icons-dired-mode))
 
 (feature!
  treemacs
