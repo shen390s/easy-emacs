@@ -35,7 +35,7 @@
 
 (defun enable-treemacs ()
   (treemacs)
-  (required 'dired)
+  (require 'dired)
   (treemacs-icons-dired-mode))
 
 (feature!

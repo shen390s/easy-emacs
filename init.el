@@ -10,6 +10,7 @@
 ;;  features in global scope
 (enable! global
 	 (emacs-server
+	  treemacs
 	  which-key
 	  (ivy ((t)
 		((setq ivy-use-virtual-buffers t)
@@ -25,7 +26,6 @@
 			  '("\\.plantuml\\'" . plantuml-mode))
 	     (setq plantuml-jar-path
 		   "/Users/rshen/workenv/emacs/jars/plantuml.jar"))))
-	  treemacs
 	  golden-ratio))
 
 ;; features in c-c++ scope
