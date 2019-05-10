@@ -11,6 +11,7 @@
 (enable! global
 	 (emacs-server
 	  treemacs
+	  powerline
 	  which-key
 	  (ivy ((t)
 		((setq ivy-use-virtual-buffers t)

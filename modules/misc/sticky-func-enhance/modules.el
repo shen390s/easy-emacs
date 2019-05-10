@@ -5,7 +5,8 @@
 
 (defun enable-stickyfunc-enhance ()
   (semantic-mode 1)
-  (require 'stickyfunc-enhance))
+  (require 'stickyfunc-enhance)
+  (semantic-stickyfunc-mode 1))
 
 (feature!
  stickyfunc-enhance
