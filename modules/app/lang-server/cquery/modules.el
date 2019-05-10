@@ -12,7 +12,7 @@
     (let ((feature-actived-scope (feature-enabled 'lsp-ui)))
       (when (member current-scope feature-actived-scope)
 	(add-hook 'lsp-mode-hook 'lsp-ui-mode)))
-    (lsp)))
+    (enable-lsp)))
 
 (feature!
  cquery
