@@ -30,11 +30,20 @@
 				 :off-fn off-fn)))
     (puthash name xfeature all-xfeatures)))
 
+(defun extract-xfeature-pkgs (xfeature)
+  (let ((xpkgs (xfeature-pkgs xfeature)))
+    (let ((pkgs (if (functionp xpkgs)
+		    (funcall xpkgs)
+		  xpkgs)))
+      (if (listp pkgs)
+	  pkgs
+	(list pkgs)))))
+
 (defun actived-packages(activated-features)
   (let ((feature-info (hash-table-values all-xfeatures)))
     (let ((feature-pkg-map (mapcar #'(lambda (xfeature)
 				       (cons (xfeature-name xfeature)
-					     (xfeature-pkgs xfeature)))
+					     (extract-xfeature-pkgs xfeature)))
 				   feature-info)))
       (delete-dups
        (collect-lists nil
