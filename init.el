@@ -12,6 +12,10 @@
 	 (emacs-server
 	  treemacs
 	  powerline
+	  ;;color-theme-solarized
+	  (color-theme-modern
+	   ((
+	     (setq color-theme-used 'cobalt))))
 	  which-key
 	  (ivy ((t)
 		((setq ivy-use-virtual-buffers t)
