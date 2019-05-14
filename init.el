@@ -13,9 +13,10 @@
 	  treemacs
 	  powerline
 	  ;;color-theme-solarized
-	  (color-theme-modern
-	   ((
-	     (setq color-theme-used 'cobalt))))
+	  ;;color-theme-modern
+	  ;;(color-theme-modern
+	  ;; ((
+	  ;;   (setq color-theme-used 'railscast))))
 	  which-key
 	  (ivy ((t)
 		((setq ivy-use-virtual-buffers t)
@@ -38,10 +39,11 @@
 	  (smartparens
 	   lsp-ui
 	   stickyfunc-enhance
-	   (cquery ((;; configuration code before featured actived
-		     (setq cquery-executable  "/usr/local/bin/cquery"))
-		    (;; configuration code after feature actived
-		     t)))
+	   ;;(cquery ((;; configuration code before featured actived
+	   ;;	     (setq cquery-executable  "/usr/local/bin/cquery"))
+  	   ;;	    (;; configuration code after feature actived
+           ;;		     t)))
+	   ccls
 	   rainbow-delimiters
 	   rainbow-identifiers
 	   linum
