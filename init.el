@@ -39,6 +39,7 @@
 	  (smartparens
 	   lsp-ui
 	   stickyfunc-enhance
+	   cquery
 	   ;;(cquery ((;; configuration code before featured actived
 	   ;;	     (setq cquery-executable  "/usr/local/bin/cquery"))
   	   ;;	    (;; configuration code after feature actived

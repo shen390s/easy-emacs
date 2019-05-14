@@ -3,6 +3,14 @@
  "Use cquery as c/c++ language server"
  (emacs-cquery :type git :host github :repo "cquery-project/emacs-cquery"))
 
+(defun config-cquery ()
+  (if (conflict-features current-scope 'ccls)
+      (progn
+	(message "C/C++ language server `ccls' has already been enabled in scope %s `cquery' language server will be disabled"
+		 current-scope)
+	nil)
+    t))
+
 (defun cquery-on ()
   (require 'cquery)
   (progn
@@ -18,6 +26,6 @@
  cquery
  "Use cquery as c/c++ language server"
  (lsp-module emacs-cquery)
- nil
+ config-cquery
  cquery-on
  nil)

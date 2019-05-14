@@ -30,6 +30,12 @@
 				 :off-fn off-fn)))
     (puthash name xfeature all-xfeatures)))
 
+(defun config-xfeature (xfeature)
+  (let ((config-fn (xfeature-config-fn xfeature)))
+    (if config-fn
+	(funcall config-fn)
+      t)))
+
 (defun extract-xfeature-pkgs (xfeature)
   (let ((xpkgs (xfeature-pkgs xfeature)))
     (let ((pkgs (if (functionp xpkgs)

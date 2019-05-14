@@ -3,6 +3,14 @@
  "Use ccls as c/c++ language server"
  (emacs-ccls :type git :host github :repo "MaskRay/emacs-ccls"))
 
+(defun config-ccls ()
+  (if (conflict-features current-scope 'cquery)
+      (progn
+	(message "C/C++ language server `cquery' has already been enabled in scope %s `ccls' language server will be disabled"
+		 current-scope)
+	  nil)
+    t))
+
 (defun ccls-on ()
   (require 'ccls)
   (progn
@@ -18,6 +26,6 @@
  ccls
  "Use ccls as c/c++ language server"
  (lsp-module emacs-ccls)
- nil
+ config-ccls
  ccls-on
  nil)

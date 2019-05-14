@@ -61,7 +61,8 @@
 	(activation-config (extract-activation-config))
 	(deactivation-config (extract-deactivation-config)))
     (let ((xfeature (gethash feature-name all-xfeatures)))
-      (when xfeature
+      (when (and xfeature
+		 (config-xfeature xfeature))
 	(let ((feature-on (xfeature-on-fn xfeature))
 	      (feature-off (xfeature-off-fn xfeature)))
 	  (list feature-name
@@ -72,6 +73,15 @@
 		    (build-fn feature-off deactivation-config)
 		  (build-fn (lambda () nil) deactivation-config))))))))
 
+(defun conflict-feature (scope feature)
+  (member scope (feature-enabled feature)))
+
+(defun conflict-features (scope &rest features)
+  (let ((conflicts 
+	 (cl-loop for feature in features
+		  collect (conflict-feature scope feature))))
+    (cl-reduce #'or conflicts)))
+
 ;; Enable features in scope
 ;; (enable! scope feature1
 ;;                (feature2 ((code before activation) (code after activation))
@@ -79,10 +89,11 @@
 ;;                 ...)
 (defmacro enable! (scope features)
   (let ((xscope (get-or-create-scope scope)))
-    (cl-loop for feature in features
-	     do (add-xfeature-to-scope
-		 xscope
-		 (make-scope-xfeature feature)))))
+    (let ((current-scope scope))
+      (cl-loop for feature in features
+	       do (add-xfeature-to-scope
+		   xscope
+		   (make-scope-xfeature feature))))))
 
 ;; Define a new scope
 ;; (scope! scope (hooks to be called when enter scope) (hooks to be call when leave scope))
