@@ -12,6 +12,7 @@
 	 (emacs-server
 	  treemacs
 	  powerline
+	  projectile
 	  ;;color-theme-solarized
 	  ;;color-theme-modern
 	  ;;(color-theme-modern
@@ -25,12 +26,11 @@
 	  evil
 	  yasnippet
 	  magit
-	  (rust (((add-to-list 'auto-mode-alist
-			       '("\\.rs\\'" . rust-mode)))))
+	  rust
+	  (markdown
+	   (((setq markdown-command "multimarkdown"))))
 	  (plantuml
-	   (((add-to-list 'auto-mode-alist
-			  '("\\.plantuml\\'" . plantuml-mode))
-	     (setq plantuml-jar-path
+	   (((setq plantuml-jar-path
 		   "/Users/rshen/workenv/emacs/jars/plantuml.jar"))))
 	  golden-ratio))
 
@@ -82,6 +82,9 @@
 	  rainbow-delimiters
 	  rainbow-identifiers
 	  linum))
+
+(enable! markdown
+	 (linum))
 
 ;; Install actived packages
 
