@@ -44,7 +44,7 @@
 	   ;;	     (setq cquery-executable  "/usr/local/bin/cquery"))
   	   ;;	    (;; configuration code after feature actived
            ;;		     t)))
-	   ccls
+	   ;;ccls
 	   rainbow-delimiters
 	   rainbow-identifiers
 	   linum
