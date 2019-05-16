@@ -40,13 +40,13 @@
 	   lsp-ui
 	   ;;stickyfunc-enhance
 	   which-func
-	   eglot
-	   ;;cquery
+	   ;;eglot
+	   cquery
 	   ;;(cquery ((;; configuration code before featured actived
 	   ;;	     (setq cquery-executable  "/usr/local/bin/cquery"))
   	   ;;	    (;; configuration code after feature actived
            ;;		     t)))
-	   ccls
+	   ;;ccls
 	   rainbow-delimiters
 	   rainbow-identifiers
 	   hlinum
