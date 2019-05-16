@@ -38,16 +38,18 @@
 (enable!  c-c++
 	  (smartparens
 	   lsp-ui
-	   stickyfunc-enhance
-	   cquery
+	   ;;stickyfunc-enhance
+	   which-func
+	   eglot
+	   ;;cquery
 	   ;;(cquery ((;; configuration code before featured actived
 	   ;;	     (setq cquery-executable  "/usr/local/bin/cquery"))
   	   ;;	    (;; configuration code after feature actived
            ;;		     t)))
-	   ;;ccls
+	   ccls
 	   rainbow-delimiters
 	   rainbow-identifiers
-	   linum
+	   hlinum
 	   (set-c-style (((c-set-style "stroustrup"))))))
 
 ;; features in elisp scope
@@ -55,7 +57,8 @@
 	 (smartparens
 	  rainbow-delimiters
 	  rainbow-identifiers
-	  linum))
+	  which-func
+	  hlinum))
 
 ;; features in python scope
 (enable! python
@@ -65,15 +68,17 @@
 	  smartparens
 	  rainbow-delimiters
 	  rainbow-identifiers
-	  linum))
+	  which-func
+	  hlinum))
 
 ;; features in rust scope
 (enable! rust
 	 (smartparens
 	  rls
+	  which-func
 	  rainbow-delimiters
 	  rainbow-identifiers
-	  linum))
+	  hlinum))
 
 ;; features in java scope
 (enable! java
@@ -81,10 +86,11 @@
 	  lsp-java
 	  rainbow-delimiters
 	  rainbow-identifiers
-	  linum))
+	  hlinum))
 
 (enable! markdown
-	 (linum))
+	 (hlinum
+	  vmd))
 
 ;; Install actived packages
 

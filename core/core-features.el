@@ -61,15 +61,15 @@
 	(activation-config (extract-activation-config))
 	(deactivation-config (extract-deactivation-config)))
     (let ((xfeature (gethash feature-name all-xfeatures)))
-      (when (and xfeature
-		 (config-xfeature xfeature))
+      (when xfeature
 	(let ((feature-on (xfeature-on-fn xfeature))
-	      (feature-off (xfeature-off-fn xfeature)))
+	      (feature-off (xfeature-off-fn xfeature))
+	      (config-ok (config-xfeature xfeature)))
 	  (list feature-name
-		(if feature-on
+		(if (and config-ok feature-on)
 		    (build-fn feature-on activation-config)
 		  (build-fn (lambda () nil) activation-config))
-		(if feature-off
+		(if (and config-ok feature-off)
 		    (build-fn feature-off deactivation-config)
 		  (build-fn (lambda () nil) deactivation-config))))))))
 

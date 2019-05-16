@@ -1,7 +1,15 @@
-(package!
- emacs-ccls
- "Use ccls as c/c++ language server"
- (emacs-ccls :type git :host github :repo "MaskRay/emacs-ccls"))
+(package! emacs-ccls
+	  "Use ccls as c/c++ language server"
+	  (emacs-ccls :type git
+		      :host github
+		      :repo "MaskRay/emacs-ccls"))
+
+(defun config-lang-client-ccls ()
+  (when (eq (lang-server-client) 'eglot)
+    (with-eval-after-load "eglot"
+      (setq eglot-auto-display-help-buffer t)
+      (add-to-list 'eglot-server-programs
+		   '((c++-mode c-mode) . ("ccls"))))))
 
 (defun config-ccls ()
   (if (conflict-features current-scope 'cquery)
@@ -9,10 +17,11 @@
 	(message "C/C++ language server `cquery' has already been enabled in scope %s `ccls' language server will be disabled"
 		 current-scope)
 	  nil)
-    t))
+    (progn
+      (config-lang-client-ccls)
+      t)))
 
-(defun ccls-on ()
-  (require 'ccls)
+(defun ccls/lsp-on ()
   (progn
     (if (feature-enabled 'yasnippet)
 	(setq lsp-enable-snippet t)
@@ -22,10 +31,25 @@
 	(add-hook 'lsp-mode-hook 'lsp-ui-mode)))
     (enable-lsp)))
 
-(feature!
- ccls
- "Use ccls as c/c++ language server"
- (lsp-module emacs-ccls)
- config-ccls
- ccls-on
- nil)
+(defun ccls/eglot-on ()
+  (require 'eglot)
+  (enable-eglot))
+
+(defun ccls-on ()
+  (require 'ccls)
+  (cond
+   ((eq (lang-server-client) 'eglot) (ccls/eglot-on))
+   (t (ccls/lsp-on))))
+
+(defun ccls-pkgs ()
+  (let ((pkgs (cond
+	       ((eq (lang-server-client) 'eglot) '(eglot emacs-ccls))
+	       (t '(lsp-module emacs-ccls)))))
+    pkgs))
+
+(feature! ccls
+	  "Use ccls as c/c++ language server"
+	  ccls-pkgs
+	  config-ccls
+	  ccls-on
+	  nil)

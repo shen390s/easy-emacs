@@ -5,6 +5,14 @@
  "A major Emacs mode for edit markdown document"
  (markdown-mode :type git :host github :repo "jrblevin/markdown-mode"))
 
+
+(package!
+ vmd-mode
+ "Snappy Markdown preview minor mode for emacs"
+ (vmd-mode :type git
+	   :host github
+	   :repo "blak3mill3r/vmd-mode"))
+
 (defun config-markdown ()
   (require 'markdown-mode)
   (add-to-list 'auto-mode-alist
@@ -23,3 +31,13 @@
  nil
  nil)
 
+(defun enable-vmd ()
+  (vmd-mode))
+
+(feature!
+ vmd
+ "Snappy Markdown preview minor mode for emacs"
+ (vmd-mode)
+ nil
+ enable-vmd
+ nil)
