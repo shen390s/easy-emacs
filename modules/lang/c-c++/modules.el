@@ -12,8 +12,10 @@
 
 (scope! c-c++
 	(c-mode-hook c++-mode-hook)
-	nil
-	(c-c++-after-setup))
+	nil)
+
+(add-hook (scope-after-setup-hook 'c-c++)
+	  'c-c++-after-setup)
 
 (package! google-c-style
 	  "Google C/C++ style"

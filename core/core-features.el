@@ -13,7 +13,6 @@
 (cl-defstruct xfeature-scope name
 	      enter-hooks
 	      leave-hooks
-	      after-setup
 	      xfeatures)
 
 (defun get-or-create-scope (scope)
@@ -22,8 +21,7 @@
 	(let ((xscope (make-xfeature-scope :name scope
 					   :xfeatures nil
 					   :enter-hooks nil
-					   :leave-hooks nil
-					   :after-setup nil)))
+					   :leave-hooks nil)))
 	  (progn
 	    (puthash scope xscope all-scope)
 	    xscope))
@@ -101,15 +99,19 @@
        ,@(cl-loop for feature in features
 		  collect (make-use-xfeature scope feature)))))
 
+(defun scope-after-setup-hook (scope)
+  (intern (concat (symbol-name scope)
+		  "-scope-after-setup-hook")))
+
 ;; Define a new scope
 ;; (scope! scope (hooks to be called when enter scope) (hooks to be call when leave scope))
-(defmacro scope! (scope enter-hooks leave-hooks &rest after-setup)
-  `(let ((xscope (get-or-create-scope ',scope)))
-     (progn
-       (setf (xfeature-scope-enter-hooks xscope) ',enter-hooks)
-       (setf (xfeature-scope-leave-hooks xscope) ',leave-hooks)
-       (setf (xfeature-scope-after-setup xscope) (lambda ()
-						   ,@after-setup)))))
+(defmacro scope! (scope enter-hooks leave-hooks)
+    `(progn
+       (defvar ,(scope-after-setup-hook scope) nil)
+       (let ((xscope (get-or-create-scope ',scope)))
+	 (progn
+	   (setf (xfeature-scope-enter-hooks xscope) ',enter-hooks)
+	   (setf (xfeature-scope-leave-hooks xscope) ',leave-hooks)))))
 
 ;; Return a list of scopes when the feature has been activated
 (defun feature-enabled (feature)
@@ -142,7 +144,7 @@
 					    (xfeature-scope-xfeatures xscope))
 		   do (when active-fn
 			(funcall active-fn)))
-	  (funcall (xfeature-scope-after-setup xscope)))))))
+	  (run-hooks (scope-after-setup-hook scope)))))))
 
 (defun leave-scope (scope)
   (let ((current-scope scope))
@@ -179,9 +181,14 @@
 
 (scope! global
 	(global-scope-hook)
-	nil
-	(unless (member 'global
-			(feature-enabled 'eldoc))
-	  (global-eldoc-mode -1)))
+	nil)
+
+(defun after-enter-global ()
+  (unless (member 'global
+		  (feature-enabled 'eldoc))
+    (global-eldoc-mode -1)))
+
+(add-hook (scope-after-setup-hook 'global)
+          'after-enter-global)
 
 (provide 'core-features)
