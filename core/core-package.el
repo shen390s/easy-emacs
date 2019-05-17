@@ -4,6 +4,12 @@
 
 (defvar bootstrap-version)
 
+(defvar all-packages-ready-hook nil
+  "Hook function will run after all packages have been installed")
+
+(defun run-after-all-package-install (func)
+  (add-hook 'all-packages-ready-hook func))
+
 (defun bootstrap-straight ()
   (let ((bootstrap-file
          (expand-file-name
@@ -26,11 +32,14 @@
    (t (bootstrap-straight))))
 
 (defun install-packages(pkginfo)
-  (cl-loop for pkg in pkginfo
-	   do (when pkg
-		(if (listp pkg)
-		    (straight-use-package pkg)
-		  (straight-use-package pkg)))))
+  (progn
+    (cl-loop for pkg in pkginfo
+	     do (when pkg
+		  (progn
+		    (if (listp pkg)
+			(straight-use-package pkg)
+		      (straight-use-package pkg)))))
+    (run-hooks 'all-packages-ready-hook)))
 
 (provide 'core-package)
 ;;; core-package.el ends here

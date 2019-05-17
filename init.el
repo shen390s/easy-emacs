@@ -12,6 +12,12 @@
 	 (emacs-server
 	  ;;treemacs
 	  powerline
+	  projectile
+	  ;;color-theme-solarized
+	  ;;color-theme-modern
+	  ;;(color-theme-modern
+	  ;; ((
+	  ;;   (setq color-theme-used 'railscast))))
 	  which-key
 	  (ivy ((t)
 		((setq ivy-use-virtual-buffers t)
@@ -20,12 +26,11 @@
 	  evil
 	  yasnippet
 	  magit
-	  (rust (((add-to-list 'auto-mode-alist
-			       '("\\.rs\\'" . rust-mode)))))
+	  rust
+	  (markdown
+	   (((setq markdown-command "multimarkdown"))))
 	  (plantuml
-	   (((add-to-list 'auto-mode-alist
-			  '("\\.plantuml\\'" . plantuml-mode))
-	     (setq plantuml-jar-path
+	   (((setq plantuml-jar-path
 		   "/Users/rshen/workenv/emacs/jars/plantuml.jar"))))
 	  golden-ratio))
 
@@ -33,14 +38,18 @@
 (enable!  c-c++
 	  (smartparens
 	   lsp-ui
-	   stickyfunc-enhance
-	   (cquery ((;; configuration code before featured actived
-		     (setq cquery-executable  "/usr/local/bin/cquery"))
-		    (;; configuration code after feature actived
-		     t)))
+	   ;;stickyfunc-enhance
+	   which-func
+	   ;;eglot
+	   cquery
+	   ;;(cquery ((;; configuration code before featured actived
+	   ;;	     (setq cquery-executable  "/usr/local/bin/cquery"))
+  	   ;;	    (;; configuration code after feature actived
+           ;;		     t)))
+	   ;;ccls
 	   rainbow-delimiters
 	   rainbow-identifiers
-	   linum
+	   hlinum
 	   (set-c-style (((c-set-style "stroustrup"))))))
 
 ;; features in elisp scope
@@ -48,7 +57,8 @@
 	 (smartparens
 	  rainbow-delimiters
 	  rainbow-identifiers
-	  linum))
+	  which-func
+	  hlinum))
 
 ;; features in python scope
 (enable! python
@@ -58,15 +68,17 @@
 	  smartparens
 	  rainbow-delimiters
 	  rainbow-identifiers
-	  linum))
+	  which-func
+	  hlinum))
 
 ;; features in rust scope
 (enable! rust
 	 (smartparens
 	  rls
+	  which-func
 	  rainbow-delimiters
 	  rainbow-identifiers
-	  linum))
+	  hlinum))
 
 ;; features in java scope
 (enable! java
@@ -74,7 +86,11 @@
 	  lsp-java
 	  rainbow-delimiters
 	  rainbow-identifiers
-	  linum))
+	  hlinum))
+
+(enable! markdown
+	 (hlinum
+	  vmd))
 
 ;; Install actived packages
 
