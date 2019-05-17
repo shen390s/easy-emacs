@@ -46,7 +46,6 @@
   (let ((pkgs (cond
 	       ((eq (lang-server-client) 'eglot) '(eglot emacs-cquery))
 	       (t '(lsp-module emacs-cquery)))))
-    (message "cquery requires %s" pkgs)
     pkgs))
 
 (feature! cquery

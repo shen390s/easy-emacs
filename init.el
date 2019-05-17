@@ -10,7 +10,7 @@
 ;;  features in global scope
 (enable! global
 	 (emacs-server
-	  treemacs
+	  ;;treemacs
 	  powerline
 	  projectile
 	  ;;color-theme-solarized
