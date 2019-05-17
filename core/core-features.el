@@ -174,6 +174,9 @@
 
 (scope! global
 	(global-scope-hook)
-	nil)
+	nil
+	(unless (member 'global
+			(feature-enabled 'eldoc))
+	  (global-eldoc-mode -1)))
 
 (provide 'core-features)

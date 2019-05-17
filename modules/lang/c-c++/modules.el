@@ -5,7 +5,10 @@
   ;; on explicit
   (unless (member 'c-c++
 		  (feature-enabled 'flymake))
-    (flymake-mode 0)))
+    (flymake-mode 0))
+  (unless (member 'c-c++
+		  (feature-enabled 'eldoc))
+    (eldoc-mode -1)))
 
 (scope! c-c++
 	(c-mode-hook c++-mode-hook)
