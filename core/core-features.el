@@ -13,7 +13,6 @@
 (cl-defstruct xfeature-scope name
 	      enter-hooks
 	      leave-hooks
-	      after-setup
 	      xfeatures)
 
 (defun get-or-create-scope (scope)
@@ -22,8 +21,7 @@
 	(let ((xscope (make-xfeature-scope :name scope
 					   :xfeatures nil
 					   :enter-hooks nil
-					   :leave-hooks nil
-					   :after-setup nil)))
+					   :leave-hooks nil)))
 	  (progn
 	    (puthash scope xscope all-scope)
 	    xscope))
@@ -34,45 +32,52 @@
 	(append (xfeature-scope-xfeatures xscope)
 		(list xfeature))))
 
-(defun make-scope-xfeature (feature)
+(defun make-use-xfeature (scope feature)
   (defun extract-feature-name ()
     (if (listp feature)
 	(car feature)
       feature))
-
-  (defun extract-activation-config ()
+  (defun extract-before-activation ()
     (if (listp feature)
-	(nth-car 2 feature)
+	(nth-car 1 (nth-car 2 feature))
       nil))
 
-  (defun extract-deactivation-config ()
+  (defun extract-after-activation ()
     (if (listp feature)
-	(nth-car 3 feature)
+	(nth-car 2 (nth-car 2 feature))
       nil))
 
-  (defun build-fn (fn config)
-    (let ((before-fn (nth-car 1 config))
-	  (after-fn (nth-car 2 config)))
-      `(lambda ()
-	 ,@before-fn
-	 (,fn)
-	 ,@after-fn)))
+  (defun extract-before-deactivation ()
+    (if (listp feature)
+	(nth-car 1 (nth-car 3 feature))
+      nil))
+
+  (defun extract-after-deactivation ()
+    (if (listp feature)
+	(nth-car 2 (nth-car 3 feature))
+      nil))
   
-  (let ((feature-name (extract-feature-name))
-	(activation-config (extract-activation-config))
-	(deactivation-config (extract-deactivation-config)))
-    (let ((xfeature (gethash feature-name all-xfeatures)))
-      (when xfeature
-	(let ((feature-on (xfeature-on-fn xfeature))
-	      (feature-off (xfeature-off-fn xfeature))
-	      (config-ok (config-xfeature xfeature)))
-	  (list feature-name
-		(if (and config-ok feature-on)
-		    (build-fn feature-on activation-config)
-		  (build-fn (lambda () nil) activation-config))
-		(if (and config-ok feature-off)
-		    (build-fn feature-off deactivation-config)
-		  (build-fn (lambda () nil) deactivation-config))))))))
+  (let ((feature-name (extract-feature-name)))
+    `(let ((xfeature (gethash ',feature-name all-xfeatures)))
+       (when xfeature
+	 (let ((feature-on (xfeature-on-fn  xfeature))
+	       (feature-off (xfeature-off-fn xfeature))
+	       (config-ok (config-xfeature xfeature))
+	       (xscope (get-or-create-scope ',scope)))
+	   (add-xfeature-to-scope xscope
+				  (list ',feature-name
+					(lambda ()
+					  (when config-ok
+					    ,@(extract-before-activation)
+					    (when feature-on
+					      (funcall feature-on))
+					    ,@(extract-after-activation)))
+					(lambda ()
+					  (when config-ok
+					    ,@(extract-before-deactivation)
+					    (when feature-off
+					      (funcall feature-off))
+					    ,@(extract-after-deactivation))))))))))
 
 (defun conflict-feature (scope feature)
   (member scope (feature-enabled feature)))
@@ -89,22 +94,24 @@
 ;;                          ((code before deactivation) (code after deactivation))
 ;;                 ...)
 (defmacro enable! (scope features)
-  (let ((xscope (get-or-create-scope scope)))
-    (let ((current-scope scope))
-      (cl-loop for feature in features
-	       do (add-xfeature-to-scope
-		   xscope
-		   (make-scope-xfeature feature))))))
+  `(progn
+     (let ((current-scope ',scope))
+       ,@(cl-loop for feature in features
+		  collect (make-use-xfeature scope feature)))))
+
+(defun scope-after-setup-hook (scope)
+  (intern (concat (symbol-name scope)
+		  "-scope-after-setup-hook")))
 
 ;; Define a new scope
 ;; (scope! scope (hooks to be called when enter scope) (hooks to be call when leave scope))
-(defmacro scope! (scope enter-hooks leave-hooks &rest after-setup)
-  (let ((xscope (get-or-create-scope scope)))
-    (progn
-      (setf (xfeature-scope-enter-hooks xscope) enter-hooks)
-      (setf (xfeature-scope-leave-hooks xscope) leave-hooks)
-      (setf (xfeature-scope-after-setup xscope) `(lambda ()
-					       ,@after-setup)))))
+(defmacro scope! (scope enter-hooks leave-hooks)
+    `(progn
+       (defvar ,(scope-after-setup-hook scope) nil)
+       (let ((xscope (get-or-create-scope ',scope)))
+	 (progn
+	   (setf (xfeature-scope-enter-hooks xscope) ',enter-hooks)
+	   (setf (xfeature-scope-leave-hooks xscope) ',leave-hooks)))))
 
 ;; Return a list of scopes when the feature has been activated
 (defun feature-enabled (feature)
@@ -137,7 +144,7 @@
 					    (xfeature-scope-xfeatures xscope))
 		   do (when active-fn
 			(funcall active-fn)))
-	  (funcall (xfeature-scope-after-setup xscope)))))))
+	  (run-hooks (scope-after-setup-hook scope)))))))
 
 (defun leave-scope (scope)
   (let ((current-scope scope))
@@ -174,9 +181,14 @@
 
 (scope! global
 	(global-scope-hook)
-	nil
-	(unless (member 'global
-			(feature-enabled 'eldoc))
-	  (global-eldoc-mode -1)))
+	nil)
+
+(defun after-enter-global ()
+  (unless (member 'global
+		  (feature-enabled 'eldoc))
+    (global-eldoc-mode -1)))
+
+(add-hook (scope-after-setup-hook 'global)
+          'after-enter-global)
 
 (provide 'core-features)
