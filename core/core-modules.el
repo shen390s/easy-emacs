@@ -15,20 +15,20 @@
   "All defined features")
 
 (defmacro package! (name docstring pkginfo)
-  (let ((xpackage (make-xpackage :name `,name
-				 :docstring docstring
-				 :pkg-info pkginfo)))
-    (progn
-      (puthash name xpackage all-xpackages))))
+  `(let ((xpackage (make-xpackage :name ',name
+				  :docstring ,docstring
+				  :pkg-info ',pkginfo)))
+     (progn
+       (puthash ',name xpackage all-xpackages))))
 
 (defmacro feature! (name docstring pkgs config-fn on-fn off-fn)
-  (let ((xfeature (make-xfeature :name `,name
-				 :docstring docstring
-				 :pkgs pkgs
-				 :config-fn config-fn
-				 :on-fn on-fn
-				 :off-fn off-fn)))
-    (puthash name xfeature all-xfeatures)))
+  `(let ((xfeature (make-xfeature :name ',name
+				  :docstring ,docstring
+				  :pkgs ',pkgs
+				  :config-fn ',config-fn
+				  :on-fn ',on-fn
+				  :off-fn ',off-fn)))
+     (puthash ',name xfeature all-xfeatures)))
 
 (defun config-xfeature (xfeature)
   (let ((config-fn (xfeature-config-fn xfeature)))
