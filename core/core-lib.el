@@ -15,4 +15,13 @@
       (nth-car (- n 1)
 	       (cdr lists)))))
 
+(defun first (lists)
+  (nth-car 1 lists))
+
+(defun second (lists)
+  (nth-car 2 lists))
+
+(defun third (lists)
+  (nth-car 3 lists))
+
 (provide 'core-lib)

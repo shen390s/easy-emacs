@@ -39,22 +39,22 @@
       feature))
   (defun extract-before-activation ()
     (if (listp feature)
-	(nth-car 1 (nth-car 2 feature))
+	(first (second feature))
       nil))
 
   (defun extract-after-activation ()
     (if (listp feature)
-	(nth-car 2 (nth-car 2 feature))
+	(second (second feature))
       nil))
 
   (defun extract-before-deactivation ()
     (if (listp feature)
-	(nth-car 1 (nth-car 3 feature))
+	(first (third feature))
       nil))
 
   (defun extract-after-deactivation ()
     (if (listp feature)
-	(nth-car 2 (nth-car 3 feature))
+	(second (third feature))
       nil))
   
   (let ((feature-name (extract-feature-name)))
