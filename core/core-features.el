@@ -58,26 +58,25 @@
       nil))
   
   (let ((feature-name (extract-feature-name)))
-    `(let ((xfeature (gethash ',feature-name all-xfeatures)))
-       (when xfeature
-	 (let ((feature-on (xfeature-on-fn  xfeature))
-	       (feature-off (xfeature-off-fn xfeature))
-	       (config-ok (config-xfeature xfeature))
-	       (xscope (get-or-create-scope ',scope)))
-	   (add-xfeature-to-scope xscope
-				  (list ',feature-name
-					(lambda ()
-					  (when config-ok
-					    ,@(extract-before-activation)
-					    (when feature-on
-					      (funcall feature-on))
-					    ,@(extract-after-activation)))
-					(lambda ()
-					  (when config-ok
-					    ,@(extract-before-deactivation)
-					    (when feature-off
-					      (funcall feature-off))
-					    ,@(extract-after-deactivation))))))))))
+    `(when-bind! xfeature (gethash ',feature-name all-xfeatures)
+		 (let ((feature-on (xfeature-on-fn  xfeature))
+		       (feature-off (xfeature-off-fn xfeature))
+		       (config-ok (config-xfeature xfeature))
+		       (xscope (get-or-create-scope ',scope)))
+		   (add-xfeature-to-scope xscope
+					  (list ',feature-name
+						(lambda ()
+						  (when config-ok
+						    ,@(extract-before-activation)
+						    (when feature-on
+						      (funcall feature-on))
+						    ,@(extract-after-activation)))
+						(lambda ()
+						  (when config-ok
+						    ,@(extract-before-deactivation)
+						    (when feature-off
+						      (funcall feature-off))
+						    ,@(extract-after-deactivation)))))))))
 
 (defun conflict-feature (scope feature)
   (member scope (feature-enabled feature)))
@@ -135,26 +134,25 @@
 			  (hash-table-values all-scope)))))
 
 (defun enter-scope (scope)
+  (easy-emacs-boot-done)
   (let ((current-scope scope))
-    (let ((xscope (gethash scope all-scope)))
-      (when xscope
-	(progn
-	  (cl-loop for active-fn in (mapcar #'(lambda (x)
-						(car (cdr x)))
-					    (xfeature-scope-xfeatures xscope))
-		   do (when active-fn
-			(funcall active-fn)))
-	  (run-hooks (scope-after-setup-hook scope)))))))
+    (when-bind! xscope (gethash scope all-scope)
+		(progn
+		  (cl-loop for active-fn in (mapcar #'(lambda (x)
+							(second x))
+						    (xfeature-scope-xfeatures xscope))
+			   do (when active-fn
+				(funcall active-fn)))
+		  (run-hooks (scope-after-setup-hook scope))))))
 
 (defun leave-scope (scope)
   (let ((current-scope scope))
-    (let ((xscope (gethash scope all-scope)))
-      (when xscope
-	(cl-loop for leave-fn in (mapcar #'(lambda (x)
-					      (car (cdr (cdr x))))
-					 (xfeature-scope-xfeatures xscope))
-		 do (when leave-fn
-		      (funcall leave-fn)))))))
+    (when-bind! xscope (gethash scope all-scope)
+		(cl-loop for leave-fn in (mapcar #'(lambda (x)
+						     (third x))
+						 (xfeature-scope-xfeatures xscope))
+			 do (when leave-fn
+			      (funcall leave-fn))))))
 
 (defun build-scope-hooks (scope xscope)
   (let ((enter-hooks (xfeature-scope-enter-hooks xscope))

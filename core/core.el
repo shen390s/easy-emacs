@@ -14,6 +14,19 @@
 (unless (file-exists-p easy-emacs-etc-dir)
   (make-directory easy-emacs-etc-dir t))
 
+(defvar easy-emacs-file-name-handler-alist file-name-handler-alist)
+
+(defun easy-emacs-boot ()
+  (setq gc-cons-threshold 402653184
+	gc-cons-percentage 0.6
+	file-name-handler-alist nil))
+
+(defun easy-emacs-boot-done ()
+  (setq gc-cons-threshold 16777216
+	gc-cons-percentage 0.1
+	file-name-handler-alist easy-emacs-file-name-handler-alist))
+
+(easy-emacs-boot)
 (require 'core-lib (concat easy-emacs-core-dir "/core-lib"))
 (require 'core-package (concat easy-emacs-core-dir "/core-package"))
 (require 'core-features (concat easy-emacs-core-dir "/core-features"))

@@ -24,4 +24,9 @@
 (defun third (lists)
   (nth-car 3 lists))
 
+(defmacro when-bind! (var exp &rest body)
+  `(let ((,var ,exp))
+     (when ,var
+       ,@body)))
+
 (provide 'core-lib)
