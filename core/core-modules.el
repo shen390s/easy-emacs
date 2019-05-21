@@ -19,7 +19,7 @@
 				  :docstring ,docstring
 				  :pkg-info ',pkginfo)))
      (progn
-       (let ((old-xpackage (gethash ',name)))
+       (let ((old-xpackage (gethash ',name all-xpackages)))
 	 (when old-xpackage
 	   (message "Warning: duplicated package with name `%s'"
 		    ',name)))
@@ -33,7 +33,7 @@
 				  :on-fn ',on-fn
 				  :off-fn ',off-fn)))
      (progn
-       (let ((old-xfeature (gethash ',name)))
+       (let ((old-xfeature (gethash ',name all-xpackages)))
 	 (when old-xfeature
 	   (message "Warning: duplicated feature with name `%s'"
 		    ',name)))
