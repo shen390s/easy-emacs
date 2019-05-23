@@ -10,6 +10,7 @@
 ;;  features in global scope
 (enable! global
 	 (emacs-server
+	  ;;eldoc
 	  ;;treemacs
 	  ;;powerline
 	  (smart-mode-line :activate (:pre ((setq sml/no-confirm-load-theme t)

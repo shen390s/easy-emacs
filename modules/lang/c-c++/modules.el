@@ -6,8 +6,8 @@
   (unless (member 'c-c++
 		  (feature-enabled 'flymake))
     (flymake-mode 0))
-  (unless (member 'c-c++
-		  (feature-enabled 'eldoc))
+  (unless (eldoc-enabled)
+    (global-eldoc-mode -1)
     (eldoc-mode -1)))
 
 (scope! c-c++
