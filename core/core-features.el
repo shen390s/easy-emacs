@@ -37,26 +37,11 @@
     (if (listp feature)
 	(car feature)
       feature))
-  (defun extract-before-activation ()
+  (defun extract-hook-action (tag subtag)
     (if (listp feature)
-	(first (second feature))
+	(cl-getf (cl-getf (cdr feature) tag) subtag)
       nil))
-
-  (defun extract-after-activation ()
-    (if (listp feature)
-	(second (second feature))
-      nil))
-
-  (defun extract-before-deactivation ()
-    (if (listp feature)
-	(first (third feature))
-      nil))
-
-  (defun extract-after-deactivation ()
-    (if (listp feature)
-	(second (third feature))
-      nil))
-  
+ 
   (let ((feature-name (extract-feature-name)))
     `(when-bind! xfeature (gethash ',feature-name all-xfeatures)
 		 (let ((feature-on (xfeature-on-fn  xfeature))
@@ -67,16 +52,16 @@
 					  (list ',feature-name
 						(lambda ()
 						  (when config-ok
-						    ,@(extract-before-activation)
+						    ,@(extract-hook-action :activate :pre)
 						    (when feature-on
 						      (funcall feature-on))
-						    ,@(extract-after-activation)))
+						    ,@(extract-hook-action :activate :post)))
 						(lambda ()
 						  (when config-ok
-						    ,@(extract-before-deactivation)
+						    ,@(extract-hook-action :deactivate :pre)
 						    (when feature-off
 						      (funcall feature-off))
-						    ,@(extract-after-deactivation)))))))))
+						    ,@(extract-hook-action :deactivate :post)))))))))
 
 (defun conflict-feature (scope feature)
   (member scope (feature-enabled feature)))
@@ -89,8 +74,8 @@
 
 ;; Enable features in scope
 ;; (enable! scope feature1
-;;                (feature2 ((code before activation) (code after activation))
-;;                          ((code before deactivation) (code after deactivation))
+;;                (feature2 :activate (:pre (code before activation) :post (code after activation))
+;;                          :deactivate (:pre (code before deactivation) :post (code after deactivation))
 ;;                 ...)
 (defmacro enable! (scope features)
   `(progn

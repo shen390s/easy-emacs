@@ -11,27 +11,26 @@
 (enable! global
 	 (emacs-server
 	  ;;treemacs
-	  powerline
-	  projectile
+	  ;;powerline
+	  (smart-mode-line :activate (:pre ((setq sml/no-confirm-load-theme t)
+					    (setq sml/theme 'dark))))
+	  ;;projectile
 	  ;;color-theme-solarized
 	  ;;color-theme-modern
 	  ;;(color-theme-modern
 	  ;; ((
 	  ;;   (setq color-theme-used 'railscast))))
 	  which-key
-	  (ivy ((t)
-		((setq ivy-use-virtual-buffers t)
-		 (setq ivy-count-format "(%d/%d) "))))
+	  (ivy :activate (:post ((setq ivy-use-virtual-buffers t)
+				 (setq ivy-count-format "(%d/%d) "))))
 	  undo-tree
 	  evil
 	  yasnippet
 	  magit
 	  rust
-	  (markdown
-	   (((setq markdown-command "multimarkdown"))))
-	  (plantuml
-	   (((setq plantuml-jar-path
-		   "/Users/rshen/workenv/emacs/jars/plantuml.jar"))))
+	  (markdown :activate (:pre ((setq markdown-command "multimarkdown"))))
+	  (plantuml :activate (:pre ((setq plantuml-jar-path
+					   "/Users/rshen/workenv/emacs/jars/plantuml.jar"))))
 	  golden-ratio))
 
 ;; features in c-c++ scope
@@ -42,15 +41,12 @@
 	   which-func
 	   ;;eglot
 	   cquery
-	   ;;(cquery ((;; configuration code before featured actived
-	   ;;	     (setq cquery-executable  "/usr/local/bin/cquery"))
-  	   ;;	    (;; configuration code after feature actived
-           ;;		     t)))
+	   ;; (cquery :activate (:pre ((setq cquery-executable "/usr/local/bin/cquery"))))
 	   ;;ccls
 	   rainbow-delimiters
 	   rainbow-identifiers
 	   hlinum
-	   (set-c-style (((c-set-style "stroustrup"))))))
+	   (set-c-style :activate (:pre ((c-set-style "stroustrup"))))))
 
 ;; features in elisp scope
 (enable! elisp
@@ -62,9 +58,8 @@
 
 ;; features in python scope
 (enable! python
-	 ((lsp-python-ms
-	   (((setq lsp-python-ms-executable
-		   "/Users/rshen/bin/Microsoft.Python.LanguageServer"))))
+	 ((lsp-python-ms :activate (:pre ((setq lsp-python-ms-executable
+						"/Users/rshen/bin/Microsoft.Python.LanguageServer"))))
 	  smartparens
 	  rainbow-delimiters
 	  rainbow-identifiers
