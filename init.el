@@ -32,7 +32,9 @@
 	  (markdown :activate (:pre ((setq markdown-command "multimarkdown"))))
 	  (plantuml :activate (:pre ((setq plantuml-jar-path
 					   "/Users/rshen/workenv/emacs/jars/plantuml.jar"))))
-	  golden-ratio))
+	  golden-ratio
+	  (slime :activate (:pre ((setq inferior-lisp-program "/opt/pkg/bin/sbcl")
+				  (setq slime-contribs '(slime-fancy)))))))
 
 ;; features in c-c++ scope
 (enable!  c-c++
