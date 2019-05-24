@@ -36,7 +36,7 @@
 	  (slime :activate (:pre ((setq inferior-lisp-program "/opt/pkg/bin/sbcl")
 				  (setq slime-contribs '(slime-fancy)))))))
 
-;; features in c-c++ scope
+;; features in program languages scope
 (enable! prog-lang
 	 (smartparens
 	  which-func
@@ -44,6 +44,7 @@
 	  rainbow-identifiers
 	  hlinum))
 
+;; features in c/c++
 (enable!  c-c++
 	  (lsp-ui
 	   ;;stickyfunc-enhance
@@ -58,18 +59,15 @@
 ;; features in python scope
 (enable! python
 	 ((lsp-python-ms :activate (:pre ((setq lsp-python-ms-executable
-						"/Users/rshen/bin/Microsoft.Python.LanguageServer"))))
-	  ))
+						"/Users/rshen/bin/Microsoft.Python.LanguageServer"))))))
 
 ;; features in rust scope
 (enable! rust
-	 (rls
-	  ))
+	 (rls))
 
 ;; features in java scope
 (enable! java
-	 (lsp-java
-	  ))
+	 (lsp-java))
 
 (enable! markdown
 	 (hlinum
