@@ -37,54 +37,39 @@
 				  (setq slime-contribs '(slime-fancy)))))))
 
 ;; features in c-c++ scope
+(enable! prog-lang
+	 (smartparens
+	  which-func
+	  rainbow-delimiters
+	  rainbow-identifiers
+	  hlinum))
+
 (enable!  c-c++
-	  (smartparens
-	   lsp-ui
+	  (lsp-ui
 	   ;;stickyfunc-enhance
-	   which-func
 	   ;;eglot
 	   cquery
 	   ;; (cquery :activate (:pre ((setq cquery-executable "/usr/local/bin/cquery"))))
 	   ;;ccls
-	   rainbow-delimiters
-	   rainbow-identifiers
-	   hlinum
 	   (set-c-style :activate (:pre ((c-set-style "stroustrup"))))))
 
 ;; features in elisp scope
-(enable! elisp
-	 (smartparens
-	  rainbow-delimiters
-	  rainbow-identifiers
-	  which-func
-	  hlinum))
 
 ;; features in python scope
 (enable! python
 	 ((lsp-python-ms :activate (:pre ((setq lsp-python-ms-executable
 						"/Users/rshen/bin/Microsoft.Python.LanguageServer"))))
-	  smartparens
-	  rainbow-delimiters
-	  rainbow-identifiers
-	  which-func
-	  hlinum))
+	  ))
 
 ;; features in rust scope
 (enable! rust
-	 (smartparens
-	  rls
-	  which-func
-	  rainbow-delimiters
-	  rainbow-identifiers
-	  hlinum))
+	 (rls
+	  ))
 
 ;; features in java scope
 (enable! java
-	 (smartparens
-	  lsp-java
-	  rainbow-delimiters
-	  rainbow-identifiers
-	  hlinum))
+	 (lsp-java
+	  ))
 
 (enable! markdown
 	 (hlinum
