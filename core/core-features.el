@@ -11,8 +11,7 @@
   "The current scope which will be activated")
 
 (cl-defstruct xfeature-scope name
-	      enter-hooks
-	      leave-hooks
+	      modes
 	      xfeatures)
 
 (defun get-or-create-scope (scope)
@@ -20,8 +19,7 @@
     (if (not xscope)
 	(let ((xscope (make-xfeature-scope :name scope
 					   :xfeatures nil
-					   :enter-hooks nil
-					   :leave-hooks nil)))
+					   :modes nil)))
 	  (progn
 	    (puthash scope xscope all-scope)
 	    xscope))
@@ -33,35 +31,54 @@
 		(list xfeature))))
 
 (defun make-use-xfeature (scope feature)
+  ;; -feature to disable feature explicit
+  (defun parse-feature-name (n)
+    (let ((svalue (symbol-name n)))
+      (if (string= (substring svalue 0 1) "-")
+	  (cons t (intern (substring svalue 1)))
+	(cons nil n))))
+  
   (defun extract-feature-name ()
     (if (listp feature)
-	(car feature)
-      feature))
+	(cons nil (car feature))
+      (parse-feature-name feature)))
+  
   (defun extract-hook-action (tag subtag)
     (if (listp feature)
 	(cl-getf (cl-getf (cdr feature) tag) subtag)
       nil))
  
-  (let ((feature-name (extract-feature-name)))
-    `(when-bind! xfeature (gethash ',feature-name all-xfeatures)
-		 (let ((feature-on (xfeature-on-fn  xfeature))
-		       (feature-off (xfeature-off-fn xfeature))
-		       (config-ok (config-xfeature xfeature))
-		       (xscope (get-or-create-scope ',scope)))
-		   (add-xfeature-to-scope xscope
-					  (list ',feature-name
-						(lambda ()
-						  (when config-ok
-						    ,@(extract-hook-action :activate :pre)
-						    (when feature-on
-						      (funcall feature-on))
-						    ,@(extract-hook-action :activate :post)))
-						(lambda ()
-						  (when config-ok
-						    ,@(extract-hook-action :deactivate :pre)
-						    (when feature-off
-						      (funcall feature-off))
-						    ,@(extract-hook-action :deactivate :post)))))))))
+  (let ((feature-value (extract-feature-name)))
+    (let ((feature-name (cdr feature-value))
+	  (is-disabled (car feature-value)))
+      `(when-bind! xfeature (gethash ',feature-name all-xfeatures)
+		   (let ((xscope (get-or-create-scope ',scope)))
+		     (if ,is-disabled
+			 (let ((feature-off (xfeature-off-fn xfeature)))
+			   (add-hook (scope-after-setup-hook ',scope)
+				     (lambda ()
+				       (message "disable %s %s"
+						',feature-name
+						(buffer-name))
+				       (when feature-off
+					 (funcall feature-off)))))
+		       (let ((feature-on (xfeature-on-fn  xfeature))
+			     (feature-off (xfeature-off-fn xfeature))
+			     (config-ok (config-xfeature xfeature)))
+			 (add-xfeature-to-scope xscope
+						(list ',feature-name
+						      (lambda ()
+							(when config-ok
+							  ,@(extract-hook-action :activate :pre)
+							  (when feature-on
+							    (funcall feature-on))
+							  ,@(extract-hook-action :activate :post)))
+						      (lambda ()
+							(when config-ok
+							  ,@(extract-hook-action :deactivate :pre)
+							  (when feature-off
+							    (funcall feature-off))
+							  ,@(extract-hook-action :deactivate :post))))))))))))
 
 (defun conflict-feature (scope feature)
   (member scope (feature-enabled feature)))
@@ -89,13 +106,12 @@
 
 ;; Define a new scope
 ;; (scope! scope (hooks to be called when enter scope) (hooks to be call when leave scope))
-(defmacro scope! (scope enter-hooks leave-hooks)
+(defmacro scope! (scope &rest modes)
     `(progn
        (defvar ,(scope-after-setup-hook scope) nil)
        (let ((xscope (get-or-create-scope ',scope)))
 	 (progn
-	   (setf (xfeature-scope-enter-hooks xscope) ',enter-hooks)
-	   (setf (xfeature-scope-leave-hooks xscope) ',leave-hooks)))))
+	   (setf (xfeature-scope-modes xscope) ',modes)))))
 
 ;; Return a list of scopes when the feature has been activated
 (defun feature-enabled (feature)
@@ -140,19 +156,14 @@
 			      (funcall leave-fn))))))
 
 (defun build-scope-hooks (scope xscope)
-  (let ((enter-hooks (xfeature-scope-enter-hooks xscope))
-	(leave-hooks (xfeature-scope-leave-hooks xscope)))
+  (let ((modes (xfeature-scope-modes xscope)))
     (progn
-      (cl-loop for hook in enter-hooks
+      (cl-loop for mode in modes
 	       do (progn
-		    (add-hook hook
-		    	      #'(lambda ()
-		    		  (enter-scope scope)))))
-      (cl-loop for hook in leave-hooks
-	       do (progn
-		    (add-hook hook
+		    (add-hook (intern (concat (symbol-name mode)
+					      "-hook"))
 			      #'(lambda ()
-				  (leave-scope scope))))))))
+				  (enter-scope scope))))))))
 
 (defun build-hooks ()
   (maphash #'build-scope-hooks all-scope))
@@ -163,8 +174,7 @@
   "Hooks run when enter global scope")
 
 (scope! global
-	(global-scope-hook)
-	nil)
+	global-scope)
 
 (defun after-enter-global ()
   (unless (member 'global

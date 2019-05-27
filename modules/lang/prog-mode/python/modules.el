@@ -8,8 +8,7 @@
     (eldoc-mode -1)))
 
 (scope! python
-	(python-mode-hook)
-	nil)
+	python-mode)
 
 (add-hook (scope-after-setup-hook 'python)
 	  'python-after-setup)

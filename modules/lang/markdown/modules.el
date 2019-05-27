@@ -1,4 +1,4 @@
-(scope! markdown (markdown-mode-hook) nil)
+(scope! markdown markdown-mode)
 
 (package!
  markdown-mode

@@ -42,6 +42,7 @@
 	  which-func
 	  rainbow-delimiters
 	  rainbow-identifiers
+	  -flymake
 	  hlinum))
 
 ;; features in c/c++

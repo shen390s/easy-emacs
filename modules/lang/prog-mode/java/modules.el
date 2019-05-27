@@ -1,4 +1,4 @@
 ;;; modules.el --- description
 
-(scope! java (java-mode-hook) nil)
+(scope! java java-mode)
 

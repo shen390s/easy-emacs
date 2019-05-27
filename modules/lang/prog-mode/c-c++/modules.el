@@ -3,16 +3,15 @@
 (defun c-c++-after-setup ()
   ;; disable flymake if we have not turned
   ;; on explicit
-  (unless (member 'c-c++
-		  (feature-enabled 'flymake))
-    (flymake-mode 0))
+  ;;(unless (member 'c-c++
+  ;;		  (feature-enabled 'flymake))
+  ;;  (flymake-mode 0))
   (unless (eldoc-enabled)
     (global-eldoc-mode -1)
     (eldoc-mode -1)))
 
 (scope! c-c++
-	(c-mode-hook c++-mode-hook)
-	nil)
+	c-mode c++-mode)
 
 (add-hook (scope-after-setup-hook 'c-c++)
 	  'c-c++-after-setup)
