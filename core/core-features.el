@@ -141,6 +141,8 @@
 
 (defun enter-scope (scope)
   (easy-emacs-boot-done)
+  (message "entering scope %s major %s"
+	   scope major-mode)
   (let ((current-scope scope))
     (when-bind! xscope (gethash scope all-scope)
 		(progn
