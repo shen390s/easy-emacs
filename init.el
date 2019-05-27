@@ -42,7 +42,6 @@
 	  which-func
 	  rainbow-delimiters
 	  rainbow-identifiers
-	  -flymake
 	  hlinum))
 
 ;; features in c/c++
@@ -53,6 +52,7 @@
 	   cquery
 	   ;; (cquery :activate (:pre ((setq cquery-executable "/usr/local/bin/cquery"))))
 	   ;;ccls
+	   -flymake
 	   (set-c-style :activate (:pre ((c-set-style "stroustrup"))))))
 
 ;; features in elisp scope
@@ -60,7 +60,8 @@
 ;; features in python scope
 (enable! python
 	 ((lsp-python-ms :activate (:pre ((setq lsp-python-ms-executable
-						"/Users/rshen/bin/Microsoft.Python.LanguageServer"))))))
+						"/Users/rshen/bin/Microsoft.Python.LanguageServer"))))
+	  -flymake))
 
 ;; features in rust scope
 (enable! rust
@@ -80,9 +81,6 @@
  (pkglist-info
   (actived-packages
    (actived-features))))
-
-;; build scope hooks
-(build-hooks)
 
 ;; Enter global scope
 (enter-scope 'global)

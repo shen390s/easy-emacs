@@ -19,10 +19,6 @@
 				  :docstring ,docstring
 				  :pkg-info ',pkginfo)))
      (progn
-       (let ((old-xpackage (gethash ',name all-xpackages)))
-	 (when old-xpackage
-	   (message "Warning: duplicated package with name `%s'"
-		    ',name)))
        (puthash ',name xpackage all-xpackages))))
 
 (defmacro feature! (name docstring pkgs config-fn on-fn off-fn)
@@ -33,10 +29,6 @@
 				  :on-fn ',on-fn
 				  :off-fn ',off-fn)))
      (progn
-       (let ((old-xfeature (gethash ',name all-xpackages)))
-	 (when old-xfeature
-	   (message "Warning: duplicated feature with name `%s'"
-		    ',name)))
        (puthash ',name xfeature all-xfeatures))))
 
 (defun config-xfeature (xfeature)

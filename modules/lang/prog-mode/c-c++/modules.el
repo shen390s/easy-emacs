@@ -1,19 +1,12 @@
 ;;; modules.el --- description
 
 (defun c-c++-after-setup ()
-  ;; disable flymake if we have not turned
-  ;; on explicit
-  ;;(unless (member 'c-c++
-  ;;		  (feature-enabled 'flymake))
-  ;;  (flymake-mode 0))
-  (unless (eldoc-enabled)
-    (global-eldoc-mode -1)
-    (eldoc-mode -1)))
+  t)
 
 (scope! c-c++
 	c-mode c++-mode)
 
-(add-hook (scope-after-setup-hook 'c-c++)
+(add-hook (scope-function 'c-c++ 'hook :after)
 	  'c-c++-after-setup)
 
 (package! google-c-style

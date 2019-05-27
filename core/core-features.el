@@ -14,6 +14,12 @@
 	      modes
 	      xfeatures)
 
+(defun scope-function (scope tag subtag)
+  (intern (concat (symbol-name scope)
+		  "-scope-"
+		  (symbol-name tag)
+		  (symbol-name subtag))))
+
 (defun get-or-create-scope (scope)
   (let ((xscope (gethash scope all-scope)))
     (if (not xscope)
@@ -55,11 +61,8 @@
 		   (let ((xscope (get-or-create-scope ',scope)))
 		     (if ,is-disabled
 			 (let ((feature-off (xfeature-off-fn xfeature)))
-			   (add-hook (scope-after-setup-hook ',scope)
+			   (add-hook (scope-function ',scope 'hook :after)
 				     (lambda ()
-				       (message "disable %s %s"
-						',feature-name
-						(buffer-name))
 				       (when feature-off
 					 (funcall feature-off)))))
 		       (let ((feature-on (xfeature-on-fn  xfeature))
@@ -100,18 +103,20 @@
        ,@(cl-loop for feature in features
 		  collect (make-use-xfeature scope feature)))))
 
-(defun scope-after-setup-hook (scope)
-  (intern (concat (symbol-name scope)
-		  "-scope-after-setup-hook")))
-
 ;; Define a new scope
 ;; (scope! scope (hooks to be called when enter scope) (hooks to be call when leave scope))
 (defmacro scope! (scope &rest modes)
-    `(progn
-       (defvar ,(scope-after-setup-hook scope) nil)
-       (let ((xscope (get-or-create-scope ',scope)))
-	 (progn
-	   (setf (xfeature-scope-modes xscope) ',modes)))))
+  `(progn
+     (defvar ,(scope-function scope 'hook :before) nil)
+     (defvar ,(scope-function scope 'hook :after) nil)
+     (defun ,(scope-function scope 'entry :main) (origin-fun &rest args)
+       (run-hooks ',(scope-function scope 'hook :before))
+       (let ((res (apply origin-fun args)))
+	 (enter-scope ',scope)
+	 (run-hooks ',(scope-function scope 'hook :after))
+	 res))
+     ,@(cl-loop for mode in modes
+		collect `(advice-add ',mode :around #',(scope-function scope 'entry :main)))))
 
 ;; Return a list of scopes when the feature has been activated
 (defun feature-enabled (feature)
@@ -143,8 +148,7 @@
 							(second x))
 						    (xfeature-scope-xfeatures xscope))
 			   do (when active-fn
-				(funcall active-fn)))
-		  (run-hooks (scope-after-setup-hook scope))))))
+				(funcall active-fn)))))))
 
 (defun leave-scope (scope)
   (let ((current-scope scope))
@@ -155,23 +159,13 @@
 			 do (when leave-fn
 			      (funcall leave-fn))))))
 
-(defun build-scope-hooks (scope xscope)
-  (let ((modes (xfeature-scope-modes xscope)))
-    (progn
-      (cl-loop for mode in modes
-	       do (progn
-		    (add-hook (intern (concat (symbol-name mode)
-					      "-hook"))
-			      #'(lambda ()
-				  (enter-scope scope))))))))
-
-(defun build-hooks ()
-  (maphash #'build-scope-hooks all-scope))
-
 ;; create global scope
 ;;
 (defvar global-scope-hook nil
   "Hooks run when enter global scope")
+
+(defun global-scope ()
+  t)
 
 (scope! global
 	global-scope)
@@ -181,7 +175,7 @@
 		  (feature-enabled 'eldoc))
     (global-eldoc-mode -1)))
 
-(add-hook (scope-after-setup-hook 'global)
+(add-hook (scope-function  'global 'hook :after)
           'after-enter-global)
 
 (provide 'core-features)
