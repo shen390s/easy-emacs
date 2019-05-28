@@ -108,7 +108,7 @@
 (defvar nest-level 0
   "Nest level of scope")
 
-(defmacro incr (var val)
+(defmacro incr! (var val)
   `(setq ,var (+ ,var ,val)))
 
 ;; Define a new scope
@@ -121,13 +121,13 @@
        (run-hooks ',(scope-function scope 'hook :before))
        (when (= nest-level 0)
 	 (push ',scope nest-scope))
-       (incr nest-level 1)
+       (incr! nest-level 1)
        (when ',parent
 	 (push ',parent nest-scope))
 
        (let ((res (apply origin-fun args)))
 	 (enter-scope ',scope)
-	 (incr nest-level -1)
+	 (incr! nest-level -1)
 	 (when (= nest-level 0)
 	   (cl-loop for n in (reverse nest-scope)
 		    do (run-hooks (scope-function n 'hook :after)))
