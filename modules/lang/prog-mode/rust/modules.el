@@ -1,4 +1,4 @@
-(scope! rust rust-mode)
+(scope! rust prog-lang rust-mode)
 
 (package! rust-mode
 	  "A major Emacs mode for edit Rust source code"

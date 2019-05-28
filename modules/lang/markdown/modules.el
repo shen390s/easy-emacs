@@ -1,4 +1,4 @@
-(scope! markdown markdown-mode)
+(scope! markdown prog-lang markdown-mode)
 
 (package!
  markdown-mode

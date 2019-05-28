@@ -1,4 +1,4 @@
 ;;; modules.el --- description
 
-(scope! java java-mode)
+(scope! java prog-lang java-mode)
 

@@ -1,1 +1,3 @@
-(scope! elisp emacs-lisp-mode)
+(scope! elisp
+	prog-lang
+	emacs-lisp-mode)

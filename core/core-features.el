@@ -103,17 +103,35 @@
        ,@(cl-loop for feature in features
 		  collect (make-use-xfeature scope feature)))))
 
+(defvar nest-scope nil
+  "Nested scopes")
+(defvar nest-level 0
+  "Nest level of scope")
+
+(defmacro incr (var val)
+  `(setq ,var (+ ,var ,val)))
+
 ;; Define a new scope
 ;; (scope! scope (hooks to be called when enter scope) (hooks to be call when leave scope))
-(defmacro scope! (scope &rest modes)
+(defmacro scope! (scope parent &rest modes)
   `(progn
      (defvar ,(scope-function scope 'hook :before) nil)
      (defvar ,(scope-function scope 'hook :after) nil)
      (defun ,(scope-function scope 'entry :main) (origin-fun &rest args)
        (run-hooks ',(scope-function scope 'hook :before))
+       (when (= nest-level 0)
+	 (push ',scope nest-scope))
+       (incr nest-level 1)
+       (when ',parent
+	 (push ',parent nest-scope))
+
        (let ((res (apply origin-fun args)))
 	 (enter-scope ',scope)
-	 (run-hooks ',(scope-function scope 'hook :after))
+	 (incr nest-level -1)
+	 (when (= nest-level 0)
+	   (cl-loop for n in (reverse nest-scope)
+		    do (run-hooks (scope-function n 'hook :after)))
+	   (setq nest-scope nil))
 	 res))
      ,@(cl-loop for mode in modes
 		collect `(advice-add ',mode :around #',(scope-function scope 'entry :main)))))
@@ -141,8 +159,6 @@
 
 (defun enter-scope (scope)
   (easy-emacs-boot-done)
-  (message "entering scope %s major %s"
-	   scope major-mode)
   (let ((current-scope scope))
     (when-bind! xscope (gethash scope all-scope)
 		(progn

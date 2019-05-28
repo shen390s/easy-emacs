@@ -1,4 +1,4 @@
-(scope! prog-lang prog-mode)
+(scope! prog-lang nil prog-mode)
 
 (defun prog-lang-after-hook ()
   t)
