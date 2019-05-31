@@ -29,6 +29,7 @@
 	  yasnippet
 	  magit
 	  rust
+	  clojure
 	  (markdown :activate (:pre ((setq markdown-command "multimarkdown"))))
 	  (plantuml :activate (:pre ((setq plantuml-jar-path
 					   "/Users/rshen/workenv/emacs/jars/plantuml.jar"))))

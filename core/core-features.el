@@ -118,21 +118,23 @@
      (defvar ,(scope-function scope 'hook :before) nil)
      (defvar ,(scope-function scope 'hook :after) nil)
      (defun ,(scope-function scope 'entry :main) (origin-fun &rest args)
-       (run-hooks ',(scope-function scope 'hook :before))
-       (when (= nest-level 0)
-	 (push ',scope nest-scope))
-       (incr! nest-level 1)
-       (when ',parent
-	 (push ',parent nest-scope))
+       (when easy-emacs-boot-ok
+	 (run-hooks ',(scope-function scope 'hook :before))
+	 (when (= nest-level 0)
+	   (push ',scope nest-scope))
+	 (incr! nest-level 1)
+	 (when ',parent
+	   (push ',parent nest-scope)))
 
        (let ((res (apply origin-fun args)))
-	 (enter-scope ',scope)
-	 (incr! nest-level -1)
-	 (when (= nest-level 0)
-	   (cl-loop for n in (reverse nest-scope)
-		    do (run-hooks (scope-function n 'hook :after)))
-	   (setq nest-scope nil))
-	 res))
+	 (when easy-emacs-boot-ok
+	   (enter-scope ',scope)
+	   (incr! nest-level -1)
+	   (when (= nest-level 0)
+	     (cl-loop for n in (reverse nest-scope)
+		      do (run-hooks (scope-function n 'hook :after)))
+	     (setq nest-scope nil)))
+	       res))
      ,@(cl-loop for mode in modes
 		collect `(advice-add ',mode :around #',(scope-function scope 'entry :main)))))
 
@@ -188,10 +190,10 @@
 (scope! global
 	global-scope)
 
+;; Actions to be done after we enter global scope
+;;
 (defun after-enter-global ()
-  (unless (member 'global
-		  (feature-enabled 'eldoc))
-    (global-eldoc-mode -1)))
+  t)
 
 (add-hook (scope-function  'global 'hook :after)
           'after-enter-global)

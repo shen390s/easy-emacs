@@ -34,7 +34,10 @@
 (defun config-xfeature (xfeature)
   (let ((config-fn (xfeature-config-fn xfeature)))
     (if config-fn
-	(funcall config-fn)
+	(condition-case err
+	    (funcall config-fn)
+	  (error (message "%s" (error-message-string err))
+		 nil))
       t)))
 
 (defun extract-xfeature-pkgs (xfeature)

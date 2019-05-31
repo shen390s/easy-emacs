@@ -15,6 +15,7 @@
   (make-directory easy-emacs-etc-dir t))
 
 (defvar easy-emacs-file-name-handler-alist file-name-handler-alist)
+(defvar easy-emacs-boot-ok nil)
 
 (defun easy-emacs-boot ()
   (setq gc-cons-threshold 402653184
@@ -24,7 +25,8 @@
 (defun easy-emacs-boot-done ()
   (setq gc-cons-threshold 16777216
 	gc-cons-percentage 0.1
-	file-name-handler-alist easy-emacs-file-name-handler-alist))
+	file-name-handler-alist easy-emacs-file-name-handler-alist
+	easy-emacs-boot-ok t))
 
 (easy-emacs-boot)
 (require 'core-lib (concat easy-emacs-core-dir "/core-lib"))
