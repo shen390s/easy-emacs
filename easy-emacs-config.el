@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 ;; Configuration for easy-emacs
 ;; this file will be loaded
 
