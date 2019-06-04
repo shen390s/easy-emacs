@@ -15,6 +15,10 @@
   (make-directory easy-emacs-etc-dir t))
 
 (defvar easy-emacs-file-name-handler-alist file-name-handler-alist)
+
+(defvar easy-emacs-boot-done-hook nil
+  "Hooks which will be called when easy-emacs boot done")
+
 (defvar easy-emacs-boot-ok nil)
 
 (defun easy-emacs-boot ()
@@ -22,11 +26,16 @@
 	gc-cons-percentage 0.6
 	file-name-handler-alist nil))
 
+(add-hook 'easy-emacs-boot-done-hook
+	  (lambda ()
+	    (setq gc-cons-threshold 16777216
+		  gc-cons-percentage 0.1
+		  file-name-handler-alist easy-emacs-file-name-handler-alist
+		  easy-emacs-boot-ok t)))
+
 (defun easy-emacs-boot-done ()
-  (setq gc-cons-threshold 16777216
-	gc-cons-percentage 0.1
-	file-name-handler-alist easy-emacs-file-name-handler-alist
-	easy-emacs-boot-ok t))
+  (unless easy-emacs-boot-ok
+    (run-hooks 'easy-emacs-boot-done-hook)))
 
 (easy-emacs-boot)
 (require 'core-lib (concat easy-emacs-core-dir "/core-lib"))

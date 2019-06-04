@@ -118,25 +118,25 @@
      (defvar ,(scope-function scope 'hook :before) nil)
      (defvar ,(scope-function scope 'hook :after) nil)
      (defun ,(scope-function scope 'entry :main) (origin-fun &rest args)
-       (when easy-emacs-boot-ok
-	 (run-hooks ',(scope-function scope 'hook :before))
-	 (when (= nest-level 0)
-	   (push ',scope nest-scope))
-	 (incr! nest-level 1)
-	 (when ',parent
-	   (push ',parent nest-scope)))
+       (run-hooks ',(scope-function scope 'hook :before))
+       (when (= nest-level 0)
+	 (push ',scope nest-scope))
+       (incr! nest-level 1)
+       (when ',parent
+	 (push ',parent nest-scope))
 
        (let ((res (apply origin-fun args)))
-	 (when easy-emacs-boot-ok
-	   (enter-scope ',scope)
-	   (incr! nest-level -1)
-	   (when (= nest-level 0)
-	     (cl-loop for n in (reverse nest-scope)
-		      do (run-hooks (scope-function n 'hook :after)))
-	     (setq nest-scope nil)))
-	       res))
+	 (enter-scope ',scope)
+	 (incr! nest-level -1)
+	 (when (= nest-level 0)
+	   (cl-loop for n in (reverse nest-scope)
+		    do (run-hooks (scope-function n 'hook :after)))
+	   (setq nest-scope nil))
+	 res))
      ,@(cl-loop for mode in modes
-		collect `(advice-add ',mode :around #',(scope-function scope 'entry :main)))))
+		collect `(add-hook 'easy-emacs-boot-done-hook
+				   (lambda ()
+				     (advice-add ',mode :around #',(scope-function scope 'entry :main)))))))
 
 ;; Return a list of scopes when the feature has been activated
 (defun feature-enabled (feature)
