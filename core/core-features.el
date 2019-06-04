@@ -136,7 +136,9 @@
      ,@(cl-loop for mode in modes
 		collect `(add-hook 'easy-emacs-boot-done-hook
 				   (lambda ()
-				     (advice-add ',mode :around #',(scope-function scope 'entry :main)))))))
+				     (advice-add ',mode
+						 :around
+						 #',(scope-function scope 'entry :main)))))))
 
 ;; Return a list of scopes when the feature has been activated
 (defun feature-enabled (feature)
