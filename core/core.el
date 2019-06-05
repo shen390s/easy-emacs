@@ -1,4 +1,6 @@
-;;; core.el --- description -*- lexical-binding: t; -*-
+;; -*- lexical-binding: t; -*-
+;; core.el
+
 (defvar easy-emacs-dir (file-truename user-emacs-directory)
   "Directory for easy-emacs")
 
@@ -39,6 +41,7 @@
 
 (easy-emacs-boot)
 (require 'core-lib (concat easy-emacs-core-dir "/core-lib"))
+(require 'core-keybind (concat easy-emacs-core-dir "/core-keybind"))
 (require 'core-package (concat easy-emacs-core-dir "/core-package"))
 (require 'core-features (concat easy-emacs-core-dir "/core-features"))
 (require 'core-modules (concat easy-emacs-core-dir "/core-modules"))
