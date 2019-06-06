@@ -18,16 +18,17 @@
       (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
       (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references))
     
+    (define-key-in-major-map
+      "gd" #'lsp-find-definition
+      "gr" #'lsp-find-references
+      "gi" #'lsp-find-implementation
+      "gt" #'lsp-find-type-definition)
+    
     (easy-emacs/define-key lsp-ui-peek-mode-map
 			   "h" #'lsp-ui-peek--select-prev-file
 			   "j" #'lsp-ui-peek--select-next
 			   "k" #'lsp-ui-peek--select-prev
-			   "l" #'lsp-ui-peek--select-next-file)
-    (easy-emacs/define-key evil-normal-state-local-map
-			   "gd" #'lsp-find-definitions
-			   "gr" #'lsp-find-references
-			   "gi" #'lsp-find-implementation
-			   "gt" #'lsp-find-type-definition)))
+			   "l" #'lsp-ui-peek--select-next-file)))
 
 (defun enable-lsp ()
   (progn

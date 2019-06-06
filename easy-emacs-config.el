@@ -53,7 +53,7 @@
 	   ;; (cquery :activate (:pre ((setq cquery-executable "/usr/local/bin/cquery"))))
 	   ;;ccls
 	   (set-c-style :activate
-			(:pre ((c-set-style "stroustrup"))))))
+			(:pre ((c-set-style "cc-mode"))))))
 
 ;; features in elisp scope
 

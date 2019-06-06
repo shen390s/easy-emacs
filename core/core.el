@@ -23,6 +23,13 @@
 
 (defvar easy-emacs-boot-ok nil)
 
+(defvar easy-emacs-core-packages
+  '(use-package
+       (bind-map :type git
+		 :host github
+		 :repo "justbur/emacs-bind-map"))
+  "list of packages which will be used by easy-emacs")
+
 (defun easy-emacs-boot ()
   (setq gc-cons-threshold 402653184
 	gc-cons-percentage 0.6
@@ -39,7 +46,6 @@
   (unless easy-emacs-boot-ok
     (run-hooks 'easy-emacs-boot-done-hook)))
 
-(easy-emacs-boot)
 (require 'core-lib (concat easy-emacs-core-dir "/core-lib"))
 (require 'core-keybind (concat easy-emacs-core-dir "/core-keybind"))
 (require 'core-package (concat easy-emacs-core-dir "/core-package"))
@@ -47,6 +53,25 @@
 (require 'core-modules (concat easy-emacs-core-dir "/core-modules"))
 
 (setq custom-file (concat easy-emacs-etc-dir "custom.el"))
+
+(defun easy-emacs-bootstrap-core ()
+  (bootstrap-package "straight")
+  (install-core-packages easy-emacs-core-packages))
+
+(defun easy-emacs-bootstrap (module-dir config)
+  (load-modules easy-emacs-modules-dir)
+
+  ;; load configuration of
+  ;; easy-emacs
+  (load-file config)
+
+  ;; Install actived packages
+  (install-packages
+   (pkglist-info
+    (actived-packages
+     (actived-features)))))
+
+(easy-emacs-boot)
 
 (provide 'core)
 ;;; core.el ends here

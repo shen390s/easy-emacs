@@ -4,20 +4,11 @@
 
 (require 'core (concat user-emacs-directory "core/core"))
 
-(bootstrap-package "straight")
-(load-modules easy-emacs-modules-dir)
+(easy-emacs-bootstrap-core)
 
-;; load configuration of
-;; easy-emacs
-(load-file (concat user-emacs-directory "easy-emacs-config.el"))
-
-;; Install actived packages
-
-(install-packages
- (pkglist-info
-  (actived-packages
-   (actived-features))))
-
+(easy-emacs-bootstrap easy-emacs-modules-dir
+		      (concat user-emacs-directory
+			      "easy-emacs-config.el"))
 ;; Enter global scope
 (enter-scope 'global)
 

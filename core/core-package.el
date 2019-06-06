@@ -23,8 +23,19 @@
            'silent 'inhibit-cookies)
         (goto-char (point-max))
         (eval-print-last-sexp)))
-    (load bootstrap-file nil 'nomessage)
-    (straight-use-package 'use-package)))
+    (load bootstrap-file nil 'nomessage)))
+
+(defun install-pkg (pkg)
+  (when pkg
+    (progn
+      (if (listp pkg)
+	  (straight-use-package pkg)
+	(straight-use-package pkg)))))
+
+(defun install-core-packages (pkgs)
+  (progn
+    (cl-loop for pkg in pkgs
+	     do (install-pkg pkg))))
 
 (defun bootstrap-package (pkgmgr)
   (cond
@@ -34,11 +45,7 @@
 (defun install-packages(pkginfo)
   (progn
     (cl-loop for pkg in pkginfo
-	     do (when pkg
-		  (progn
-		    (if (listp pkg)
-			(straight-use-package pkg)
-		      (straight-use-package pkg)))))
+	     do (install-pkg pkg))
     (run-hooks 'all-packages-ready-hook)))
 
 (provide 'core-package)

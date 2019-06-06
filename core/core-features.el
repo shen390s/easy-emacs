@@ -166,6 +166,10 @@
   (let ((current-scope scope))
     (when-bind! xscope (gethash scope all-scope)
 		(progn
+		  (bind-major-map :keys ("M-m")
+				  :evil-keys (",")
+				  :evil-mode (normal motion visual))
+		  
 		  (cl-loop for active-fn in (mapcar #'(lambda (x)
 							(second x))
 						    (xfeature-scope-xfeatures xscope))
