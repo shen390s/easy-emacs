@@ -2,6 +2,10 @@
 
 ## Quick start
 
+  1. clone this repository as .emacs.d in your home directory.
+  
+  2. edit .emacs.d/easy-emacs-config.el to meet your requirement
+  
 ## Feature highlights
 
   1. Easy for configuration
