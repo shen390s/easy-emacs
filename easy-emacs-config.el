@@ -72,6 +72,9 @@
 (enable! java
 	 (lsp-java))
 
+(enable! graphviz
+	 ())
+
 (enable! markdown
 	 (hlinum
 	  vmd))

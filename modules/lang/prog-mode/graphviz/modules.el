@@ -1,3 +1,5 @@
+(scope! graphviz prog-lang graphviz-dot-mode)
+
 (package! graphviz
 	  "Emacs mode for the graphviz"
 	  (graphviz-dot-mode :type git
@@ -27,3 +29,4 @@
 	  graphviz-config
 	  graphviz-enable
 	  nil)
+
