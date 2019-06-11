@@ -29,3 +29,7 @@
 ## Troubleshooting
 
 ## Contribute
+
+  - fork this repository
+  - fix bugs or add more features
+  - send pull requests

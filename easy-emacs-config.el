@@ -6,6 +6,7 @@
 ;;  features in global scope
 (enable! global
 	 (emacs-server
+	  graphviz
 	  ;;eldoc
 	  ;;treemacs
 	  ;;powerline

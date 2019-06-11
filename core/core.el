@@ -24,13 +24,13 @@
 (defvar easy-emacs-boot-ok nil)
 
 (defvar easy-emacs-core-packages
-  '(use-package
-       (bind-map :type git
-		 :host github
-		 :repo "justbur/emacs-bind-map"))
+  (list 'use-package
+	'(bind-map :type git
+		   :host github
+		   :repo "justbur/emacs-bind-map"))
   "list of packages which will be used by easy-emacs")
 
-(defun easy-emacs-boot ()
+(defun easy-emacs-boot-start ()
   (setq gc-cons-threshold 402653184
 	gc-cons-percentage 0.6
 	file-name-handler-alist nil))
@@ -56,7 +56,8 @@
 
 (defun easy-emacs-bootstrap-core ()
   (bootstrap-package "straight")
-  (install-core-packages easy-emacs-core-packages))
+  (install-core-packages easy-emacs-core-packages)
+  (log-init "%t [%l] %m" "%H:%M:%S"))
 
 (defun easy-emacs-bootstrap (module-dir config)
   (load-modules easy-emacs-modules-dir)
@@ -71,7 +72,7 @@
     (actived-packages
      (actived-features)))))
 
-(easy-emacs-boot)
+(easy-emacs-boot-start)
 
 (provide 'core)
 ;;; core.el ends here

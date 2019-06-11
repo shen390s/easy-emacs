@@ -29,4 +29,7 @@
      (when ,var
        ,@body)))
 
+(defmacro log-init (fmt time-fmt)
+  `())
+
 (provide 'core-lib)
