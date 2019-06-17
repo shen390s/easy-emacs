@@ -32,6 +32,8 @@
 
 (defun enable-lsp ()
   (progn
+    (require 'lsp)
+    (require 'lsp-ui)
     (lsp)
     (lsp-setup-keybind)))
 
