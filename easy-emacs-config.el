@@ -50,8 +50,8 @@
 	  (lsp-ui
 	   ;;stickyfunc-enhance
 	   ;;eglot
-	   cquery
-	   ;; (cquery :activate (:pre ((setq cquery-executable "/usr/local/bin/cquery"))))
+	   (cquery :activate
+		   (:pre ((setq cquery-executable "/opt/tools/cquery/bin/cquery"))))
 	   ;;ccls
 	   (set-c-style :activate
 			(:pre ((c-set-style "cc-mode"))))))
