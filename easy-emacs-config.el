@@ -62,7 +62,7 @@
 (enable! python
 	 ((lsp-python-ms :activate
 			 (:pre ((setq lsp-python-ms-executable
-				      "/Users/rshen/bin/Microsoft.Python.LanguageServer"))))))
+				      "/opt/tools/mspyls/Microsoft.Python.LanguageServer"))))))
 
 ;; features in rust scope
 (enable! rust
