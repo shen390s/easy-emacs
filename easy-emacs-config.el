@@ -42,6 +42,7 @@
 	  which-func
 	  rainbow-delimiters
 	  rainbow-identifiers
+	  -flymake
 	  hlinum))
 
 ;; features in c/c++
@@ -50,8 +51,9 @@
 	   ;;stickyfunc-enhance
 	   ;;eglot
 	   (cquery :activate
-		   (:pre ((setq cquery-executable "/opt/tools/cquery/bin/cquery"))))
+	   	   (:pre ((setq cquery-executable "/opt/tools/cquery/bin/cquery"))))
 	   ;;ccls
+	   ;;clangd
 	   (set-c-style :activate
 			(:pre ((c-set-style "cc-mode"))))))
 
