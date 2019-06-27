@@ -19,7 +19,8 @@
 	  which-key
 	  (ivy :activate
 	       (:post ((setq ivy-use-virtual-buffers t)
-		       (setq ivy-count-format "(%d/%d) "))))
+	  	       (setq ivy-count-format "(%d/%d) "))))
+	  ;;helm
 	  undo-tree
 	  evil
 	  yasnippet
@@ -52,6 +53,7 @@
 	   ;;eglot
 	   (cquery :activate
 	   	   (:pre ((setq cquery-executable "/opt/tools/cquery/bin/cquery"))))
+	   ggtags
 	   ;;ccls
 	   ;;clangd
 	   (set-c-style :activate
@@ -71,7 +73,8 @@
 
 ;; features in java scope
 (enable! java
-	 (lsp-java))
+	 (lsp-java
+	  ggtags))
 
 (enable! graphviz
 	 ())
