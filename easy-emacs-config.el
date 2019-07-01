@@ -54,12 +54,15 @@
 	   (cquery :activate
 	   	   (:pre ((setq cquery-executable "/opt/tools/cquery/bin/cquery"))))
 	   ggtags
+	   call-graph
 	   ;;ccls
 	   ;;clangd
 	   (set-c-style :activate
 			(:pre ((c-set-style "cc-mode"))))))
 
 ;; features in elisp scope
+(enable! elisp
+	 ())
 
 ;; features in python scope
 (enable! python
