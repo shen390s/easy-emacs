@@ -10,9 +10,6 @@
 		      (concat user-emacs-directory
 			      "easy-emacs-config.el"))
 ;; Enter global scope
-(enter-scope 'global)
-
-;; load customization
-(load custom-file t t)
+(enter-global)
 
 ;;; init.el ends here

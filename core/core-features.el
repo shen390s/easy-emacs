@@ -126,7 +126,7 @@
 	 (push ',parent nest-scope))
 
        (let ((res (apply origin-fun args)))
-	 (enter-scope ',scope)
+	 (activate-scope ',scope)
 	 (incr! nest-level -1)
 	 (when (= nest-level 0)
 	   (cl-loop for n in (reverse nest-scope)
@@ -161,8 +161,7 @@
 				      (xfeature-scope-xfeatures xscope)))
 			  (hash-table-values all-scope)))))
 
-(defun enter-scope (scope)
-  (easy-emacs-boot-done)
+(defun activate-scope (scope)
   (let ((current-scope scope))
     (when-bind! xscope (gethash scope all-scope)
 		(progn
@@ -176,7 +175,7 @@
 			   do (when active-fn
 				(funcall active-fn)))))))
 
-(defun leave-scope (scope)
+(defun deactivate-scope (scope)
   (let ((current-scope scope))
     (when-bind! xscope (gethash scope all-scope)
 		(cl-loop for leave-fn in (mapcar #'(lambda (x)
@@ -184,6 +183,11 @@
 						 (xfeature-scope-xfeatures xscope))
 			 do (when leave-fn
 			      (funcall leave-fn))))))
+
+
+(defun enter-global ()
+  (easy-emacs-boot-done)
+  (global-scope))
 
 ;; create global scope
 ;;
@@ -193,13 +197,13 @@
 (defun global-scope ()
   t)
 
-(scope! global
+(scope! global nil
 	global-scope)
 
 ;; Actions to be done after we enter global scope
 ;;
 (defun after-enter-global ()
-  t)
+  (load custom-file t t))
 
 (add-hook (scope-function  'global 'hook :after)
           'after-enter-global)

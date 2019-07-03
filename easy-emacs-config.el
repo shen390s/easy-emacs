@@ -16,6 +16,7 @@
 	  ;;projectile
 	  ;;color-theme-solarized
 	  ;;color-theme-modern
+	  zenburn-emacs
 	  which-key
 	  (ivy :activate
 	       (:post ((setq ivy-use-virtual-buffers t)
@@ -23,6 +24,7 @@
 	  ;;helm
 	  undo-tree
 	  evil
+	  ;;boon
 	  yasnippet
 	  magit
 	  rust
