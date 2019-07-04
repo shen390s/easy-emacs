@@ -16,7 +16,9 @@
 	  ;;projectile
 	  ;;color-theme-solarized
 	  ;;color-theme-modern
-	  zenburn-emacs
+	  load-custom
+	  ;;zenburn-emacs
+	  sanityinc-tomorrow
 	  which-key
 	  (ivy :activate
 	       (:post ((setq ivy-use-virtual-buffers t)

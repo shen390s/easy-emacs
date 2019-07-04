@@ -203,7 +203,7 @@
 ;; Actions to be done after we enter global scope
 ;;
 (defun after-enter-global ()
-  (load custom-file t t))
+  t)
 
 (add-hook (scope-function  'global 'hook :after)
           'after-enter-global)
