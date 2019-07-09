@@ -61,10 +61,11 @@
 		   (let ((xscope (get-or-create-scope ',scope)))
 		     (if ,is-disabled
 			 (let ((feature-off (xfeature-off-fn xfeature)))
-			   (add-hook (scope-function ',scope 'hook :after)
-				     (lambda ()
-				       (when feature-off
-					 (funcall feature-off)))))
+			   (when (config-xfeature xfeature)
+			     (add-hook (scope-function ',scope 'hook :after)
+				       (lambda ()
+					 (when feature-off
+					   (funcall feature-off))))))
 		       (let ((feature-on (xfeature-on-fn  xfeature))
 			     (feature-off (xfeature-off-fn xfeature))
 			     (config-ok (config-xfeature xfeature)))

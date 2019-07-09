@@ -18,15 +18,18 @@
 	  ;;color-theme-modern
 	  load-custom
 	  ;;zenburn-emacs
-	  sanityinc-tomorrow
+	  ;;(sanityinc-tomorrow :activate
+	  ;;		      (:pre ((setf sanityinc-tomorrow-actived 'night))))
+          atom-one-dark
 	  which-key
 	  (ivy :activate
 	       (:post ((setq ivy-use-virtual-buffers t)
 	  	       (setq ivy-count-format "(%d/%d) "))))
 	  ;;helm
 	  undo-tree
-	  evil
-	  ;;boon
+	  ;;evil
+	  boon
+          ;;ergoemacs
 	  yasnippet
 	  magit
 	  rust
