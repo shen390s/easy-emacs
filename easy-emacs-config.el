@@ -28,6 +28,7 @@
 	  ;;helm
 	  undo-tree
 	  ;;evil
+          show-paren-line
 	  boon
           ;;ergoemacs
 	  yasnippet

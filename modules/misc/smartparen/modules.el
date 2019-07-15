@@ -15,4 +15,3 @@
  	  nil
  	  enable-smartparens
  	  nil)
-
