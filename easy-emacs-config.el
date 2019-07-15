@@ -51,6 +51,7 @@
 	  rainbow-delimiters
 	  rainbow-identifiers
 	  -flymake
+	  fold-this
 	  hlinum))
 
 ;; features in c/c++
@@ -75,11 +76,13 @@
 (enable! python
 	 ((lsp-python-ms :activate
 			 (:pre ((setq lsp-python-ms-executable
-				      "/opt/tools/mspyls/Microsoft.Python.LanguageServer"))))))
+				      "/opt/tools/mspyls/Microsoft.Python.LanguageServer"))))
+	 ))
 
 ;; features in rust scope
 (enable! rust
-	 (rls))
+	 (rls
+          ))
 
 ;; features in java scope
 (enable! java
