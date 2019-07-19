@@ -20,7 +20,9 @@
 	  ;;zenburn-emacs
 	  ;;(sanityinc-tomorrow :activate
 	  ;;		      (:pre ((setf sanityinc-tomorrow-actived 'night))))
-          atom-one-dark
+          ;;atom-one-dark
+          ;;aanila
+          tango-dark
 	  which-key
 	  (ivy :activate
 	       (:post ((setq ivy-use-virtual-buffers t)
@@ -35,6 +37,7 @@
 	  magit
 	  rust
 	  clojure
+          ess
 	  (markdown :activate
 		    (:pre ((setq markdown-command "multimarkdown"))))
 	  (plantuml :activate
@@ -63,7 +66,8 @@
 	   (cquery :activate
 	   	   (:pre ((setq cquery-executable "/opt/tools/cquery/bin/cquery"))))
 	   ggtags
-	   call-graph
+	   (call-graph
+	    :activate (:pre ((setq cg-initial-max-depth 3))))
 	   ;;ccls
 	   ;;clangd
 	   (set-c-style :activate
