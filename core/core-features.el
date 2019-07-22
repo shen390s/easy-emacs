@@ -48,6 +48,11 @@
     (if (listp feature)
 	(cons nil (car feature))
       (parse-feature-name feature)))
+
+  (defun extract-feature-args ()
+    (if (listp feature)
+	(cl-getf (cdr feature) :args)
+      nil))
   
   (defun extract-hook-action (tag subtag)
     (if (listp feature)
@@ -75,7 +80,7 @@
 							(when config-ok
 							  ,@(extract-hook-action :activate :pre)
 							  (when feature-on
-							    (funcall feature-on))
+							    (funcall feature-on ,@(extract-feature-args)))
 							  ,@(extract-hook-action :activate :post)))
 						      (lambda ()
 							(when config-ok

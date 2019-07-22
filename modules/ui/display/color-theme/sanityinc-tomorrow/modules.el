@@ -4,19 +4,16 @@
 			      :host github
 			      :repo "purcell/color-theme-sanityinc-tomorrow"))
 
-(defvar sanityinc-tomorrow-actived 'blue
-  "Activated sanityinc-tomorrow theme")
-
 (defun config-sanityinc-tomorrow ()
   t)
 
-(defmacro  activate-sanityinc-tomorrow ()
-  `(,(intern (concat "color-theme-sanityinc-tomorrow-"
-		     (symbol-name sanityinc-tomorrow-actived)))))
+(defmacro  activate-sanityinc-tomorrow (actived)
+  `(funcall (intern (concat "color-theme-sanityinc-tomorrow-"
+			    (symbol-name ,actived)))))
 
-(defun enable-sanityinc-tomorrow ()
+(defun enable-sanityinc-tomorrow (actived-theme)
   (require 'color-theme-sanityinc-tomorrow)
-  (activate-sanityinc-tomorrow))
+  (activate-sanityinc-tomorrow actived-theme))
 
 (feature! sanityinc-tomorrow
 	  "A set of comprehensive Emacs color themes based on Chris Kempson's 'tomorrow' themes"
