@@ -10,6 +10,9 @@
 (defvar current-scope nil
   "The current scope which will be activated")
 
+(defvar feature-key-args '(:activate :deactivate)
+  "Key args for feature")
+  
 (cl-defstruct xfeature-scope name
 	      modes
 	      xfeatures)
@@ -36,6 +39,18 @@
 	(append (xfeature-scope-xfeatures xscope)
 		(list xfeature))))
 
+(defun filt-key-args (collected-args keys args)
+  (if (null args)
+      (reverse collected-args)
+    (let ((x (car args))
+	  (remain (cdr args)))
+      (cond
+       ((member x keys)
+	(if (null remain)
+	    (reverse collected-args)
+	  (filt-key-args collected-args keys (cdr remain))))
+       (t (filt-key-args (push x collected-args) keys remain))))))
+       
 (defun make-use-xfeature (scope feature)
   ;; -feature to disable feature explicit
   (defun parse-feature-name (n)
@@ -51,7 +66,8 @@
 
   (defun extract-feature-args ()
     (if (listp feature)
-	(cl-getf (cdr feature) :args)
+	(filt-key-args nil feature-key-args
+		       (cdr feature))
       nil))
   
   (defun extract-hook-action (tag subtag)

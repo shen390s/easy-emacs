@@ -18,12 +18,12 @@
 	  ;;color-theme-modern
 	  load-custom
 	  ;;zenburn-emacs
-	  ;;(sanityinc-tomorrow :args ('bright))
+	  (sanityinc-tomorrow 'blue)
           ;;atom-one-dark
           ;;aanila
           ;;tango-dark
-          ;;(color-theme :args ('tango-dark))
-          (color-theme :args ('tsdh-dark))
+          ;;(color-theme 'tango-dark)
+          ;;(color-theme  'tsdh-dark)
 	  which-key
 	  (ivy :activate
 	       (:post ((setq ivy-use-virtual-buffers t)
