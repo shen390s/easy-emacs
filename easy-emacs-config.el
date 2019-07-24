@@ -36,6 +36,7 @@
           ;;ergoemacs
 	  yasnippet
 	  magit
+          forge
 	  rust
 	  clojure
           ess
