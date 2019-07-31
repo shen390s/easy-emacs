@@ -85,24 +85,21 @@
 			   (when (config-xfeature xfeature)
 			     (add-hook (scope-function ',scope 'hook :after)
 				       (lambda ()
-					 (when feature-off
-					   (funcall feature-off))))))
+					   `(when-call! ',feature-off)))))
 		       (let ((feature-on (xfeature-on-fn  xfeature))
 			     (feature-off (xfeature-off-fn xfeature))
 			     (config-ok (config-xfeature xfeature)))
 			 (add-xfeature-to-scope xscope
 						(list ',feature-name
 						      (lambda ()
-							(when config-ok
+						   	 (when config-ok
 							  ,@(extract-hook-action :activate :pre)
-							  (when feature-on
-							    (funcall feature-on ,@(extract-feature-args)))
+                                                          `(when-call! ',feature-on ,@(extract-feature-args))
 							  ,@(extract-hook-action :activate :post)))
 						      (lambda ()
-							(when config-ok
+						  	(when config-ok
 							  ,@(extract-hook-action :deactivate :pre)
-							  (when feature-off
-							    (funcall feature-off))
+                                                          `(when-call! ',feature-off)
 							  ,@(extract-hook-action :deactivate :post))))))))))))
 
 (defun conflict-feature (scope feature)
