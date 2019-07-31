@@ -24,6 +24,11 @@
 (defun third (lists)
   (nth-car 3 lists))
 
+(defmacro safe-pop (lst)
+  `(if (null ,lst)
+       nil
+     (pop ,lst)))
+      
 (defmacro when-bind! (var exp &rest body)
   `(let ((,var ,exp))
      (when ,var
@@ -32,4 +37,15 @@
 (defmacro log-init (fmt time-fmt)
   `())
 
+(defmacro set-vars (&rest vals)
+  `(progn
+     ,@(let ((vars vals))
+	 (cl-loop until (null vars)
+		  collect (let* ((var (safe-pop vars))
+				 (val (safe-pop vars)))
+			    `(setq ,var ,val))))))
+
+(defmacro apply-macro (mac &rest args)
+  `(,mac ,@args))
+  
 (provide 'core-lib)
