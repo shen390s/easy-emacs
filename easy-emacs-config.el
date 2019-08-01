@@ -101,5 +101,6 @@
 
 (enable! markdown
 	 (hlinum
+	  format-all
 	  vmd))
 
