@@ -34,10 +34,6 @@
      (when ,var
        ,@body)))
 
-(defmacro when-call! (fun-or-macro &rest args)
-  `(unless (equal ',fun-or-macro 'nil)
-     (,fun-or-macro ,@args)))
-     
 (defmacro log-init (fmt time-fmt)
   `())
 
