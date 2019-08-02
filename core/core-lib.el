@@ -49,6 +49,10 @@
 				 (val (safe-pop vars)))
 			    `(setq ,var ,val))))))
 
+(defmacro when-call! (fun-or-macro &rest args)
+  `(unless (equal ',fun-or-macro 'nil)
+     (,fun-or-macro ,@args)))
+
 (defmacro apply-macro (mac &rest args)
   `(,mac ,@args))
   

@@ -7,8 +7,10 @@
 			:repo "clojure-emacs/clojure-mode"))
 
 (defun config-clojure ()
-  (add-to-list 'auto-mode-alist
-	       '("\\.clj\\'" . clojure-mode)))
+  (progn
+    (add-to-list 'auto-mode-alist
+		 '("\\.clj\\'" . clojure-mode))
+    t))
 
 (feature! clojure
 	  "Support to edit clojure source code"
