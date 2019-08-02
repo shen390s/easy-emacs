@@ -1,5 +1,6 @@
 (defmacro activate-environ (&rest vars)
-  (apply 'set-vars vars))
+  `(set-vars ,@vars))
+
   
 (feature! environ
 	  "setting of environment"
