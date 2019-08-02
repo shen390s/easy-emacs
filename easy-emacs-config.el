@@ -30,9 +30,9 @@
 	  	       (setq ivy-count-format "(%d/%d) "))))
 	  ;;helm
 	  undo-tree
-	  ;;evil
+	  evil
           show-paren-line
-	  boon
+	  ;;boon
           ;;ergoemacs
 	  yasnippet
 	  magit

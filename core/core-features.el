@@ -84,26 +84,29 @@
 			 (let ((feature-off (xfeature-off-fn xfeature)))
 			   (when (config-xfeature xfeature)
 			     (add-hook (scope-function ',scope 'hook :after)
-				       (lambda ()
-					 (when feature-off
-					   (funcall feature-off))))))
+				       `(lambda ()
+					  (when-call! ,feature-off)))))
 		       (let ((feature-on (xfeature-on-fn  xfeature))
 			     (feature-off (xfeature-off-fn xfeature))
-			     (config-ok (config-xfeature xfeature)))
+			     (config-ok (config-xfeature xfeature))
+			     (before-active-action ',(extract-hook-action :activate :pre))
+			     (after-active-action ',(extract-hook-action :activate :post))
+			     (before-deactive-action ',(extract-hook-action :deactivate :pre))
+			     (after-deactive-action ',(extract-hook-action :deactivate :post))
+			     (activate-args ',(extract-feature-args)))
 			 (add-xfeature-to-scope xscope
 						(list ',feature-name
-						      (lambda ()
-							(when config-ok
-							  ,@(extract-hook-action :activate :pre)
-							  (when feature-on
-							    (funcall feature-on ,@(extract-feature-args)))
-							  ,@(extract-hook-action :activate :post)))
-						      (lambda ()
-							(when config-ok
-							  ,@(extract-hook-action :deactivate :pre)
-							  (when feature-off
-							    (funcall feature-off))
-							  ,@(extract-hook-action :deactivate :post))))))))))))
+						      `(lambda ()
+							 (when ,config-ok
+							   ,@before-active-action
+							   (when-call! ,feature-on ,@activate-args)
+							   ,@after-active-action))
+						      `(lambda ()
+							 (when ,config-ok
+							   ,@before-deactive-action
+							   (when-call! ,feature-off)
+							   ,@after-deactive-action)))))))))))
+
 
 (defun conflict-feature (scope feature)
   (member scope (feature-enabled feature)))
