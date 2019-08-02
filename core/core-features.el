@@ -50,7 +50,33 @@
 	    (reverse collected-args)
 	  (filt-key-args collected-args keys (cdr remain))))
        (t (filt-key-args (push x collected-args) keys remain))))))
-       
+
+(defmacro build-xfeature-disable-hook! (scope xfeature feature-off)
+  `(when (config-xfeature ,xfeature)
+     (add-hook (scope-function ,scope 'hook :after)
+	       (lambda ()
+		 (when-call! ',feature-off)))))
+
+(defmacro add-xfeature-to-scope! (xscope feature-name config-ok
+					 pre-active-action
+					 after-active-action
+					 pre-deactive-action
+					 after-deactive-action
+					 feature-on feature-off
+					 activate-args)
+  `(add-xfeature-to-scope ,xscope
+			  (list ',feature-name
+				(lambda ()
+				  (when ,config-ok
+				    ,@pre-active-action
+				    (when-call! ,feature-on ,@activate-args)
+				    ,@after-active-action))
+				(lambda ()
+				  (when ,config-ok
+				    ,@pre-deactive-action
+				    (when-call! ,feature-off)
+				    ,@after-deactive-action)))))
+
 (defun make-use-xfeature (scope feature)
   ;; -feature to disable feature explicit
   (defun parse-feature-name (n)
@@ -82,25 +108,17 @@
 		   (let ((xscope (get-or-create-scope ',scope)))
 		     (if ,is-disabled
 			 (let ((feature-off (xfeature-off-fn xfeature)))
-			   `(when (config-xfeature ,xfeature)
-			      (add-hook (scope-function ',,scope 'hook :after)
-					(lambda ()
-					  (when-call! ',feature-off)))))
+			   `(build-xfeature-disable-hook! ',,scope xfeature ,feature-off))
 		       (let ((feature-on (xfeature-on-fn  xfeature))
 			     (feature-off (xfeature-off-fn xfeature))
 			     (config-ok (config-xfeature xfeature)))
-			 `(add-xfeature-to-scope xscope
-						 (list ',,feature-name
-						       (lambda ()
-						   	 (when ,config-ok
-							   ,,@(extract-hook-action :activate :pre)
-							   (when-call! ',feature-on ,,@(extract-feature-args))
-							   ,,@(extract-hook-action :activate :post)))
-						      (lambda ()
-						  	(when ,config-ok
-							  ,,@(extract-hook-action :deactivate :pre)
-                                                          (when-call! ',feature-off)
-							  ,,@(extract-hook-action :deactivate :post))))))))))))
+			 `(add-xfeature-to-scope! ,xscope ',,feature-name config-ok
+						 ,,(extract-hook-action :activate :pre)
+						 ,,(extract-hook-action :activate :post)
+						 ,,(extract-hook-action :deactivate :pre)
+						 ,,(extract-hook-action :deactivate :post)
+						 ,feature-on ,feature-off
+						 ,,(extract-feature-args)))))))))
 
 (defun conflict-feature (scope feature)
   (member scope (feature-enabled feature)))
