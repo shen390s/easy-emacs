@@ -88,21 +88,19 @@
 					  (when-call! ,feature-off)))))
 		       (let ((feature-on (xfeature-on-fn  xfeature))
 			     (feature-off (xfeature-off-fn xfeature))
-			     (config-ok (config-xfeature xfeature))
 			     (before-active-action ',(extract-hook-action :activate :pre))
 			     (after-active-action ',(extract-hook-action :activate :post))
 			     (before-deactive-action ',(extract-hook-action :deactivate :pre))
 			     (after-deactive-action ',(extract-hook-action :deactivate :post))
 			     (activate-args ',(extract-feature-args)))
-			 (add-xfeature-to-scope xscope
-						(list ',feature-name
-						      `(lambda ()
-							 (when ,config-ok
+			 (when (config-xfeature xfeature)
+			   (add-xfeature-to-scope xscope
+						  (list ',feature-name
+							`(lambda ()
 							   ,@before-active-action
 							   (when-call! ,feature-on ,@activate-args)
-							   ,@after-active-action))
-						      `(lambda ()
-							 (when ,config-ok
+							   ,@after-active-action)
+							`(lambda ()
 							   ,@before-deactive-action
 							   (when-call! ,feature-off)
 							   ,@after-deactive-action)))))))))))
