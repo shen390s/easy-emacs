@@ -80,32 +80,24 @@
 	 (feature-name (cdr feature-value))
 	 (is-disabled (car feature-value)))
       `(when-bind! xfeature (gethash ',feature-name all-xfeatures)
-		   (if ,is-disabled
-		       (let ((feature-off (xfeature-off-fn xfeature)))
-			 (when (config-xfeature xfeature)
-			   (progn
-			     ;;(get-or-create-scope ',scope)
-			     (add-hook (scope-function ',scope 'hook :after)
-				       `(lambda ()
-					  (when-call! ,feature-off))))))
-		     (let ((feature-on (xfeature-on-fn  xfeature))
-			   (feature-off (xfeature-off-fn xfeature))
-			   (before-active-action ',(extract-hook-action :activate :pre))
-			   (after-active-action ',(extract-hook-action :activate :post))
-			   (before-deactive-action ',(extract-hook-action :deactivate :pre))
-			   (after-deactive-action ',(extract-hook-action :deactivate :post))
-			   (activate-args ',(extract-feature-args)))
-		       (when (config-xfeature xfeature)
-			 (add-xfeature-to-scope ',scope
-						(list ',feature-name
-						      `(lambda ()
-							 ,@before-active-action
-							 (when-call! ,feature-on ,@activate-args)
-							 ,@after-active-action)
-						      `(lambda ()
-							 ,@before-deactive-action
-							 (when-call! ,feature-off)
-							 ,@after-deactive-action)))))))))
+		   (when (config-xfeature xfeature)
+		     (if ,is-disabled
+			 (progn
+			   ;;(get-or-create-scope ',scope)
+			   (add-hook (scope-function ',scope 'hook :after)
+				     `(lambda ()
+					(when-call! ,(xfeature-off-fn xfeature)))))
+		       (add-xfeature-to-scope ',scope
+					      (list ',feature-name
+						    `(lambda ()
+						       ,@',(extract-hook-action :activate :pre)
+						       (when-call! ,(xfeature-on-fn xfeature)
+								   ,@',(extract-feature-args))
+						       ,@',(extract-hook-action :activate :post))
+						    `(lambda ()
+						       ,@',(extract-hook-action :deactivate :pre)
+						       (when-call! ,(xfeature-off-fn xfeature))
+						       ,@',(extract-hook-action :deactivate :post)))))))))
 
 
 (defun conflict-feature (scope feature)
