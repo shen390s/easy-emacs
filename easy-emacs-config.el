@@ -5,7 +5,7 @@
 ;; Enable features
 ;;  features in global scope
 (enable! global
-	 ((environ java-home "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home")
+	 ((settings java-home "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home")
 	  emacs-server
 	  graphviz
 	  ;;eldoc

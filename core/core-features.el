@@ -61,18 +61,18 @@
 	(cons nil n))))
   
   (defun extract-feature-name ()
-    (if (listp feature)
+    (if (consp feature)
 	(cons nil (car feature))
       (parse-feature-name feature)))
 
   (defun extract-feature-args ()
-    (if (listp feature)
+    (if (consp feature)
 	(filt-key-args nil feature-key-args
 		       (cdr feature))
       nil))
   
   (defun extract-hook-action (tag subtag)
-    (if (listp feature)
+    (if (consp feature)
 	(cl-getf (cl-getf (cdr feature) tag) subtag)
       nil))
  
