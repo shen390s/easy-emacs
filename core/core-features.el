@@ -120,6 +120,7 @@
 
 (defvar nest-scope nil
   "Nested scopes")
+
 (defvar nest-level 0
   "Nest level of scope")
 
