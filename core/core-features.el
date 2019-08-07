@@ -76,28 +76,26 @@
 	(cl-getf (cl-getf (cdr feature) tag) subtag)
       nil))
  
-  (let* ((feature-value (extract-feature-name))
-	 (feature-name (cdr feature-value))
-	 (is-disabled (car feature-value)))
-      `(when-bind! xfeature (gethash ',feature-name all-xfeatures)
-		   (when (config-xfeature xfeature)
-		     (if ,is-disabled
-			 (progn
-			   ;;(get-or-create-scope ',scope)
-			   (add-hook (scope-function ',scope 'hook :after)
-				     `(lambda ()
-					(when-call! ,(xfeature-off-fn xfeature)))))
-		       (add-xfeature-to-scope ',scope
-					      (list ',feature-name
-						    `(lambda ()
-						       ,@',(extract-hook-action :activate :pre)
-						       (when-call! ,(xfeature-on-fn xfeature)
-								   ,@',(extract-feature-args))
-						       ,@',(extract-hook-action :activate :post))
-						    `(lambda ()
-						       ,@',(extract-hook-action :deactivate :pre)
-						       (when-call! ,(xfeature-off-fn xfeature))
-						       ,@',(extract-hook-action :deactivate :post)))))))))
+  (pcase (extract-feature-name)
+    (`(,is-disabled . ,feature-name)
+     `(when-bind! xfeature (gethash ',feature-name all-xfeatures)
+		  (when (config-xfeature xfeature)
+		    (if ,is-disabled
+			(progn
+			  (add-hook (scope-function ',scope 'hook :after)
+				    `(lambda ()
+				       (when-call! ,(xfeature-off-fn xfeature)))))
+		      (add-xfeature-to-scope ',scope
+					     (list ',feature-name
+						   `(lambda ()
+						      ,@',(extract-hook-action :activate :pre)
+						      (when-call! ,(xfeature-on-fn xfeature)
+								  ,@',(extract-feature-args))
+						      ,@',(extract-hook-action :activate :post))
+						   `(lambda ()
+						      ,@',(extract-hook-action :deactivate :pre)
+						      (when-call! ,(xfeature-off-fn xfeature))
+						      ,@',(extract-hook-action :deactivate :post))))))))))
 
 
 (defun conflict-feature (scope feature)
