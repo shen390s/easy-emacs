@@ -59,8 +59,8 @@
 	  rainbow-delimiters
 	  rainbow-identifiers
 	  -flymake
-	  ;;fold-this
-	  origami
+	  fold-this
+	  ;;origami
 	  hlinum))
 
 ;; features in c/c++

@@ -9,15 +9,13 @@
 	  def (pop bindings))))
 
 (defmacro bind-major-map (&rest args)
-  (let ((map-name (intern (format "%s-map" major-mode))))
-    `(progn
-       (require 'bind-map)
-       (bind-map ,map-name
-	 ,@args))))
+  `(progn
+     (require 'bind-map)
+     (bind-map (current-local-map)
+	       ,@args)))
 
 (defmacro define-key-in-major-map (&rest args)
-  (let ((map-name (intern (format "%s-map" major-mode))))
-    `(easy-emacs/define-key ,map-name
-			    ,@args)))
+  `(easy-emacs/define-key (current-local-map)
+			  ,@args))
 
 (provide 'core-keybind)
