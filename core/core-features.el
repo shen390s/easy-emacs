@@ -63,23 +63,23 @@
 	    (cons t (intern (substring svalue 1)))
 	  (cons nil n))))
   
-    (defun extract-feature-name ()
+    (defun extract-feature-name (feature)
       (if (consp feature)
 	  (cons nil (car feature))
 	(parse-feature-name feature)))
 
-    (defun extract-feature-args ()
+    (defun extract-feature-args (feature)
       (if (consp feature)
 	  (filt-key-args nil feature-key-args
 			 (cdr feature))
 	nil))
   
-  (defun extract-hook-action (tag subtag)
+  (defun extract-hook-action (feature tag subtag)
     (if (consp feature)
 	(cl-getf (cl-getf (cdr feature) tag) subtag)
       nil)))
  
-  (pcase (extract-feature-name)
+  (pcase (extract-feature-name feature)
     (`(,is-disabled . ,feature-name)
      `(when-bind! xfeature (gethash ',feature-name all-xfeatures)
 		  (when (config-xfeature xfeature)
@@ -91,14 +91,14 @@
 		      (add-xfeature-to-scope ',scope
 					     (list ',feature-name
 						   `(lambda ()
-						      ,@',(extract-hook-action :activate :pre)
+						      ,@',(extract-hook-action feature :activate :pre)
 						      (when-call! ,(xfeature-on-fn xfeature)
-								  ,@',(extract-feature-args))
-						      ,@',(extract-hook-action :activate :post))
+								  ,@',(extract-feature-args feature))
+						      ,@',(extract-hook-action feature :activate :post))
 						   `(lambda ()
-						      ,@',(extract-hook-action :deactivate :pre)
+						      ,@',(extract-hook-action feature :deactivate :pre)
 						      (when-call! ,(xfeature-off-fn xfeature))
-						      ,@',(extract-hook-action :deactivate :post))))))))))
+						      ,@',(extract-hook-action feature :deactivate :post))))))))))
 
 
 (defun conflict-feature (scope feature)
