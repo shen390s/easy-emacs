@@ -1,18 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 ;; core.el
 
-(defvar easy-emacs-dir (file-truename user-emacs-directory)
-  "Directory for easy-emacs")
-
-(defvar easy-emacs-core-dir (concat easy-emacs-dir "core")
-  "Directory of easy-emacs core components")
-
-(defvar easy-emacs-modules-dir (concat easy-emacs-dir "modules")
-  "Directory of easy-emacs modules")
-
-(defvar easy-emacs-etc-dir (concat easy-emacs-dir ".local/etc/")
-  "Directory of customized easy-emacs settings")
-
 (unless (file-exists-p easy-emacs-etc-dir)
   (make-directory easy-emacs-etc-dir t))
 
@@ -56,11 +44,10 @@
 
 (defun easy-emacs-bootstrap-core ()
   (bootstrap-package "straight")
-  (install-core-packages easy-emacs-core-packages)
-  (log-init "%t [%l] %m" "%H:%M:%S"))
+  (install-core-packages easy-emacs-core-packages))
 
 (defun easy-emacs-bootstrap (module-dir config)
-  (load-modules easy-emacs-modules-dir)
+  (load-modules module-dir)
 
   ;; load configuration of
   ;; easy-emacs
@@ -71,6 +58,10 @@
    (pkglist-info
     (actived-packages
      (actived-features)))))
+
+(defun enter-global ()
+  (easy-emacs-boot-done)
+  (global-scope))
 
 (easy-emacs-boot-start)
 

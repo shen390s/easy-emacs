@@ -3,6 +3,7 @@
 
 (require 'cl-lib)
 (require 'subr-x)
+(require 'core-lib)
 
 (defvar all-scope (make-hash-table)
   "All defined feature scope")
@@ -17,11 +18,12 @@
 	      modes
 	      xfeatures)
 
-(defun scope-function (scope tag subtag)
-  (intern (concat (symbol-name scope)
-		  "-scope-"
-		  (symbol-name tag)
-		  (symbol-name subtag))))
+(eval-and-compile
+  (defun scope-function (scope tag subtag)
+    (intern (concat (symbol-name scope)
+		    "-scope-"
+		    (symbol-name tag)
+		    (symbol-name subtag)))))
 
 (defun get-or-create-scope (scope)
   (let ((xscope (gethash scope all-scope)))
@@ -54,27 +56,28 @@
 
 (defun make-use-xfeature (scope feature)
   ;; -feature to disable feature explicit
-  (defun parse-feature-name (n)
-    (let ((svalue (symbol-name n)))
-      (if (string= (substring svalue 0 1) "-")
-	  (cons t (intern (substring svalue 1)))
-	(cons nil n))))
+  (eval-and-compile
+    (defun parse-feature-name (n)
+      (let ((svalue (symbol-name n)))
+	(if (string= (substring svalue 0 1) "-")
+	    (cons t (intern (substring svalue 1)))
+	  (cons nil n))))
   
-  (defun extract-feature-name ()
-    (if (consp feature)
-	(cons nil (car feature))
-      (parse-feature-name feature)))
+    (defun extract-feature-name ()
+      (if (consp feature)
+	  (cons nil (car feature))
+	(parse-feature-name feature)))
 
-  (defun extract-feature-args ()
-    (if (consp feature)
-	(filt-key-args nil feature-key-args
-		       (cdr feature))
-      nil))
+    (defun extract-feature-args ()
+      (if (consp feature)
+	  (filt-key-args nil feature-key-args
+			 (cdr feature))
+	nil))
   
   (defun extract-hook-action (tag subtag)
     (if (consp feature)
 	(cl-getf (cl-getf (cdr feature) tag) subtag)
-      nil))
+      nil)))
  
   (pcase (extract-feature-name)
     (`(,is-disabled . ,feature-name)
@@ -181,9 +184,9 @@
   (let ((current-scope scope))
     (when-bind! xscope (gethash scope all-scope)
 		(progn
-		  (bind-major-map :keys ("M-m")
-				  :evil-keys (",")
-				  :evil-mode (normal motion visual))
+		  ;; (bind-major-map :keys ("M-m")
+		  ;; 		  :evil-keys (",")
+		  ;; 		  :evil-mode (normal motion visual))
 		  
 		  (cl-loop for active-fn in (mapcar #'(lambda (x)
 							(second x))
@@ -201,9 +204,6 @@
 			      (funcall leave-fn))))))
 
 
-(defun enter-global ()
-  (easy-emacs-boot-done)
-  (global-scope))
 
 ;; create global scope
 ;;
@@ -215,13 +215,5 @@
 
 (scope! global nil
 	global-scope)
-
-;; Actions to be done after we enter global scope
-;;
-(defun after-enter-global ()
-  t)
-
-(add-hook (scope-function  'global 'hook :after)
-          'after-enter-global)
 
 (provide 'core-features)

@@ -28,9 +28,10 @@
 (defun install-pkg (pkg)
   (when pkg
     (progn
-      (if (listp pkg)
-	  (straight-use-package pkg)
-	(straight-use-package pkg)))))
+      (when (fboundp 'straight-use-package)
+	(if (listp pkg)
+	    (straight-use-package pkg)
+	  (straight-use-package pkg))))))
 
 (defun install-core-packages (pkgs)
   (progn

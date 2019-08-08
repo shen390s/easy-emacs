@@ -34,9 +34,6 @@
      (when ,var
        ,@body)))
 
-(defmacro log-init (fmt time-fmt)
-  `())
-
 (defmacro set-vars (&rest vals)
   `(progn
      ,@(let ((vars vals))
