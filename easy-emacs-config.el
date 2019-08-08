@@ -6,6 +6,7 @@
 ;;  features in global scope
 (enable! global
 	 ((settings java-home "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home")
+	  smex
 	  emacs-server
 	  graphviz
 	  ;;eldoc
