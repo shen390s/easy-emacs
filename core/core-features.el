@@ -19,11 +19,16 @@
 	      xfeatures)
 
 (eval-and-compile
+  (defun scope-null ()
+    t)
+  
   (defun scope-function (scope tag subtag)
-    (intern (concat (symbol-name scope)
-		    "-scope-"
-		    (symbol-name tag)
-		    (symbol-name subtag)))))
+    (if scope
+	(intern (concat (symbol-name scope)
+			"-scope-"
+			(symbol-name tag)
+			(symbol-name subtag)))
+      (intern "scope-null"))))
 
 (defun get-or-create-scope (scope)
   (let ((xscope (gethash scope all-scope)))
@@ -128,14 +133,12 @@
      (defvar ,(scope-function scope 'hook :before) nil)
      (defvar ,(scope-function scope 'hook :after) nil)
      (defun ,(scope-function scope 'entry :pre-activate) ()
-       (unless (eq ',parent 'nil)
-	 (,(scope-function parent 'entry :pre-activate)))
-       (run-hooks ,(scope-function scope 'hook :pre-activate)))
+       (,(scope-function parent 'entry :pre-activate))
+       (run-hooks ,(scope-function scope 'hook :before)))
 
      (defun ,(scope-function scope 'entry :post-activate) ()
-       (run-hooks ,(scope-function scope 'hook :post-activate))
-       (unless (eq ',parent 'nil)
-	 (,(scope-function parent 'entry :post-activate))))))
+       (run-hooks ,(scope-function scope 'hook :after))
+       (,(scope-function parent 'entry :post-activate)))))
      
 ;; Return a list of scopes when the feature has been activated
 (defun feature-enabled (feature)
@@ -187,7 +190,7 @@
      ;; run hook of pre- scope
      (,(scope-function scope 'entry :pre-activate))
      (let ((res (if ,entry
-		     (apply ,entry ,@args)
+		     (apply ,entry ,args)
 		   t)))
        ;; activate features in scope
        (activate-scope ',scope)
@@ -204,7 +207,7 @@
   `(progn
      ,@(cl-loop for mode in modes
 		collect `(defun ,(mode-function mode) (origin-fun &rest args)
-			   (enter-scope! ,scope origin-fun args)))
+			   (enter-scope! ,scope origin-fun ,@args)))
      ,@(cl-loop for mode in modes
 		collect `(add-hook 'easy-emacs-boot-done-hook
 				   (lambda ()
@@ -214,12 +217,14 @@
 
 ;; create global scope
 ;;
-(defvar global-scope-hook nil
-  "Hooks run when enter global scope")
-
 (defun global-scope ()
   t)
 
 (scope! global nil)
+
+(defun enter-global ()
+  (easy-emacs-boot-done)
+  (enter-scope! global #'global-scope))
+	    
 
 (provide 'core-features)

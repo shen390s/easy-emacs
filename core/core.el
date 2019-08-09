@@ -59,10 +59,6 @@
     (actived-packages
      (actived-features)))))
 
-(defun enter-global ()
-  (easy-emacs-boot-done)
-  (global-scope))
-
 (easy-emacs-boot-start)
 
 (provide 'core)
