@@ -4,8 +4,7 @@
   t)
 
 (scope! c-c++
-	prog-lang
-	c-mode c++-mode)
+	prog-lang)
 
 (add-hook (scope-function 'c-c++ 'hook :after)
 	  'c-c++-after-setup)

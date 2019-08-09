@@ -121,44 +121,22 @@
        ,@(cl-loop for feature in features
 		  collect (make-use-xfeature scope feature)))))
 
-(defvar nest-scope nil
-  "Nested scopes")
-
-(defvar nest-level 0
-  "Nest level of scope")
-
-(defmacro incr! (var val)
-  `(setq ,var (+ ,var ,val)))
-
 ;; Define a new scope
 ;; (scope! scope (hooks to be called when enter scope) (hooks to be call when leave scope))
-(defmacro scope! (scope parent &rest modes)
+(defmacro scope! (scope parent)
   `(progn
      (defvar ,(scope-function scope 'hook :before) nil)
      (defvar ,(scope-function scope 'hook :after) nil)
-     (defun ,(scope-function scope 'entry :main) (origin-fun &rest args)
-       (run-hooks ',(scope-function scope 'hook :before))
-       (when (= nest-level 0)
-	 (push ',scope nest-scope))
-       (incr! nest-level 1)
-       (when ',parent
-	 (push ',parent nest-scope))
+     (defun ,(scope-function scope 'entry :pre-activate) ()
+       (unless (eq ',parent 'nil)
+	 (,(scope-function parent 'entry :pre-activate)))
+       (run-hooks ,(scope-function scope 'hook :pre-activate)))
 
-       (let ((res (apply origin-fun args)))
-	 (activate-scope ',scope)
-	 (incr! nest-level -1)
-	 (when (= nest-level 0)
-	   (cl-loop for n in (reverse nest-scope)
-		    do (run-hooks (scope-function n 'hook :after)))
-	   (setq nest-scope nil))
-	 res))
-     ,@(cl-loop for mode in modes
-		collect `(add-hook 'easy-emacs-boot-done-hook
-				   (lambda ()
-				     (advice-add ',mode
-						 :around
-						 #',(scope-function scope 'entry :main)))))))
-
+     (defun ,(scope-function scope 'entry :post-activate) ()
+       (run-hooks ,(scope-function scope 'hook :post-activate))
+       (unless (eq ',parent 'nil)
+	 (,(scope-function parent 'entry :post-activate))))))
+     
 ;; Return a list of scopes when the feature has been activated
 (defun feature-enabled (feature)
   (let ((enabled-scope
@@ -204,6 +182,35 @@
 			      (funcall leave-fn))))))
 
 
+(defmacro enter-scope! (scope entry &rest args)
+  `(progn
+     ;; run hook of pre- scope
+     (,(scope-function scope 'entry :pre-activate))
+     (let ((res (if ,entry
+		     (apply ,entry ,@args)
+		   t)))
+       ;; activate features in scope
+       (activate-scope ',scope)
+       ;; run hooks after scope activated
+       (,(scope-function scope 'entry :post-activate))
+       res)))
+
+(eval-and-compile
+  (defun mode-function (mode)
+    (intern (concat (symbol-name mode)
+		    ":entry"))))
+
+(defmacro mode! (scope &rest modes)
+  `(progn
+     ,@(cl-loop for mode in modes
+		collect `(defun ,(mode-function mode) (origin-fun &rest args)
+			   (enter-scope! ,scope origin-fun args)))
+     ,@(cl-loop for mode in modes
+		collect `(add-hook 'easy-emacs-boot-done-hook
+				   (lambda ()
+				     (advice-add ',mode
+						 :around
+						 #',(mode-function mode)))))))
 
 ;; create global scope
 ;;
@@ -213,7 +220,6 @@
 (defun global-scope ()
   t)
 
-(scope! global nil
-	global-scope)
+(scope! global nil)
 
 (provide 'core-features)

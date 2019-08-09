@@ -1,4 +1,4 @@
-(scope! clojure prog-lang clojure-mode)
+(scope! clojure prog-lang )
 
 (package! clojure-mode
 	  "A major Emacs mode for edit Clojure source code"

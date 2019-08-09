@@ -2,8 +2,7 @@
   t)
 
 (scope! python
-	prog-lang
-	python-mode)
+	prog-lang)
 
 (add-hook (scope-function 'python 'hook :after)
 	  'python-after-setup)

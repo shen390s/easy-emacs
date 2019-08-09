@@ -1,6 +1,5 @@
 (scope! poly-mode
-	prog-lang
-	polymode)
+	prog-lang)
 
 (package! polymode
 	  "Extensible framework for multiple major modes"

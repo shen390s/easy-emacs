@@ -1,4 +1,4 @@
-(scope! graphviz prog-lang graphviz-dot-mode)
+(scope! graphviz prog-lang )
 
 (package! graphviz
 	  "Emacs mode for the graphviz"
