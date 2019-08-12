@@ -130,15 +130,23 @@
 ;; (scope! scope (hooks to be called when enter scope) (hooks to be call when leave scope))
 (defmacro scope! (scope parent)
   `(progn
-     (defvar ,(scope-function scope 'hook :before) nil)
-     (defvar ,(scope-function scope 'hook :after) nil)
+     (defvar ,(scope-function scope 'hook :before) nil
+       "Hooks run before scope ,scope has been activated")
+     
+     (defvar ,(scope-function scope 'hook :after) nil
+       "Hooks run after scope ,scope has been activated")
+     
      (defun ,(scope-function scope 'entry :pre-activate) ()
        (,(scope-function parent 'entry :pre-activate))
        (run-hooks ',(scope-function scope 'hook :before)))
 
      (defun ,(scope-function scope 'entry :post-activate) ()
        (run-hooks ',(scope-function scope 'hook :after))
-       (,(scope-function parent 'entry :post-activate)))))
+       (,(scope-function parent 'entry :post-activate)))
+
+     (defun ,(scope-function scope 'entry :activate)()
+       (,(scope-function parent 'entry :activate))
+       (activate-scope ',scope))))
      
 ;; Return a list of scopes when the feature has been activated
 (defun feature-enabled (feature)
@@ -190,7 +198,8 @@
   (let ((res (if entry
 		 (apply entry args)
 	       t)))
-    (activate-scope scope)
+    ;;(activate-scope scope)
+    (funcall (scope-function scope 'entry :activate))
     (funcall (scope-function scope 'entry :post-activate))
     res))
   
