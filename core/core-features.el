@@ -228,8 +228,9 @@
 (scope! global nil)
 
 (defun enter-global ()
-  (add-hook (scope-function 'global 'hook :before)
-  	    #'easy-emacs-boot-done)
+  (when (fboundp 'easy-emacs-boot-done)
+    (add-hook (scope-function 'global 'hook :before)
+	      #'easy-emacs-boot-done))
   (enter-scope 'global #'global-scope nil))
 	    
 
