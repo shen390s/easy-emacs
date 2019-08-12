@@ -20,6 +20,7 @@
 		 '("\\.nwdiag\\'" . graphviz-dot-mode))
     (add-to-list 'auto-mode-alist
 		 '("\\.rackdiag\\'" . graphviz-dot-mode))
+    (mode! graphviz graphviz-dot-mode)
     t))
 
 (defun graphviz-enable ()

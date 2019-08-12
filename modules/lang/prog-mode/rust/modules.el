@@ -7,6 +7,7 @@
 (defun config-rust ()
   (add-to-list 'auto-mode-alist
 	       '("\\.rs\\'" . rust-mode))
+  (mode! rust rust-mode)
   t)
 
 (feature! rust

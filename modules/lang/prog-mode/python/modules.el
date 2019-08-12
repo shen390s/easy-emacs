@@ -6,3 +6,5 @@
 
 (add-hook (scope-function 'python 'hook :after)
 	  'python-after-setup)
+
+(mode! python python-mode )
