@@ -10,7 +10,10 @@
 	  poly-markdown)
 
 (defun config-poly-markdown ()
-  t)
+  (progn
+    (add-to-list 'auto-mode-alist '("\\.md$" . poly-markdown-mode))
+    (mode! poly-mode poly-markdown-mode)
+    t))
 
 (defun activate-poly-markdown ()
   (require 'poly-markdown)
@@ -18,7 +21,7 @@
 
 (feature! poly-markdown
 	  "polymode for markdown mode"
-	  (polymode poly-markdown markdown)
+	  (polymode poly-markdown markdown-mode)
 	  config-poly-markdown
-	  activate-poly-markdown
+	  nil ;;activate-poly-markdown
 	  nil)
