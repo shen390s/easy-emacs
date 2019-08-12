@@ -19,11 +19,16 @@
 	      xfeatures)
 
 (eval-and-compile
+  (defun scope-null ()
+    t)
+  
   (defun scope-function (scope tag subtag)
-    (intern (concat (symbol-name scope)
-		    "-scope-"
-		    (symbol-name tag)
-		    (symbol-name subtag)))))
+    (if scope
+	(intern (concat (symbol-name scope)
+			"-scope-"
+			(symbol-name tag)
+			(symbol-name subtag)))
+      (intern "scope-null"))))
 
 (defun get-or-create-scope (scope)
   (let ((xscope (gethash scope all-scope)))
@@ -121,44 +126,28 @@
        ,@(cl-loop for feature in features
 		  collect (make-use-xfeature scope feature)))))
 
-(defvar nest-scope nil
-  "Nested scopes")
-
-(defvar nest-level 0
-  "Nest level of scope")
-
-(defmacro incr! (var val)
-  `(setq ,var (+ ,var ,val)))
-
 ;; Define a new scope
 ;; (scope! scope (hooks to be called when enter scope) (hooks to be call when leave scope))
-(defmacro scope! (scope parent &rest modes)
+(defmacro scope! (scope parent)
   `(progn
-     (defvar ,(scope-function scope 'hook :before) nil)
-     (defvar ,(scope-function scope 'hook :after) nil)
-     (defun ,(scope-function scope 'entry :main) (origin-fun &rest args)
-       (run-hooks ',(scope-function scope 'hook :before))
-       (when (= nest-level 0)
-	 (push ',scope nest-scope))
-       (incr! nest-level 1)
-       (when ',parent
-	 (push ',parent nest-scope))
+     (defvar ,(scope-function scope 'hook :before) nil
+       "Hooks run before scope ,scope has been activated")
+     
+     (defvar ,(scope-function scope 'hook :after) nil
+       "Hooks run after scope ,scope has been activated")
+     
+     (defun ,(scope-function scope 'entry :pre-activate) ()
+       (,(scope-function parent 'entry :pre-activate))
+       (run-hooks ',(scope-function scope 'hook :before)))
 
-       (let ((res (apply origin-fun args)))
-	 (activate-scope ',scope)
-	 (incr! nest-level -1)
-	 (when (= nest-level 0)
-	   (cl-loop for n in (reverse nest-scope)
-		    do (run-hooks (scope-function n 'hook :after)))
-	   (setq nest-scope nil))
-	 res))
-     ,@(cl-loop for mode in modes
-		collect `(add-hook 'easy-emacs-boot-done-hook
-				   (lambda ()
-				     (advice-add ',mode
-						 :around
-						 #',(scope-function scope 'entry :main)))))))
+     (defun ,(scope-function scope 'entry :post-activate) ()
+       (run-hooks ',(scope-function scope 'hook :after))
+       (,(scope-function parent 'entry :post-activate)))
 
+     (defun ,(scope-function scope 'entry :activate)()
+       (,(scope-function parent 'entry :activate))
+       (activate-scope ',scope))))
+     
 ;; Return a list of scopes when the feature has been activated
 (defun feature-enabled (feature)
   (let ((enabled-scope
@@ -204,16 +193,44 @@
 			      (funcall leave-fn))))))
 
 
+(defun enter-scope (scope entry args)
+  (funcall (scope-function scope 'entry :pre-activate))
+  (let ((res (if entry
+		 (apply entry args)
+	       t)))
+    ;;(activate-scope scope)
+    (funcall (scope-function scope 'entry :activate))
+    (funcall (scope-function scope 'entry :post-activate))
+    res))
+  
+(eval-and-compile
+  (defun mode-function (mode)
+    (intern (concat (symbol-name mode)
+		    ":entry"))))
+
+(defmacro mode! (scope &rest modes)
+  `(progn
+     ,@(cl-loop for mode in modes
+		collect `(defun ,(mode-function mode) (origin-fun &rest args)
+			     (enter-scope ',scope origin-fun args)))
+     ,@(cl-loop for mode in modes
+		collect `(add-hook 'easy-emacs-boot-done-hook
+				   (lambda ()
+				     (advice-add ',mode
+						 :around
+						 #',(mode-function mode)))))))
 
 ;; create global scope
 ;;
-(defvar global-scope-hook nil
-  "Hooks run when enter global scope")
-
 (defun global-scope ()
   t)
 
-(scope! global nil
-	global-scope)
+(scope! global nil)
+
+(defun enter-global ()
+  (add-hook (scope-function 'global 'hook :before)
+  	    #'easy-emacs-boot-done)
+  (enter-scope 'global #'global-scope nil))
+	    
 
 (provide 'core-features)

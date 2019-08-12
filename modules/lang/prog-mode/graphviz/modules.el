@@ -1,4 +1,4 @@
-(scope! graphviz prog-lang graphviz-dot-mode)
+(scope! graphviz prog-lang )
 
 (package! graphviz
 	  "Emacs mode for the graphviz"
@@ -20,6 +20,7 @@
 		 '("\\.nwdiag\\'" . graphviz-dot-mode))
     (add-to-list 'auto-mode-alist
 		 '("\\.rackdiag\\'" . graphviz-dot-mode))
+    (mode! graphviz graphviz-dot-mode)
     t))
 
 (defun graphviz-enable ()

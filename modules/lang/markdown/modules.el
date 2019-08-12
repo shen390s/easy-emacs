@@ -1,4 +1,4 @@
-(scope! markdown prog-lang markdown-mode)
+(scope! markdown prog-lang)
 
 (package! markdown-mode
 	  "A major Emacs mode for edit markdown document"
@@ -21,6 +21,7 @@
 	       '("\\.markdown\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist
 	       '("README\\.md\\'" . gfm-mode))
+  (mode! markdown markdown-mode gfm-mode)
   t)
 
 (feature! markdowm

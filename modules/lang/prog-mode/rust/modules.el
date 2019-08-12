@@ -1,4 +1,4 @@
-(scope! rust prog-lang rust-mode)
+(scope! rust prog-lang )
 
 (package! rust-mode
 	  "A major Emacs mode for edit Rust source code"
@@ -7,6 +7,7 @@
 (defun config-rust ()
   (add-to-list 'auto-mode-alist
 	       '("\\.rs\\'" . rust-mode))
+  (mode! rust rust-mode)
   t)
 
 (feature! rust

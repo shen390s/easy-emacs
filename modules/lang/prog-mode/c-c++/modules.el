@@ -3,12 +3,10 @@
 (defun c-c++-after-setup ()
   t)
 
-(scope! c-c++
-	prog-lang
-	c-mode c++-mode)
+(scope! c-c++ prog-lang)
 
 (add-hook (scope-function 'c-c++ 'hook :after)
-	  'c-c++-after-setup)
+	  #'c-c++-after-setup)
 
 (package! google-c-style
 	  "Google C/C++ style"
@@ -32,3 +30,5 @@
 	  nil
 	  nil
 	  nil)
+
+(mode! c-c++ c-mode c++-mode)

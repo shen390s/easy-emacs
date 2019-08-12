@@ -1,4 +1,4 @@
-(scope! clojure prog-lang clojure-mode)
+(scope! clojure prog-lang )
 
 (package! clojure-mode
 	  "A major Emacs mode for edit Clojure source code"
@@ -10,6 +10,7 @@
   (progn
     (add-to-list 'auto-mode-alist
 		 '("\\.clj\\'" . clojure-mode))
+    (mode! clojure clojure-mode)
     t))
 
 (feature! clojure
