@@ -134,10 +134,10 @@
      (defvar ,(scope-function scope 'hook :after) nil)
      (defun ,(scope-function scope 'entry :pre-activate) ()
        (,(scope-function parent 'entry :pre-activate))
-       (run-hooks ,(scope-function scope 'hook :before)))
+       (run-hooks ',(scope-function scope 'hook :before)))
 
      (defun ,(scope-function scope 'entry :post-activate) ()
-       (run-hooks ,(scope-function scope 'hook :after))
+       (run-hooks ',(scope-function scope 'hook :after))
        (,(scope-function parent 'entry :post-activate)))))
      
 ;; Return a list of scopes when the feature has been activated
@@ -185,19 +185,15 @@
 			      (funcall leave-fn))))))
 
 
-(defmacro enter-scope! (scope entry &rest args)
-  `(progn
-     ;; run hook of pre- scope
-     (,(scope-function scope 'entry :pre-activate))
-     (let ((res (if ,entry
-		     (apply ,entry ,args)
-		   t)))
-       ;; activate features in scope
-       (activate-scope ',scope)
-       ;; run hooks after scope activated
-       (,(scope-function scope 'entry :post-activate))
-       res)))
-
+(defun enter-scope (scope entry args)
+  (funcall (scope-function scope 'entry :pre-activate))
+  (let ((res (if entry
+		 (apply entry args)
+	       t)))
+    (activate-scope scope)
+    (funcall (scope-function scope 'entry :post-activate))
+    res))
+  
 (eval-and-compile
   (defun mode-function (mode)
     (intern (concat (symbol-name mode)
@@ -207,7 +203,7 @@
   `(progn
      ,@(cl-loop for mode in modes
 		collect `(defun ,(mode-function mode) (origin-fun &rest args)
-			   (enter-scope! ,scope origin-fun ,@args)))
+			     (enter-scope ',scope origin-fun args)))
      ,@(cl-loop for mode in modes
 		collect `(add-hook 'easy-emacs-boot-done-hook
 				   (lambda ()
@@ -223,8 +219,9 @@
 (scope! global nil)
 
 (defun enter-global ()
-  (easy-emacs-boot-done)
-  (enter-scope! global #'global-scope))
+  (add-hook (scope-function 'global 'hook :before)
+  	    #'easy-emacs-boot-done)
+  (enter-scope 'global #'global-scope nil))
 	    
 
 (provide 'core-features)
