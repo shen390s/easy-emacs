@@ -114,5 +114,5 @@
 (enable! poly-mode
 	 (hlinum
 	  ;;format-all
-	  ;;vmd
+	  vmd
 	  ))
