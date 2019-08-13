@@ -30,7 +30,7 @@
 	   (setq log-level (cdr zel))
 	 (message "log-init!: unknown log level `%s'" ',loglvl)))))
 
-(defun log-msg (lvl msg)
+(defun log-msg (_lvl msg)
   (unless log-buffer
     (setq log-buffer (get-buffer-create log-buffer-name)))
   (with-current-buffer log-buffer
