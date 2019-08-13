@@ -49,4 +49,10 @@
 (defmacro apply-macro (mac &rest args)
   `(,mac ,@args))
   
+(let ((zval 0))
+  (defun gen_seq ()
+    (let ((rval zval))
+      (setq zval (1+ zval))
+      rval)))
+
 (provide 'core-lib)

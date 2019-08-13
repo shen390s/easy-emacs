@@ -1,6 +1,13 @@
 ;; -*- lexical-binding: t; -*-
 ;; core.el
 
+(require 'core-lib)
+(require 'core-log)
+(require 'core-keybind)
+(require 'core-package)
+(require 'core-features)
+(require 'core-modules)
+
 (unless (file-exists-p easy-emacs-etc-dir)
   (make-directory easy-emacs-etc-dir t))
 
@@ -21,7 +28,10 @@
 (defun easy-emacs-boot-start ()
   (setq gc-cons-threshold 402653184
 	gc-cons-percentage 0.6
-	file-name-handler-alist nil))
+	file-name-handler-alist nil)
+  (log-define-levels! EMERG ERR WARN INFO DEBUG DEBUG2 DEBUG3)
+  (log-init! INFO)
+  (log! INFO "Booting EasyEMACS..."))
 
 (add-hook 'easy-emacs-boot-done-hook
 	  (lambda ()
@@ -32,13 +42,9 @@
 
 (defun easy-emacs-boot-done ()
   (unless easy-emacs-boot-ok
-    (run-hooks 'easy-emacs-boot-done-hook)))
+    (run-hooks 'easy-emacs-boot-done-hook))
+  (log! INFO "EasyEMACS boot OK"))
 
-(require 'core-lib (concat easy-emacs-core-dir "/core-lib"))
-(require 'core-keybind (concat easy-emacs-core-dir "/core-keybind"))
-(require 'core-package (concat easy-emacs-core-dir "/core-package"))
-(require 'core-features (concat easy-emacs-core-dir "/core-features"))
-(require 'core-modules (concat easy-emacs-core-dir "/core-modules"))
 
 (setq custom-file (concat easy-emacs-etc-dir "custom.el"))
 

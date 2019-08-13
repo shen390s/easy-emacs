@@ -3,11 +3,15 @@
 
 (package! polymode
 	  "Extensible framework for multiple major modes"
-	  polymode)
+	  (polymode :type git
+		    :host github
+		    :repo "emacsmirror/polymode"))
 
 (package! poly-markdown
 	  "polymode for markdown mode"
-	  poly-markdown)
+	  (poly-markdown :type git
+			 :host github
+			 :repo "emacsmirror/poly-markdown"))
 
 (package! poly-org
 	  "Poly org mode"
@@ -23,7 +27,6 @@
 
 (defun config-poly-markdown ()
   (progn
-    (require 'poly-markdown)
     (add-to-list 'auto-mode-alist '("\\.md$" . poly-markdown-mode))
     (mode! poly-mode poly-markdown-mode)
     t))
@@ -38,7 +41,6 @@
 (defun config-poly-R ()
   (progn
 ;;    (add-to-list 'auto-mode-alist '("\\.r$" . poly-R-mode))
-    (require 'poly-R)
     (mode! poly-mode poly-noweb+r-mode)
     t))
 
@@ -51,13 +53,12 @@
 
 (defun config-poly-org ()
   (progn
-    (require 'poly-org)
     (mode! poly-mode poly-org-mode)
     t))
 
 (feature! poly-org
 	  "Poly mode for org"
-	  (polymode poly-org org-mode)
+	  (polymode poly-org)
 	  config-poly-org
 	  nil
 	  nil)

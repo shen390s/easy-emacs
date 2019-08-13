@@ -42,9 +42,12 @@
 	  rust
 	  clojure
           ess
-	  ;;poly-markdown
-	  (markdown :activate
-	  	    (:pre ((setq markdown-command "multimarkdown"))))
+	  polymode
+	  poly-markdown
+	  poly-R
+	  poly-org
+	  ;;(markdown :activate
+	  ;;	    (:pre ((setq markdown-command "multimarkdown"))))
 	  (plantuml :activate
 		    (:pre ((setq plantuml-jar-path
 				 "/Users/rshen/workenv/emacs/jars/plantuml.jar"))))
@@ -111,4 +114,5 @@
 (enable! poly-mode
 	 (hlinum
 	  ;;format-all
-	  vmd))
+	  ;;vmd
+	  ))

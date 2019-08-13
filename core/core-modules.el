@@ -3,6 +3,8 @@
 
 (require 'cl-lib)
 (require 'subr-x)
+(require 'core-lib)
+(require 'core-log)
 
 (cl-defstruct xpackage name docstring pkg-info)
 
@@ -35,8 +37,15 @@
   (let ((config-fn (xfeature-config-fn xfeature)))
     (if config-fn
 	(condition-case err
-	    (funcall config-fn)
-	  (error (message "%s" (error-message-string err))
+	    (let ((result (funcall config-fn)))
+	      (log! DEBUG "config xfeature %s get %s"
+		    xfeature result)
+	      (unless result
+		(log! WARN "configure %s failed" xfeature))
+	      result)
+	  (error (log! WARN "configure xfeature %s error %s"
+		       xfeature
+		       (error-message-string err))
 		 nil))
       t)))
 
@@ -63,7 +72,11 @@
 
 (defun pkglist-info (packages)
   (cl-loop for pkg in packages
-	   collect (xpackage-pkg-info (gethash pkg all-xpackages))))
+	   collect (progn
+		     (let ((zpkg (gethash pkg all-xpackages)))
+		       (log! DEBUG "pkg %s zpkg %s"
+			     pkg zpkg)
+		       (xpackage-pkg-info zpkg)))))
 		
 						      
 (defun load-module-definition (module-file)

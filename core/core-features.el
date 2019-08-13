@@ -4,6 +4,7 @@
 (require 'cl-lib)
 (require 'subr-x)
 (require 'core-lib)
+(require 'core-log)
 
 (defvar all-scope (make-hash-table)
   "All defined feature scope")
@@ -42,6 +43,7 @@
       xscope)))
 
 (defun add-xfeature-to-scope (scope xfeature)
+  (log! DEBUG "add xfeature %s to scope %s" xfeature scope)
   (let ((xscope (get-or-create-scope scope)))
     (setf (xfeature-scope-xfeatures xscope)
 	  (append (xfeature-scope-xfeatures xscope)
@@ -60,6 +62,8 @@
        (t (filt-key-args (push x collected-args) keys remain))))))
 
 (defun make-use-xfeature (scope feature)
+  (log! DEBUG "make-use-xfeature %s scope %s"
+	feature scope)
   ;; -feature to disable feature explicit
   (eval-and-compile
     (defun parse-feature-name (n)
@@ -87,6 +91,7 @@
   (pcase (extract-feature-name feature)
     (`(,is-disabled . ,feature-name)
      `(when-bind! xfeature (gethash ',feature-name all-xfeatures)
+		  (log! DEBUG "when-bind! xfeature %s is-disabled %s" xfeature ,is-disabled)
 		  (when (config-xfeature xfeature)
 		    (if ,is-disabled
 			(progn

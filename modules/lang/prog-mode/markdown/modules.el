@@ -2,10 +2,7 @@
 
 (package! markdown-mode
 	  "A major Emacs mode for edit markdown document"
-	  (markdown-mode :type git
-			 :host github
-			 :repo "jrblevin/markdown-mode"))
-
+	  markdown-mode)
 
 (package! vmd-mode
 	  "Snappy Markdown preview minor mode for emacs"
