@@ -12,19 +12,31 @@
      
 	 forget mode hooks
 	 
-  2. Language server support
-     - C/C++. cquery and ccls
-	 - python. Microsoft python language server
-	 - rust. rls
+  2. Fast startup
+  
+  3. Language support
+	 - Support languages
+		- C/C++, python, rust, java,R,plantuml, graphviz,clojure
+		
+	 - Language server support
+		- C/C++. cquery and ccls
+		- python. Microsoft python language server
+		- rust. rls
+		- Java language server
+		- Both support LSP and eglot
 	 
-  3. Live preview for markdown
+  4. Live preview for markdown
   
-  4. Ivy complete
+  5. Ivy complete
   
-  5. Other misc feature 
+  6. Other misc feature 
+	 - powerline/smartline
+	 - easy color theme support
+	 - keybinding (evil, boon ergoemacs)
      - rainbow delimiters
 	 - rainbow identifiers
 	 - smartparens
+	 - emacs server
 	 
 ## Troubleshooting
 
