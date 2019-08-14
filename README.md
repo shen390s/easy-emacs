@@ -38,6 +38,32 @@
 	 - smartparens
 	 - emacs server
 	 
+## Hack Easy-Emacs
+
+### Basic conception
+
+	- scope
+	
+	  Easy-Emacs uses scope to control the on/off of features. A scope
+	  can have parent scope which it can inherit features from parent
+	  scope
+	  
+	- feature
+	
+	  Easy-Emacs uses feature to customized the behavior of system, such
+	  as feature cquery will enable using cquery as C/C++ language server 
+	  and ccls will enable using ccls as C/C++ language server.
+	  
+	- package
+	
+	  Package defines how Easy-Emacs install packages, currently Easy-Emacs
+	  support install package from ELPA, MELPA source and github repository
+	  
+	- mode
+	
+	  This is the same as mode in Emacs. A mode in Easy-Emacs will be assigned
+	  with a scope to get a list of features.
+	  
 ## Troubleshooting
 
 ## Contribute
