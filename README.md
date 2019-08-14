@@ -117,9 +117,10 @@ The feature is defined using command *feature!*:
 The feature can be turned on using command *enable!*:
 
 ```{elisp}
-(enable! my-scope (feature1
-				   feature2
-				   ))
+(enable! my-scope
+		 (feature1
+		  feature2
+		  ))
 ```
 #### binding a mode to a scope
 
