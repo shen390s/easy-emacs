@@ -17,11 +17,19 @@
 (defvar log-buffer nil
   "The buffer of log")
 
+(eval-and-compile
+  (defmacro abbrev-level-macro (lvl)
+    `(defmacro ,(intern (concat (symbol-name lvl) "!")) (fmt &rest args)
+       `(log! ,',lvl ,fmt ,@args))))
+
 (defmacro log-define-levels! (&rest args)
-  (if (fboundp 'gen_seq)
-      `(setq log-levels
-	     ',(cl-loop for arg in args
-			collect `(,arg . ,(gen_seq))))))
+  `(eval-and-compile 
+     (if (fboundp 'gen_seq)
+	 (setq log-levels
+	       ',(cl-loop for arg in args
+			  collect `(,arg . ,(gen_seq)))))
+     ,@(cl-loop for arg in args
+		collect `(abbrev-level-macro ,arg))))
 
 (defmacro log-init! (loglvl)
   `(progn

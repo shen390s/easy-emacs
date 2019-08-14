@@ -25,10 +25,14 @@
 		   :repo "justbur/emacs-bind-map"))
   "list of packages which will be used by easy-emacs")
 
+
+
 (defun easy-emacs-boot-start ()
   (setq gc-cons-threshold 402653184
 	gc-cons-percentage 0.6
 	file-name-handler-alist nil)
+  ;; Initialize log system
+  ;;
   (log-define-levels! EMERG ERR WARN INFO DEBUG DEBUG2 DEBUG3)
   (log-init! INFO)
   (log! INFO "Booting EasyEMACS..."))
