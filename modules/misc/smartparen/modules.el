@@ -7,7 +7,8 @@
 (defun enable-smartparens ()
   ;;(backtrace)
   (require 'smartparens)
-  (smartparens-mode))
+  (require 'smartparens-config)
+  (smartparens-mode 1))
 
 (feature! smartparens
  	  "Enable smart parents"
