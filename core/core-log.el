@@ -17,19 +17,15 @@
 (defvar log-buffer nil
   "The buffer of log")
 
-(eval-and-compile
-  (defmacro abbrev-level-macro (lvl)
-    `(defmacro ,(intern (concat (symbol-name lvl) "!")) (fmt &rest args)
-       `(log! ,',lvl ,fmt ,@args))))
-
-(defmacro log-define-levels! (&rest args)
-  `(eval-and-compile 
+(defmacro log-levels! (&rest args)
+  `(progn
      (if (fboundp 'gen_seq)
 	 (setq log-levels
 	       ',(cl-loop for arg in args
 			  collect `(,arg . ,(gen_seq)))))
      ,@(cl-loop for arg in args
-		collect `(abbrev-level-macro ,arg))))
+		collect `(defmacro ,(intern (concat (symbol-name arg) "!")) (&rest zargs)
+			      `(log! ,',arg ,@zargs)))))
 
 (defmacro log-init! (loglvl)
   `(progn
@@ -57,6 +53,6 @@
 			 ',lvl ,@args)))
 	(log-msg ',lvl msg)))))
 
-(log-define-levels! EMERG ERR WARN INFO DEBUG DEBUG2 DEBUG3)
+(log-levels! EMERG ERR WARN INFO DEBUG DEBUG2 DEBUG3)
 
 (provide 'core-log)
