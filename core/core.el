@@ -33,9 +33,8 @@
 	file-name-handler-alist nil)
   ;; Initialize log system
   ;;
-  (log-define-levels! EMERG ERR WARN INFO DEBUG DEBUG2 DEBUG3)
   (log-init! INFO)
-  (log! INFO "Booting EasyEMACS..."))
+  (INFO! "Booting EasyEMACS..."))
 
 (add-hook 'easy-emacs-boot-done-hook
 	  (lambda ()
@@ -47,7 +46,7 @@
 (defun easy-emacs-boot-done ()
   (unless easy-emacs-boot-ok
     (run-hooks 'easy-emacs-boot-done-hook))
-  (log! INFO "EasyEMACS boot OK"))
+  (INFO! "EasyEMACS boot OK"))
 
 
 (setq custom-file (concat easy-emacs-etc-dir "custom.el"))

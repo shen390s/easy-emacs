@@ -57,4 +57,6 @@
 			 ',lvl ,@args)))
 	(log-msg ',lvl msg)))))
 
+(log-define-levels! EMERG ERR WARN INFO DEBUG DEBUG2 DEBUG3)
+
 (provide 'core-log)
