@@ -38,14 +38,14 @@
     (if config-fn
 	(condition-case err
 	    (let ((result (funcall config-fn)))
-	      (log! DEBUG "config xfeature %s get %s"
-		    xfeature result)
+	      (DEBUG! "config xfeature %s get %s"
+		      xfeature result)
 	      (unless result
-		(log! WARN "configure %s failed" xfeature))
+		(WARN! "configure %s failed" xfeature))
 	      result)
-	  (error (log! WARN "configure xfeature %s error %s"
-		       xfeature
-		       (error-message-string err))
+	  (error (WARN! "configure xfeature %s error %s"
+			xfeature
+			(error-message-string err))
 		 nil))
       t)))
 
@@ -74,8 +74,8 @@
   (cl-loop for pkg in packages
 	   collect (progn
 		     (let ((zpkg (gethash pkg all-xpackages)))
-		       (log! DEBUG "pkg %s zpkg %s"
-			     pkg zpkg)
+		       (DEBUG! "pkg %s zpkg %s"
+			       pkg zpkg)
 		       (xpackage-pkg-info zpkg)))))
 		
 						      
