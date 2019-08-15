@@ -1,4 +1,4 @@
-;; -*- lexical-binding: t -*-
+; -*- lexical-binding: t -*-
 ;; enable lexical scope
 
 (require 'core-lib)
@@ -8,7 +8,7 @@
 (defvar log-levels nil
   "Pre-defined log levels")
 
-(defvar log-time-fmt "%m/%d/%Y %r"
+(defvar log-time-fmt "%m/%d/%Y %T "
   "Default log format of time")
 
 (defvar log-buffer-name "*EasyEmacs Logs*"
@@ -53,6 +53,7 @@
 			 ',lvl ,@args)))
 	(log-msg ',lvl msg)))))
 
-(log-levels! EMERG ERR WARN INFO DEBUG DEBUG2 DEBUG3)
+(eval-and-compile
+  (log-levels! EMERG ERR WARN INFO DEBUG DEBUG2 DEBUG3))
 
 (provide 'core-log)
