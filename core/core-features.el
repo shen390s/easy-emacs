@@ -186,7 +186,9 @@
 							(second x))
 						    (xfeature-scope-xfeatures xscope))
 			   do (when active-fn
-				(funcall active-fn)))))))
+				(condition-case err
+				    (funcall active-fn)
+				  (error (WARN! "%s" (error-message-string err))))))))))
 
 (defun deactivate-scope (scope)
   (let ((current-scope scope))
