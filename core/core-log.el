@@ -29,9 +29,9 @@
 
 (defmacro log-init! (loglvl)
   `(progn
-     (let ((zel (assoc ',loglvl log-levels)))
+     (let ((zel (alist-get ',loglvl log-levels)))
        (if zel
-	   (setq log-level (cdr zel))
+	   (setq log-level zel)
 	 (message "log-init!: unknown log level `%s'" ',loglvl)))))
 
 (defun log-msg (_lvl msg)
@@ -46,8 +46,8 @@
   (setq log-time-fmt fmt))
 
 (defmacro log! (lvl fmt &rest args)
-  `(let ((zel (assoc ',lvl log-levels)))
-     (when (<= (cdr zel) log-level)
+  `(let ((zel (alist-get ',lvl log-levels)))
+     (when (<= zel log-level)
       (let ((msg (format ,(concat "%s  %s  " fmt)
 			 (format-time-string log-time-fmt (current-time))
 			 ',lvl ,@args)))
