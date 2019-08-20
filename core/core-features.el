@@ -22,7 +22,7 @@
 (eval-and-compile
   (defun scope-null ()
     t)
-  
+
   (defun scope-function (scope tag subtag)
     (if scope
 	(intern (concat (symbol-name scope)
@@ -141,6 +141,26 @@
      (defvar ,(scope-function scope 'hook :after) nil
        "Hooks run after scope ,scope has been activated")
      
+     (defvar ,(scope-function scope 'var :pkg-installed) nil
+       "Var to tell us whether the packages of scope has been installed")
+     
+     (defun ,(scope-function scope 'entry :install-pkgs) ()
+       (unless ,(scope-function scope 'var :pkg-installed)
+	 (DEBUG! "Installing packages for scope %s"
+		 ',scope)
+	 (,(scope-function parent 'entry :install-pkgs))
+	 (when (and (fboundp 'install-packages)
+		    (fboundp 'pkglist-info)
+		    (fboundp 'actived-packages))
+	   (let ((xscope (gethash ',scope all-scope)))
+	     (when xscope
+	       (install-packages
+		(pkglist-info
+		 (actived-packages
+		  (mapcar #'car
+			  (xfeature-scope-xfeatures xscope)))))))
+	   (setf ,(scope-function scope 'var :pkg-installed) t))))
+
      (defun ,(scope-function scope 'entry :pre-activate) ()
        (,(scope-function parent 'entry :pre-activate))
        (run-hooks ',(scope-function scope 'hook :before)))
@@ -200,7 +220,13 @@
 			      (funcall leave-fn))))))
 
 
+(defun install-packages-for-scope (scope)
+  (let ((pkg-install-fn (scope-function scope 'entry :install-pkgs)))
+    (when (fboundp pkg-install-fn)
+      (funcall pkg-install-fn))))
+
 (defun enter-scope (scope entry args)
+  (install-packages-for-scope scope)
   (funcall (scope-function scope 'entry :pre-activate))
   (let ((res (if entry
 		 (apply entry args)

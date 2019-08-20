@@ -3,9 +3,13 @@
 	  rainbow-delimiters)
 
 
+(defun activate-rainbow-delimiters ()
+  (require 'rainbow-delimiters)
+  (rainbow-delimiters-mode 1))
+
 (feature! rainbow-delimiters
 	  "Enable rainbow delimiters"
 	  (rainbow-delimiters)
 	  nil
-	  rainbow-delimiters-mode
+	  activate-rainbow-delimiters
 	  nil)

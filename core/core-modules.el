@@ -59,6 +59,8 @@
 	(list pkgs)))))
 
 (defun actived-packages(activated-features)
+  (DEBUG! "Get actived packages for features: %s"
+	  activated-features)
   (let ((feature-info (hash-table-values all-xfeatures)))
     (let ((feature-pkg-map (mapcar #'(lambda (xfeature)
 				       (cons (xfeature-name xfeature)
@@ -71,6 +73,7 @@
 			      activated-features))))))
 
 (defun pkglist-info (packages)
+  (DEBUG! "Get pkginfo for packages: %s" packages)
   (cl-loop for pkg in packages
 	   collect (progn
 		     (let ((zpkg (gethash pkg all-xpackages)))

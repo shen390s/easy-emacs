@@ -44,6 +44,7 @@
    (t (bootstrap-straight))))
 
 (defun install-packages(pkginfo)
+  (DEBUG! "Install packages: %s" pkginfo)
   (progn
     (cl-loop for pkg in pkginfo
 	     do (install-pkg pkg))

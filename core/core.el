@@ -60,13 +60,7 @@
 
   ;; load configuration of
   ;; easy-emacs
-  (load-file config)
-
-  ;; Install actived packages
-  (install-packages
-   (pkglist-info
-    (actived-packages
-     (actived-features)))))
+  (load-file config))
 
 (easy-emacs-boot-start)
 
