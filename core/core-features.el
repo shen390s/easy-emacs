@@ -185,15 +185,6 @@
 			      scope)))))
     (delq nil enabled-scope)))
 
-;; All enabled features
-(defun actived-features ()
-  (delete-dups
-   (collect-lists nil
-		  (mapcar #'(lambda (xscope)
-			      (mapcar #'car
-				      (xfeature-scope-xfeatures xscope)))
-			  (hash-table-values all-scope)))))
-
 (defun activate-scope (scope)
   (let ((current-scope scope))
     (when-bind! xscope (gethash scope all-scope)
