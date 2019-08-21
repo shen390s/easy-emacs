@@ -6,7 +6,7 @@
   (progn
     (add-to-list 'auto-mode-alist
 		 '("\\.plantuml\\'" . plantuml-mode))
-    (mode! plantuml plantuml-mode)
+    (attach! plantuml plantuml-mode)
     t))
 
 (feature! plantuml

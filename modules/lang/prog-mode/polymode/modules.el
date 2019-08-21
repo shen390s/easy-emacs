@@ -28,7 +28,7 @@
 (defun config-poly-markdown ()
   (progn
     (add-to-list 'auto-mode-alist '("\\.md$" . poly-markdown-mode))
-    (mode! poly-mode poly-markdown-mode)
+    (attach! poly-mode poly-markdown-mode)
     t))
 
 (feature! poly-markdown
@@ -41,7 +41,7 @@
 (defun config-poly-R ()
   (progn
 ;;    (add-to-list 'auto-mode-alist '("\\.r$" . poly-R-mode))
-    (mode! poly-mode poly-noweb+r-mode)
+    (attach! poly-mode poly-noweb+r-mode)
     t))
 
 (feature! poly-R
@@ -53,7 +53,7 @@
 
 (defun config-poly-org ()
   (progn
-    (mode! poly-mode poly-org-mode)
+    (attach! poly-mode poly-org-mode)
     t))
 
 (feature! poly-org

@@ -127,10 +127,10 @@ Also you can read easy-emacs-config.el to get more information.
 
 #### binding a mode to a scope
 
-We can assign a mode to a scope with command *mode!*:
+We can assign a mode to a scope with command *attach!*:
 
 ```{elisp}
-(mode! my-c-c++-scope c-c++-mode)
+(attach! my-c-c++-scope c-c++-mode)
 ```
 
 #### Other

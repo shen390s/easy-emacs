@@ -238,7 +238,7 @@
     (intern (concat (symbol-name mode)
 		    ":entry"))))
 
-(defmacro mode! (scope &rest modes)
+(defmacro attach! (scope &rest modes)
   `(progn
      ,@(cl-loop for mode in modes
 		collect `(defun ,(mode-function mode) (origin-fun &rest args)

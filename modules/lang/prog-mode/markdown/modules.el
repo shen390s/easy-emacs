@@ -18,7 +18,7 @@
 	       '("\\.markdown\\'" . markdown-mode))
   (add-to-list 'auto-mode-alist
 	       '("README\\.md\\'" . gfm-mode))
-  (mode! markdown markdown-mode gfm-mode)
+  (attach! markdown markdown-mode gfm-mode)
   t)
 
 (feature! markdowm
