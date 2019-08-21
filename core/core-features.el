@@ -5,6 +5,7 @@
 (require 'subr-x)
 (require 'core-lib)
 (require 'core-log)
+(require 'core-modules)
 
 (defvar all-scope (make-hash-table)
   "All defined feature scope")
@@ -149,17 +150,15 @@
 	 (DEBUG! "Installing packages for scope %s"
 		 ',scope)
 	 (,(scope-function parent 'entry :install-pkgs))
-	 (when (and (fboundp 'install-packages)
-		    (fboundp 'pkglist-info)
-		    (fboundp 'actived-packages))
+	 (when (fboundp 'actived-packages)
 	   (let ((xscope (gethash ',scope all-scope)))
 	     (when xscope
-	       (install-packages
-		(pkglist-info
-		 (actived-packages
-		  (mapcar #'car
-			  (xfeature-scope-xfeatures xscope)))))))
-	   (setf ,(scope-function scope 'var :pkg-installed) t))))
+	       (cl-loop for pkg in
+			(actived-packages
+			 (mapcar #'car
+				 (xfeature-scope-xfeatures xscope)))
+			do (install-package-by-name pkg)))))
+	   (setf ,(scope-function scope 'var :pkg-installed) t)))
 
      (defun ,(scope-function scope 'entry :pre-activate) ()
        (,(scope-function parent 'entry :pre-activate))
@@ -215,6 +214,15 @@
   (let ((pkg-install-fn (scope-function scope 'entry :install-pkgs)))
     (when (fboundp pkg-install-fn)
       (funcall pkg-install-fn))))
+
+;; All enabled features
+(defun actived-features ()
+  (delete-dups
+   (collect-lists nil
+                  (mapcar #'(lambda (xscope)
+                              (mapcar #'car
+                                      (xfeature-scope-xfeatures xscope)))
+                          (hash-table-values all-scope)))))
 
 (defun enter-scope (scope entry args)
   (install-packages-for-scope scope)

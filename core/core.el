@@ -25,7 +25,14 @@
 		   :repo "justbur/emacs-bind-map"))
   "list of packages which will be used by easy-emacs")
 
+(defvar easy-emacs-deferred-packages nil
+  "List of deferred installed packages")
 
+(defvar easy-emacs-idle-package-installation-timer nil
+  "Timer to trigger package to be installed")
+
+(defvar easy-emacs-idle-time 30
+  "Idle time*(seconds) to trigger deferred package installation")
 
 (defun easy-emacs-boot-start ()
   (setq gc-cons-threshold 402653184
@@ -55,12 +62,31 @@
   (bootstrap-package "straight")
   (install-core-packages easy-emacs-core-packages))
 
+(defun schedule-package-defer-installation ()
+  (setf easy-emacs-idle-package-installation-timer
+	(run-with-idle-timer easy-emacs-idle-time (1+ (length easy-emacs-deferred-packages))
+			     (lambda ()
+			       (if easy-emacs-deferred-packages
+				 (let ((pkg (pop easy-emacs-deferred-packages)))
+				   (progn
+				     (install-package-by-name pkg)))
+				 (progn
+				   (when easy-emacs-idle-package-installation-timer
+				     (cancel-timer easy-emacs-idle-package-installation-timer)
+				     (setf easy-emacs-idle-package-installation-timer nil))))))))
+
 (defun easy-emacs-bootstrap (module-dir config)
   (load-modules module-dir)
 
   ;; load configuration of
   ;; easy-emacs
-  (load-file config))
+  (load-file config)
+  (defer-package-install (actived-features)))
+
+(defun defer-package-install (features)
+  (setf easy-emacs-deferred-packages
+	(actived-packages features))
+  (schedule-package-defer-installation))
 
 (easy-emacs-boot-start)
 

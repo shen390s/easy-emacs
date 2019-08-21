@@ -5,8 +5,9 @@
 (require 'subr-x)
 (require 'core-lib)
 (require 'core-log)
+(require 'core-package)
 
-(cl-defstruct xpackage name docstring pkg-info)
+(cl-defstruct xpackage name docstring pkg-info installed)
 
 (cl-defstruct xfeature name docstring pkgs config-fn on-fn off-fn)
 
@@ -19,7 +20,8 @@
 (defmacro package! (name docstring pkginfo)
   `(let ((xpackage (make-xpackage :name ',name
 				  :docstring ,docstring
-				  :pkg-info ',pkginfo)))
+				  :pkg-info ',pkginfo
+				  :installed nil)))
      (progn
        (puthash ',name xpackage all-xpackages))))
 
@@ -33,24 +35,36 @@
      (progn
        (puthash ',name xfeature all-xfeatures))))
 
-(defun config-xfeature (xfeature)
-  (let ((config-fn (xfeature-config-fn xfeature)))
+(cl-defmethod install-xpackage ((pkg xpackage))
+  (unless (xpackage-installed pkg)
+    (if (fboundp 'install-pkg)
+	(install-pkg (xpackage-pkg-info pkg)))
+    (setf (xpackage-installed pkg) t)))
+
+
+(defun install-package-by-name (pkg)
+  (DEBUG! "installing package %s..." pkg)
+  (let ((xpackage (gethash pkg all-xpackages)))
+    (when xpackage
+      (install-xpackage xpackage))))
+
+(cl-defmethod config-xfeature ((f xfeature))
+  (let ((config-fn (xfeature-config-fn f)))
     (if config-fn
 	(condition-case err
 	    (let ((result (funcall config-fn)))
 	      (DEBUG! "config xfeature %s get %s"
-		      xfeature result)
+		      f result)
 	      (unless result
-		(WARN! "configure %s failed" xfeature))
+		(WARN! "configure %s failed" f))
 	      result)
 	  (error (WARN! "configure xfeature %s error %s"
-			xfeature
-			(error-message-string err))
+			f (error-message-string err))
 		 nil))
       t)))
 
-(defun extract-xfeature-pkgs (xfeature)
-  (let ((xpkgs (xfeature-pkgs xfeature)))
+(cl-defmethod pkglist-xfeature ((f xfeature))
+  (let ((xpkgs (xfeature-pkgs f)))
     (let ((pkgs (if (functionp xpkgs)
 		    (funcall xpkgs)
 		  xpkgs)))
@@ -64,23 +78,13 @@
   (let ((feature-info (hash-table-values all-xfeatures)))
     (let ((feature-pkg-map (mapcar #'(lambda (xfeature)
 				       (cons (xfeature-name xfeature)
-					     (extract-xfeature-pkgs xfeature)))
+					     (pkglist-xfeature xfeature)))
 				   feature-info)))
       (delete-dups
        (collect-lists nil
 		      (mapcar #'(lambda (feature-name)
 				  (cdr (assoc feature-name feature-pkg-map)))
 			      activated-features))))))
-
-(defun pkglist-info (packages)
-  (DEBUG! "Get pkginfo for packages: %s" packages)
-  (cl-loop for pkg in packages
-	   collect (progn
-		     (let ((zpkg (gethash pkg all-xpackages)))
-		       (DEBUG! "pkg %s zpkg %s"
-			       pkg zpkg)
-		       (xpackage-pkg-info zpkg)))))
-		
 						      
 (defun load-module-definition (module-file)
   (load-file module-file))
