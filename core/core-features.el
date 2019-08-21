@@ -17,7 +17,6 @@
   "Key args for feature")
   
 (cl-defstruct xfeature-scope name
-	      modes
 	      xfeatures)
 
 (eval-and-compile
@@ -36,8 +35,7 @@
   (let ((xscope (gethash scope all-scope)))
     (if (not xscope)
 	(let ((xscope (make-xfeature-scope :name scope
-					   :xfeatures nil
-					   :modes nil)))
+					   :xfeatures nil)))
 	  (progn
 	    (puthash scope xscope all-scope)
 	    xscope))
