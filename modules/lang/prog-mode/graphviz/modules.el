@@ -1,10 +1,13 @@
-(scope! graphviz prog-lang )
-
 (package! graphviz
 	  "Emacs mode for the graphviz"
 	  (graphviz-dot-mode :type git
 			     :host github
 			     :repo "ppareit/graphviz-dot-mode"))
+
+(mode! graphviz-dot-mode
+       "Emacs mode to edit graphviz"
+       (graphviz)
+       'graph-dot-mode)
 
 (defun graphviz-config ()
   (progn
@@ -23,13 +26,13 @@
     (attach! graphviz graphviz-dot-mode)
     t))
 
-(defun graphviz-enable ()
-  t)
+(scope! graphviz prog-lang graphviz-config)
 
-(feature! graphviz
-	  "Emacs mode for graphviz"
-	  (graphviz)
-	  graphviz-config
-	  graphviz-enable
-	  nil)
+(defun graphviz-dot-mode-load ()
+  (require 'graphviz-dot-mode))
+
+(add-hook (scope-function 'graphviz 'hook :before)
+	  'graphviz-dot-mode-load)
+
+(attach! graphviz graphviz-dot-mode)
 

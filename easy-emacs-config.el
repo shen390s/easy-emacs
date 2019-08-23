@@ -4,11 +4,11 @@
 
 ;; Enable features
 ;;  features in global scope
+
 (enable! global
 	 ((settings java-home "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home")
 	  smex
 	  emacs-server
-	  ;;graphviz
 	  ;;eldoc
 	  ;;treemacs
 	  ;;powerline
@@ -116,3 +116,15 @@
 	  ;;format-all
 	  vmd
 	  ))
+
+(activate! global c-c++ elisp python rust graphviz poly-mode)
+(progn
+  (defun graphviz-dot-mode:entry (origin-fun &rest args)
+    (enter-scope (quote graphviz) origin-fun args))
+
+  (add-hook (quote easy-emacs-boot-done-hook)
+	    (lambda nil (when (member (quote graphviz) actived-scopes)
+			  (advice-add (quote graphviz-dot-mode)
+				      :around (function graphviz-dot-mode:entry))))))
+
+(message "deferred packages: %s" easy-emacs-deferred-packages)

@@ -7,8 +7,11 @@
 (require 'core-log)
 (require 'core-modules)
 
-(defvar all-scope (make-hash-table)
+(defvar all-scopes (make-hash-table)
   "All defined feature scope")
+
+(defvar actived-scopes nil
+  "All activated scopes")
 
 (defvar current-scope nil
   "The current scope which will be activated")
@@ -16,8 +19,11 @@
 (defvar feature-key-args '(:activate :deactivate)
   "Key args for feature")
   
-(cl-defstruct xfeature-scope name
-	      xfeatures)
+(cl-defstruct xfeature-scope
+  name  ;; Name of scope
+  modes ;; modes which have been attached
+  xfeatures ;; features which have been enabled in scope
+  )
 
 (eval-and-compile
   (defun scope-null ()
@@ -32,12 +38,13 @@
       (intern "scope-null"))))
 
 (defun get-or-create-scope (scope)
-  (let ((xscope (gethash scope all-scope)))
+  (let ((xscope (gethash scope all-scopes)))
     (if (not xscope)
 	(let ((xscope (make-xfeature-scope :name scope
-					   :xfeatures nil)))
+					   :xfeatures nil
+					   :modes nil)))
 	  (progn
-	    (puthash scope xscope all-scope)
+	    (puthash scope xscope all-scopes)
 	    xscope))
       xscope)))
 
@@ -47,6 +54,23 @@
     (setf (xfeature-scope-xfeatures xscope)
 	  (append (xfeature-scope-xfeatures xscope)
 		  (list xfeature)))))
+
+(defun attach-mode-to-scope (scope mode)
+  (DEBUG! "attach mode %s to scope %s" mode scope)
+  (let ((xscope (get-or-create-scope scope)))
+    (push (get-xmode mode) (xfeature-scope-modes xscope))))
+
+(defun xfeature-scope-mode-pkgs (scope)
+  (let ((zpkgs nil))
+    (when (fboundp 'mode-pkgs)
+      (let ((xscope (get-or-create-scope scope)))
+	(progn
+	  (cl-loop for mode in (xfeature-scope-modes xscope)
+		   do (cl-loop for pkg in (mode-pkgs mode)
+			       do (push pkg zpkgs))))))
+    (DEBUG! "mode packages for scope %s: %s"
+	    scope zpkgs)
+    (delete-dups zpkgs)))
 
 (defun filt-key-args (collected-args keys args)
   (if (null args)
@@ -132,7 +156,7 @@
 
 ;; Define a new scope
 ;; (scope! scope (hooks to be called when enter scope) (hooks to be call when leave scope))
-(defmacro scope! (scope parent)
+(defmacro scope! (scope parent &optional config-fn)
   `(progn
      (defvar ,(scope-function scope 'hook :before) nil
        "Hooks run before scope ,scope has been activated")
@@ -142,6 +166,9 @@
      
      (defvar ,(scope-function scope 'var :pkg-installed) nil
        "Var to tell us whether the packages of scope has been installed")
+
+     (defvar ,(scope-function scope 'var :config-fn) #',config-fn
+       "Var to hold scope configuration function")
      
      (defun ,(scope-function scope 'entry :install-pkgs) ()
        (unless ,(scope-function scope 'var :pkg-installed)
@@ -149,12 +176,13 @@
 		 ',scope)
 	 (,(scope-function parent 'entry :install-pkgs))
 	 (when (fboundp 'actived-packages)
-	   (let ((xscope (gethash ',scope all-scope)))
+	   (let ((xscope (gethash ',scope all-scopes)))
 	     (when xscope
 	       (cl-loop for pkg in
-			(actived-packages
-			 (mapcar #'car
-				 (xfeature-scope-xfeatures xscope)))
+			(append (xfeature-scope-mode-pkgs ',scope)
+				(actived-packages
+				 (mapcar #'car
+					 (xfeature-scope-xfeatures xscope))))
 			do (install-package-by-name pkg)))))
 	   (setf ,(scope-function scope 'var :pkg-installed) t)))
 
@@ -168,23 +196,57 @@
 
      (defun ,(scope-function scope 'entry :activate)()
        (,(scope-function parent 'entry :activate))
-       (activate-scope ',scope))))
+       (activate-scope ',scope))
+
+     (defun ,(scope-function scope 'entry :configure) ()
+       (DEBUG! "trying to configure scope %s"
+	       ',scope)
+       (when (,(scope-function parent 'entry :configure))
+	 (let ((config-fn ,(scope-function scope 'var :config-fn)))
+	   (DEBUG! "configure scope %s" ',scope)
+	   (if config-fn
+	       (funcall config-fn)
+	     t))))
+
+     (defun ,(scope-function scope 'entry :prepare) ()
+       (,(scope-function scope 'entry :install-pkgs))
+       (,(scope-function scope 'entry :configure))
+       (when (member ',scope actived-scopes)
+	 (let ((xscope (gethash ',scope all-scopes)))
+	   (when xscope
+	     (cl-loop for mode in (xfeature-scope-modes xscope)
+		      (advice-add (xmode-entry mode)
+				  :around
+				  #',(mode-function (xmode-name mode)))))))))
      
+(defmacro activate! (&rest scopes)
+  `(progn
+     (setf actived-scopes ',scopes)
+     ;; enable global and elisp scope as default
+     (unless (member 'global actived-scopes)
+       (push 'global actived-scopes))
+     (unless (member 'elisp actived-scopes)
+       (push 'elisp actived-scopes))
+     (DEBUG! "scopes to be activated: %s"
+	     actived-scopes)
+     ,@(cl-loop for scope in actived-scopes
+		collect `(,(scope-function scope 'entry :configure)))))
+
 ;; Return a list of scopes when the feature has been activated
 (defun feature-enabled (feature)
   (let ((enabled-scope
-	 (cl-loop for scope in (hash-table-keys all-scope)
+	 (cl-loop for scope in actived-scopes
 		  collect (let ((features-in-scope
 				 (mapcar #'car
 					 (xfeature-scope-xfeatures
-					  (gethash scope all-scope)))))
+					  (gethash scope all-scopes)))))
 			    (when (member feature features-in-scope)
 			      scope)))))
     (delq nil enabled-scope)))
 
 (defun activate-scope (scope)
   (let ((current-scope scope))
-    (when-bind! xscope (gethash scope all-scope)
+    (when-bind! xscope (gethash scope all-scopes)
 		(progn
 		  ;; (bind-major-map :keys ("M-m")
 		  ;; 		  :evil-keys (",")
@@ -200,7 +262,7 @@
 
 (defun deactivate-scope (scope)
   (let ((current-scope scope))
-    (when-bind! xscope (gethash scope all-scope)
+    (when-bind! xscope (gethash scope all-scopes)
 		(cl-loop for leave-fn in (mapcar #'(lambda (x)
 						     (third x))
 						 (xfeature-scope-xfeatures xscope))
@@ -217,10 +279,11 @@
 (defun actived-features ()
   (delete-dups
    (collect-lists nil
-                  (mapcar #'(lambda (xscope)
-                              (mapcar #'car
-                                      (xfeature-scope-xfeatures xscope)))
-                          (hash-table-values all-scope)))))
+                  (mapcar #'(lambda (scope)
+                              (let ((xscope (gethash scope all-scopes)))
+				(mapcar #'car
+					(xfeature-scope-xfeatures xscope))))
+                          actived-scopes))))
 
 (defun enter-scope (scope entry args)
   (install-packages-for-scope scope)
@@ -241,14 +304,10 @@
 (defmacro attach! (scope &rest modes)
   `(progn
      ,@(cl-loop for mode in modes
-		collect `(defun ,(mode-function mode) (origin-fun &rest args)
-			     (enter-scope ',scope origin-fun args)))
+		do (attach-mode-to-scope scope mode))
      ,@(cl-loop for mode in modes
-		collect `(add-hook 'easy-emacs-boot-done-hook
-				   (lambda ()
-				     (advice-add ',mode
-						 :around
-						 #',(mode-function mode)))))))
+		collect `(defun ,(mode-function mode) (origin-fun &rest args)
+			     (enter-scope ',scope origin-fun args)))))
 
 ;; create global scope
 ;;

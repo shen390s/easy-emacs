@@ -7,15 +7,34 @@
 (require 'core-log)
 (require 'core-package)
 
-(cl-defstruct xpackage name docstring pkg-info installed)
+(cl-defstruct xpackage
+  name
+  docstring
+  pkg-info
+  installed)
 
-(cl-defstruct xfeature name docstring pkgs config-fn on-fn off-fn)
+(cl-defstruct xfeature
+  name
+  docstring
+  pkgs
+  config-fn
+  on-fn
+  off-fn)
+
+(cl-defstruct xmode
+  name
+  docstring
+  pkgs
+  entry)
 
 (defvar all-xpackages (make-hash-table)
   "All defined packages")
 
 (defvar all-xfeatures (make-hash-table)
   "All defined features")
+
+(defvar all-xmodes (make-hash-table)
+  "All defined xmodes") 
 
 (defmacro package! (name docstring pkginfo)
   `(let ((xpackage (make-xpackage :name ',name
@@ -35,18 +54,40 @@
      (progn
        (puthash ',name xfeature all-xfeatures))))
 
+(defmacro mode! (name docstring pkgs entry)
+  `(let ((xmode (make-xmode :name ',name
+			    :docstring ,docstring
+			    :pkgs ',pkgs
+			    :entry ',entry)))
+     (progn
+       (puthash ',name xmode all-xmodes))))
+
 (cl-defmethod install-xpackage ((pkg xpackage))
   (unless (xpackage-installed pkg)
     (if (fboundp 'install-pkg)
 	(install-pkg (xpackage-pkg-info pkg)))
     (setf (xpackage-installed pkg) t)))
 
+(defun mode-pkgs (mode)
+  (let ((xmode (gethash mode all-xmodes)))
+    (if xmode
+	(xmode-pkgs xmode)
+      nil)))
 
 (defun install-package-by-name (pkg)
   (DEBUG! "installing package %s..." pkg)
   (let ((xpackage (gethash pkg all-xpackages)))
     (when xpackage
       (install-xpackage xpackage))))
+
+(defun get-xmode (mode)
+  (let ((xmode (gethash mode all-xmodes)))
+    (unless xmode
+      (setq xmode (make-xmode :name mode
+			      :docstring ""
+			      :pkgs nil
+			      :entry (intern (symbol-name mode)))))
+    xmode))
 
 (cl-defmethod config-xfeature ((f xfeature))
   (let ((config-fn (xfeature-config-fn f)))
