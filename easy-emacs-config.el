@@ -5,7 +5,8 @@
 ;; Enable features
 ;;  features in global scope
 (enable! global
-	 ((settings java-home "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home")
+	 ((settings java-home
+		    "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home")
 	  smex
 	  emacs-server
 	  ;;graphviz
@@ -64,6 +65,7 @@
 	  rainbow-identifiers
 	  -flymake
 	  fold-this
+	  ruler
 	  ;;origami
 	  hlinum))
 
