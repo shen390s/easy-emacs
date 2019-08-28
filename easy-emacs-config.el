@@ -42,8 +42,8 @@
 	  rust
 	  clojure
           ess
-	  polymode
-	  poly-markdown
+	  ;;polymode
+	  ;;poly-markdown
 	  poly-R
 	  poly-org
 	  ;;(markdown :activate

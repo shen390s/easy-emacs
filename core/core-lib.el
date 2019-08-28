@@ -30,6 +30,7 @@
      (pop ,lst)))
       
 (defmacro when-bind! (var exp &rest body)
+  (declare (indent defun))
   `(let ((,var ,exp))
      (when ,var
        ,@body)))
@@ -54,5 +55,22 @@
     (let ((rval zval))
       (setq zval (1+ zval))
       rval)))
+
+(eval-and-compile
+  (defun scope-null ()
+    t)
+
+  (defun scope-function (scope tag subtag)
+    (if scope
+	(intern (concat (symbol-name scope)
+			"-scope-"
+			(symbol-name tag)
+			(symbol-name subtag)))
+      (intern "scope-null"))))
+
+(eval-and-compile
+  (defun mode-function (mode)
+    (intern (concat (symbol-name mode)
+		    ":entry"))))
 
 (provide 'core-lib)

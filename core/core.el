@@ -40,7 +40,7 @@
 	file-name-handler-alist nil)
   ;; Initialize log system
   ;;
-  (log-init! INFO)
+  (log-init! DEBUG)
   (INFO! "Booting EasyEMACS..."))
 
 (add-hook 'easy-emacs-boot-done-hook
@@ -85,7 +85,7 @@
 
 (defun defer-package-install (features)
   (setf easy-emacs-deferred-packages
-	(actived-packages features))
+	(packages features))
   (schedule-package-defer-installation))
 
 (easy-emacs-boot-start)
