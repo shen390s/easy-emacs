@@ -6,8 +6,8 @@
 (defun config-flymake ()
   (progn
     ;; (advice-add 'flymake-mode
-    ;; 	      :around
-    ;;             #'trace-flymake-mode)
+    ;; 		:around
+    ;; 		#'trace-flymake-mode)
     t))
               
 (defun enable-flymake ()

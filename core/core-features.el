@@ -104,7 +104,7 @@
  
   (let ((zfeature (parse-feature feature)))
     (let ((name (plist-get zfeature :name))
-	  (disabled (plist-get zfeature :is-disabled))
+	  (disabled (plist-get zfeature :disabled))
 	  (pre-activate-action (plist-get zfeature :pre-activate-action))
 	  (post-activate-action (plist-get zfeature :post-activate-action))
 	  (pre-deactivate-action (plist-get zfeature :pre-deactivate-action))

@@ -86,6 +86,8 @@
 (defun defer-package-install (features)
   (setf easy-emacs-deferred-packages
 	(packages features))
+  (DEBUG! "Defer to install packages: %s"
+	  easy-emacs-deferred-packages)
   (schedule-package-defer-installation))
 
 (easy-emacs-boot-start)
