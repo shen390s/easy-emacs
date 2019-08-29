@@ -196,6 +196,12 @@
     res))
   
 
+(defun config-mode (m)
+  (let ((zmode (get-mode m)))
+    (if zmode
+	(Feature/configure zmode)
+      t)))
+
 (defmacro attach! (scope &rest modes)
   `(progn
      ,@(cl-loop for mode in modes
@@ -203,11 +209,12 @@
 			     (origin-fun &rest args)
 			     (enter-scope ',scope origin-fun args)))
      ,@(cl-loop for mode in modes
-		collect `(add-hook 'easy-emacs-boot-done-hook
-				   (lambda ()
-				     (advice-add ',mode
-						 :around
-						 #',(mode-function mode)))))))
+		collect `(when (config-mode ',mode)
+			   (add-hook 'easy-emacs-boot-done-hook
+				     (lambda ()
+				       (advice-add ',mode
+						   :around
+						   #',(mode-function mode))))))))
 
 ;; create global scope
 ;;

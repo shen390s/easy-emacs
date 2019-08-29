@@ -9,8 +9,6 @@
 		    "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home")
 	  smex
 	  emacs-server
-	  ;;graphviz
-	  ;;eldoc
 	  ;;treemacs
 	  ;;powerline
 	  (smart-mode-line :activate
@@ -40,18 +38,6 @@
 	  yasnippet
 	  magit
           forge
-	  rust
-	  clojure
-          ess
-	  ;;polymode
-	  ;;poly-markdown
-	  poly-R
-	  poly-org
-	  ;;(markdown :activate
-	  ;;	    (:pre ((setq markdown-command "multimarkdown"))))
-	  (plantuml :activate
-		    (:pre ((setq plantuml-jar-path
-				 "/Users/rshen/workenv/emacs/jars/plantuml.jar"))))
 	  golden-ratio
 	  (slime :activate
 		 (:pre ((setq inferior-lisp-program "/opt/pkg/bin/sbcl")
@@ -118,3 +104,5 @@
 	  ;;format-all
 	  vmd
 	  ))
+
+(attach! graphviz graphviz-mode)

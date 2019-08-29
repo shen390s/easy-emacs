@@ -88,7 +88,7 @@
   (setf (oref mode scope) scope))
 
 (defmethod Mode/active-fn ((mode Mode))
-  (lambda (args)
+  (lambda (&rest args)
     (progn
       (cl-loop for pkg in (Feature/pkglist mode)
 	       do (Package/install (get-package pkg)))
@@ -154,19 +154,22 @@
      (progn
        (puthash ',name feature all-features))))
 
-(defmacro mode! (name docstring pkgs active-fn)
-  `(let ((mode (make-instance 'Mode
-			      :name ',name
-			      :docstring ,docstring
-			      :pkgs ',pkgs
-			      :config-fn nil
-			      :scope nil
-			      :on-fn ',active-fn
-			      :off-fn nil)))
-     (progn
-       (puthash ',name mode all-modes)
-
-       (defun ,name (&rest args)
+(defmacro mode! (name docstring pkgs config-fn active-fn)
+  `(progn
+     (puthash ',name
+	      (make-instance 'Mode
+			     :name ',name
+			     :docstring ,docstring
+			     :pkgs ',pkgs
+			     :config-fn ',config-fn
+			     :scope nil
+			     :on-fn ',active-fn
+			     :off-fn nil)
+	      all-modes)
+     
+     (defun ,name (&rest args)
+       (interactive)
+       (let ((mode (get-mode ',name)))
 	 (apply (Mode/active-fn mode) args)))))
 
 (defmacro scope! (name parent)

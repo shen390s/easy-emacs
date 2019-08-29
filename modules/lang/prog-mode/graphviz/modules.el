@@ -6,22 +6,33 @@
 			     :host github
 			     :repo "ppareit/graphviz-dot-mode"))
 
-(defun graphviz-config ()
+(defun config-graphviz ()
   (progn
+    (DEBUG! "configuring graphviz mode")
     (add-to-list 'auto-mode-alist
-		 '("\\.dot\\'" . graphviz-dot-mode))
+		 '("\\.dot\\'" . graphviz-mode))
     (add-to-list 'auto-mode-alist
-		 '("\\.diag\\'" . graphviz-dot-mode))
+		 '("\\.diag\\'" . graphviz-mode))
     (add-to-list 'auto-mode-alist
-		 '("\\.gv\\'" . graphviz-dot-mode))
+		 '("\\.gv\\'" . graphviz-mode))
     (add-to-list 'auto-mode-alist
-		 '("\\.blockdiag\\'" . graphviz-dot-mode))
+		 '("\\.blockdiag\\'" . graphviz-mode))
     (add-to-list 'auto-mode-alist
-		 '("\\.nwdiag\\'" . graphviz-dot-mode))
+		 '("\\.nwdiag\\'" . graphviz-mode))
     (add-to-list 'auto-mode-alist
-		 '("\\.rackdiag\\'" . graphviz-dot-mode))
-    (attach! graphviz graphviz-dot-mode)
-    t))
+		 '("\\.rackdiag\\'" . graphviz-mode))
+ 
+  t))
+
+(defun activate-graphviz (&rest args)
+  (require 'graphviz-dot-mode)
+  (graphviz-dot-mode))
+
+(mode! graphviz-mode
+       "Emacs mode to edit graphviz files"
+       (graphviz)
+       config-graphviz
+       activate-graphviz)
 
 (defun graphviz-enable ()
   t)
