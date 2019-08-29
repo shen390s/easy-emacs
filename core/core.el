@@ -40,7 +40,7 @@
 	file-name-handler-alist nil)
   ;; Initialize log system
   ;;
-  (log-init! DEBUG)
+  (log-init! INFO)
   (INFO! "Booting EasyEMACS..."))
 
 (add-hook 'easy-emacs-boot-done-hook
