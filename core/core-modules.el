@@ -156,16 +156,17 @@
 
 (defmacro mode! (name docstring pkgs config-fn active-fn)
   `(progn
-     (puthash ',name
-	      (make-instance 'Mode
-			     :name ',name
-			     :docstring ,docstring
-			     :pkgs ',pkgs
-			     :config-fn ',config-fn
-			     :scope nil
-			     :on-fn ',active-fn
-			     :off-fn nil)
-	      all-modes)
+     (let ((zmode (make-instance 'Mode
+				 :name ',name
+				 :docstring ,docstring
+				 :pkgs ',pkgs
+				 :config-fn ',config-fn
+				 :scope nil
+				 :on-fn ',active-fn
+				 :off-fn nil)))
+       (puthash ',name zmode all-modes)
+       ;; mode is also a instance of features
+       (puthash ',name zmode all-features))
      
      (defun ,name (&rest args)
        (interactive)

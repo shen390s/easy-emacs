@@ -10,6 +10,9 @@
 (defvar feature-key-args '(:activate :deactivate)
   "Key args for feature")
   
+(defvar actived-modes nil
+  "A list of actived modes")
+
 (defun filt-key-args (collected-args keys args)
   (if (null args)
       (reverse collected-args)
@@ -176,12 +179,15 @@
 
 ;; All enabled features
 (defun actived-features ()
-  (delete-dups
-   (collect-lists nil
-                  (mapcar #'(lambda (xscope)
-                              (mapcar #'car
-                                      (oref xscope features)))
-                          (hash-table-values all-scopes)))))
+  (let ((mode-features (cl-remove-if-not (lambda (m)
+					   (get-mode m))
+					 actived-modes)))
+    (delete-dups
+     (collect-lists mode-features
+		    (mapcar #'(lambda (xscope)
+				(mapcar #'car
+					(oref xscope features)))
+			    (hash-table-values all-scopes))))))
 
 (defun enter-scope (scope entry args)
   (DEBUG! "Entering scope %s args %s"
@@ -210,6 +216,7 @@
 			     (enter-scope ',scope origin-fun args)))
      ,@(cl-loop for mode in modes
 		collect `(when (config-mode ',mode)
+			   (push ',mode actived-modes)
 			   (add-hook 'easy-emacs-boot-done-hook
 				     (lambda ()
 				       (advice-add ',mode
