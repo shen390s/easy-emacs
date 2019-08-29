@@ -105,4 +105,14 @@
 	  vmd
 	  ))
 
+(enable! plantuml ())
+
 (attach! graphviz graphviz-mode)
+(attach! rust lang/rust-mode)
+(attach! plantuml lang/plantuml-mode)
+(attach! elisp emacs-lisp-mode)
+(attach! python python-mode)
+(attach! c-c++ c-mode c++-mode)
+(attach! java java-mode)
+(attach! clojure lang/clojure-mode)
+(attach! markdown lang/markdown-mode lang/gfm-mode markdown-mode gfm-mode)

@@ -9,15 +9,16 @@
 (defun config-clojure ()
   (progn
     (add-to-list 'auto-mode-alist
-		 '("\\.clj\\'" . clojure-mode))
-    (attach! clojure clojure-mode)
+		 '("\\.clj\\'" . lang/clojure-mode))
     t))
 
-(feature! clojure
-	  "Support to edit clojure source code"
-	  (smartparen-module clojure-mode)
-	  config-clojure
-	  nil
-	  nil)
+(defun activate-clojure ()
+  (require 'clojure-mode)
+  (clojure-mode))
 
+(mode! lang/clojure-mode
+       "Emacs mode for clojure"
+       (clojure-mode)
+       config-clojure
+       activate-clojure)
 

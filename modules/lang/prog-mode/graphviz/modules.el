@@ -34,13 +34,3 @@
        config-graphviz
        activate-graphviz)
 
-(defun graphviz-enable ()
-  t)
-
-(feature! graphviz
-	  "Emacs mode for graphviz"
-	  (graphviz)
-	  graphviz-config
-	  graphviz-enable
-	  nil)
-

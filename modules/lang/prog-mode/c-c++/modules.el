@@ -31,4 +31,3 @@
 	  nil
 	  nil)
 
-(attach! c-c++ c-mode c++-mode)

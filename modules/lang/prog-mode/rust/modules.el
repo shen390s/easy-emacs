@@ -1,20 +1,23 @@
-(scope! rust prog-lang )
+(scope! rust prog-lang)
 
 (package! rust-mode
 	  "A major Emacs mode for edit Rust source code"
-	  (rust-mode :type git :host github :repo "rust-lang/rust-mode"))
+	  (rust-mode :type git
+		     :host github
+		     :repo "rust-lang/rust-mode"))
 
 (defun config-rust ()
   (add-to-list 'auto-mode-alist
-	       '("\\.rs\\'" . rust-mode))
-  (attach! rust rust-mode)
+	       '("\\.rs\\'" . lang/rust-mode))
   t)
 
-(feature! rust
-	  "Support to edit rust source code"
-	  (rust-mode)
-	  config-rust
-	  nil
-	  nil)
+(defun activate-rust (&rest args)
+  (require 'rust-mode)
+  (rust-mode))
 
+(mode! lang/rust-mode
+       "Emacs mode for rust program language"
+       (rust-mode)
+       config-rust
+       activate-rust)
 

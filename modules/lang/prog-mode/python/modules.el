@@ -7,4 +7,3 @@
 (add-hook (scope-function 'python 'hook :after)
 	  'python-after-setup)
 
-(attach! python python-mode )

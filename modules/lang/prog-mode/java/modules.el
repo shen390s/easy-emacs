@@ -2,5 +2,3 @@
 
 (scope! java prog-lang )
 
-(attach! java java-mode)
-
