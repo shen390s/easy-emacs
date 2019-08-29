@@ -116,3 +116,4 @@
 (attach! java java-mode)
 (attach! clojure lang/clojure-mode)
 (attach! markdown lang/markdown-mode lang/gfm-mode markdown-mode gfm-mode)
+;;(attach! poly-mode lang/poly-markdown-mode)

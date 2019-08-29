@@ -28,8 +28,18 @@
 (defun config-poly-markdown ()
   (progn
     (add-to-list 'auto-mode-alist '("\\.md$" . poly-markdown-mode))
-    (attach! poly-mode poly-markdown-mode)
     t))
+
+(defun activate-poly-markdown ()
+  (require 'poly-markdown-mode)
+  (poly-markdown-mode)
+  (attach! poly-mode poly-markdown-mode markdown-mode))
+
+(mode! lang/poly-markdown-mode
+       "Emacs mode for poly markdown"
+       (polymode polydown-mode markdown-mode)
+       config-poly-markdown
+       activate-poly-markdown)
 
 (feature! poly-markdown
 	  "polymode for markdown mode"
