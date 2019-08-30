@@ -22,7 +22,8 @@
   (list 'use-package
 	'(bind-map :type git
 		   :host github
-		   :repo "justbur/emacs-bind-map"))
+		   :repo "justbur/emacs-bind-map")
+	'el-patch)
   "list of packages which will be used by easy-emacs")
 
 (defvar easy-emacs-deferred-packages nil

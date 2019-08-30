@@ -25,50 +25,60 @@
 		    :host github
 		    :repo "emacsmirror/poly-R"))
 
+(defun hack-markdown ()
+    (setq auto-mode-alist (rassq-delete-all 'markdown-mode auto-mode-alist))
+    (add-to-list 'auto-mode-alist '("\\.md$" . lang/poly-markdown-mode)))
+
 (defun config-poly-markdown ()
   (progn
-    (add-to-list 'auto-mode-alist '("\\.md$" . poly-markdown-mode))
+    (INFO! "configuring poly-markdown mode ...")
+    (hack-markdown)
+    (with-eval-after-load "markdown-mode"
+      (hack-markdown))
     t))
 
 (defun activate-poly-markdown ()
-  (require 'poly-markdown-mode)
+  (require 'poly-markdown)
   (poly-markdown-mode)
   (attach! poly-mode poly-markdown-mode markdown-mode))
 
 (mode! lang/poly-markdown-mode
        "Emacs mode for poly markdown"
-       (polymode polydown-mode markdown-mode)
+       (polymode poly-markdown markdown-mode)
        config-poly-markdown
        activate-poly-markdown)
 
-(feature! poly-markdown
-	  "polymode for markdown mode"
-	  (polymode poly-markdown markdown-mode)
-	  config-poly-markdown
-	  nil 
-	  nil)
-
 (defun config-poly-R ()
   (progn
-;;    (add-to-list 'auto-mode-alist '("\\.r$" . poly-R-mode))
-    (attach! poly-mode poly-noweb+r-mode)
+    (rassq-delete-all 'r-mode auto-mode-alist)
+    (add-to-list 'auto-mode-alist '("\\.r\\'" . lang/poly-R-mode))
     t))
 
-(feature! poly-R
-	  "polymode for R"
-	  (polymode poly-R ess)
-	  config-poly-R
-	  nil 
-	  nil)
+(defun activate-poly-R ()
+  (require 'poly-R)
+  (poly-noweb+r-mode)
+  (attach! poly-mode poly-noweb+r-mode))
+
+(mode! lang/poly-R-mode
+       "Emacs mode for poly R"
+       (polymode poly-R ess)
+       config-poly-R
+       activate-poly-R)
 
 (defun config-poly-org ()
   (progn
-    (attach! poly-mode poly-org-mode)
+    (rassq-delete-all 'org-mode auto-mode-alist)
+    (add-to-list 'auto-mode-alist '("\\.org\\'" . lang/poly-org-mode))
     t))
 
-(feature! poly-org
-	  "Poly mode for org"
-	  (polymode poly-org)
-	  config-poly-org
-	  nil
-	  nil)
+(defun activate-poly-org ()
+  (require 'poly-org)
+  (poly-org-mode)
+  (attach! poly-mode poly-org-mode))
+
+(mode! lang/poly-org-mode
+       "Emacs mode for poly ORG"
+       (polymode poly-org)
+       config-poly-org
+       activate-poly-org)
+
