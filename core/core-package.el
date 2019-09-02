@@ -50,5 +50,20 @@
 	     do (install-pkg pkg))
     (run-hooks 'all-packages-ready-hook)))
 
+;; autoload-r! will enabled a function in a package
+;; which has not already been installed to be
+;; autoloaded
+(defmacro autoload-r! (fn pkgs filename &optional interactive)
+  `(defun ,fn (&rest args)
+     ,(when interactive
+	`(interactive))
+     ,@(cl-loop for pkg in pkgs
+		collect `(install-pkg ',pkg))
+     (let ((my-self (symbol-function ',fn)))
+       (fmakunbound ',fn)
+       (if (load-library ,filename)
+	   (apply ',fn args)
+	 (fset ',fn my-self)))))
+
 (provide 'core-package)
 ;;; core-package.el ends here
