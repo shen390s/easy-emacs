@@ -24,13 +24,14 @@
  
   t))
 
-(defun activate-graphviz (&rest args)
-  (require 'graphviz-dot-mode)
-  (graphviz-dot-mode))
+(autoload-r! graphviz-dot-mode
+	     (graphviz)
+	     "graphviz-dot-mode"
+	     t)
 
 (mode! graphviz-mode
        "Emacs mode to edit graphviz files"
        (graphviz)
        config-graphviz
-       activate-graphviz)
+       graphviz-dot-mode)
 

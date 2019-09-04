@@ -11,13 +11,14 @@
 	       '("\\.rs\\'" . lang/rust-mode))
   t)
 
-(defun activate-rust (&rest args)
-  (require 'rust-mode)
-  (rust-mode))
+(autoload-r! rust-mode
+	     (rust-mode)
+	     "rust-mode"
+	     t)
 
 (mode! lang/rust-mode
        "Emacs mode for rust program language"
        (rust-mode)
        config-rust
-       activate-rust)
+       rust-mode)
 

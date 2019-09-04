@@ -313,4 +313,24 @@
       (funcall pkg-install-fn))))
 
 
+(defvar remote-autoload-pkgs nil
+  "List of packages used in remote autoload")
+
+;; autoload-r! will enabled a function in a package
+;; which has not already been installed to be
+;; autoloaded
+(defmacro autoload-r! (fn pkgs filename &optional interactive)
+  `(progn
+     (defun ,fn (&rest args)
+       ,(when interactive
+	  `(interactive))
+       ,@(cl-loop for pkg in pkgs
+		  collect `(install-package-by-name ',pkg))
+       (let ((my-self (symbol-function ',fn)))
+	 (fmakunbound ',fn)
+	 (if (load-library ,filename)
+	     (apply ',fn args)
+	   (fset ',fn my-self))))
+     (setf remote-autoload-pkgs (append remote-autoload-pkgs ',pkgs))))
+
 (provide 'core-modules)

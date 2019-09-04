@@ -10,13 +10,14 @@
 		 '("\\.plantuml\\'" . lang/plantuml-mode))
     t))
 
-(defun activate-plantuml (&rest args)
-  (require 'plantuml-mode)
-  (plantuml-mode))
+(autoload-r! plantuml-mode
+	     (plantuml)
+	     "plantuml-mode"
+	     t)
 
 (mode! lang/plantuml-mode
        "Emacs mode for plantuml"
        (plantuml)
        config-plantuml
-       activate-plantuml)
+       plantuml-mode)
 

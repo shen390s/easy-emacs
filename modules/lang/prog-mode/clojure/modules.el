@@ -12,13 +12,14 @@
 		 '("\\.clj\\'" . lang/clojure-mode))
     t))
 
-(defun activate-clojure ()
-  (require 'clojure-mode)
-  (clojure-mode))
+(autoload-r! clojure-mode
+	     (clojure-mode)
+	     "clojure-mode"
+	     t)
 
 (mode! lang/clojure-mode
        "Emacs mode for clojure"
        (clojure-mode)
        config-clojure
-       activate-clojure)
+       clojure-mode)
 

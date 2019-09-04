@@ -26,8 +26,12 @@
 	       '("README\\.md\\'" . lang/gfm-mode))
   t)
 
+(autoload-r! markdown-mode
+	     (markdown-mode)
+	     "markdown-mode"
+	     t)
+
 (defun activate-markdown ()
-  (require 'markdown-mode)
   (attach! markdown markdown-mode)
   (markdown-mode))
 
@@ -37,8 +41,12 @@
        config-markdown
        activate-markdown)
 
+(autoload-r! gfm-mode
+	     (markdown-mode)
+	     "markdown-mode"
+	     t)
+
 (defun activate-gfm ()
-  (require 'markdown-mode)
   (attach! markdown gfm-mode)
   (gfm-mode))
 
