@@ -47,11 +47,17 @@
 
 (defmacro log! (lvl fmt &rest args)
   `(let ((zel (alist-get ',lvl log-levels)))
-     (when (<= zel log-level)
-      (let ((msg (format ,(concat "%s  %s  " fmt)
-			 (format-time-string log-time-fmt (current-time))
-			 ',lvl ,@args)))
-	(log-msg ',lvl msg)))))
+     (when zel
+       (when (<= zel log-level)
+	 (let ((msg (format ,(concat "%s  %s  " fmt)
+			    (format-time-string log-time-fmt (current-time))
+			    ',lvl ,@args)))
+	   (log-msg ',lvl msg))))))
+
+(defmacro set-level! (lvl)
+  `(let ((zel (alist-get ',lvl log-levels)))
+     (when zel
+       (setf log-level zel))))
 
 (eval-and-compile
   (log-levels! EMERG ERR WARN INFO DEBUG DEBUG2 DEBUG3))
