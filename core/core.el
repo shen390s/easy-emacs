@@ -86,8 +86,8 @@
 
 (defun defer-package-install (features)
   (setf easy-emacs-deferred-packages
-	(append (packages features)
-		remote-autoload-pkgs))
+	(delete-dups (append (packages features)
+			     remote-autoload-pkgs)))
   (DEBUG! "Defer to install packages: %s"
 	  easy-emacs-deferred-packages)
   (schedule-package-defer-installation))

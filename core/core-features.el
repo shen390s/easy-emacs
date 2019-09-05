@@ -13,6 +13,9 @@
 (defvar actived-modes nil
   "A list of actived modes")
 
+(defvar mode-scope-alist nil
+  "assoc list of mode and scope")
+
 (defun filt-key-args (collected-args keys args)
   (if (null args)
       (reverse collected-args)
@@ -211,6 +214,9 @@
 (defmacro attach! (scope &rest modes)
   `(progn
      ,@(cl-loop for mode in modes
+		collect `(setf mode-scope-alist
+			       (plist-put mode-scope-alist ',mode ',scope)))
+     ,@(cl-loop for mode in modes
 		collect `(defun ,(mode-function mode)
 			     (origin-fun &rest args)
 			     (enter-scope ',scope origin-fun args)))
@@ -222,6 +228,9 @@
 				       (advice-add ',mode
 						   :around
 						   #',(mode-function mode))))))))
+
+(defun mode-scope (mode)
+  (plist-get mode-scope-alist mode))
 
 ;; create global scope
 ;;

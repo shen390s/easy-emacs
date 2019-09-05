@@ -32,8 +32,8 @@
 	     t)
 
 (defun activate-markdown ()
-  (attach! markdown markdown-mode)
-  (markdown-mode))
+  (markdown-mode)
+  (attach! markdown markdown-mode))
 
 (mode! lang/markdown-mode
        "Emacs mode for markdown"
@@ -47,8 +47,8 @@
 	     t)
 
 (defun activate-gfm ()
-  (attach! markdown gfm-mode)
-  (gfm-mode))
+  (gfm-mode)
+  (attach! markdown gfm-mode))
 
 (mode! lang/gfm-mode
        "README.md"
