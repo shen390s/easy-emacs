@@ -50,7 +50,8 @@
 	  rainbow-delimiters
 	  rainbow-identifiers
 	  -flymake
-	  fold-this
+	  ;;fold-this
+	  vimish-fold
 	  ruler
 	  ;;origami
 	  hlinum))

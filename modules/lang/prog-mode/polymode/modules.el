@@ -37,9 +37,14 @@
       (hack-markdown))
     t))
 
+(autoload-r! poly-markdown-mode
+	     (polymode poly-markdown markdown-mode)
+	     "poly-markdown"
+	     t)
+
 (defun activate-poly-markdown ()
-  (require 'poly-markdown)
   (poly-markdown-mode)
+  (hack-markdown)
   (attach! poly-mode poly-markdown-mode markdown-mode))
 
 (mode! lang/poly-markdown-mode
@@ -54,8 +59,12 @@
     (add-to-list 'auto-mode-alist '("\\.r\\'" . lang/poly-R-mode))
     t))
 
+(autoload-r! poly-noweb+r-mode
+	     (polymode poly-R ess)
+	     "poly-R"
+	     t)
+
 (defun activate-poly-R ()
-  (require 'poly-R)
   (poly-noweb+r-mode)
   (attach! poly-mode poly-noweb+r-mode))
 
@@ -71,8 +80,12 @@
     (add-to-list 'auto-mode-alist '("\\.org\\'" . lang/poly-org-mode))
     t))
 
+(autoload-r! poly-org-mode
+	     (polymode poly-org)
+	     "poly-org"
+	     t)
+
 (defun activate-poly-org ()
-  (require 'poly-org)
   (poly-org-mode)
   (attach! poly-mode poly-org-mode))
 
