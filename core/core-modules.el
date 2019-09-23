@@ -152,7 +152,10 @@
 				 :on-fn ',on-fn
 				 :off-fn ',off-fn)))
      (progn
-       (puthash ',name feature all-features))))
+       (puthash ',name feature all-features)
+       (set (intern (concat (symbol-name ',name)
+			    "-actived"))
+	    nil))))
 
 (defmacro mode! (name docstring pkgs config-fn active-fn)
   `(progn
@@ -170,6 +173,8 @@
      
      (defun ,name (&rest args)
        (interactive)
+       (DEBUG! "activate mode %s"
+	       ',name)
        (let ((mode (get-mode ',name)))
 	 (apply (Mode/active-fn mode) args)))))
 
@@ -278,8 +283,8 @@
 	     do (load-module-definition module-file))))
 
 (defun activate-scope (scope)
-  (DEBUG! "activing scope %s"
-	  scope)
+  (DEBUG! "activing scope %s for buffer %s"
+	  scope (buffer-name))
   (let ((current-scope scope))
     (when-bind! xscope (get-scope scope)
       (progn

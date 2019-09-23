@@ -121,7 +121,9 @@
 	    (fn-activate (scope-function scope  name
 					 :activate))
 	    (fn-deactivate (scope-function scope name
-					   :deactivate)))
+					   :deactivate))
+	    (var-activate (intern (concat (symbol-name name)
+					  "-actived"))))
 	(when-bind! xfeature (get-feature name)
 		    (if disabled
 			`(progn
@@ -133,15 +135,25 @@
 				     ',fn-deactive1))
 		      `(progn
 			 (defun ,fn-activate ()
-			   ,(mk-action pre-activate-action
-				       (oref xfeature on-fn)
-				       post-activate-action
-				       args))
+			   (unless ,var-activate
+			     (DEBUG! "activate %s"
+				     ',name)
+			     ,(mk-action pre-activate-action
+					 (oref xfeature on-fn)
+					 post-activate-action
+					 args)
+			     (make-local-variable  ',var-activate)
+			     (setq ,var-activate t)))
+
 			 (defun ,fn-deactivate ()
-			   ,(mk-action pre-deactivate-action
-				       (oref xfeature off-fn)
-				       post-deactivate-action
-				       nil))
+			   (when ,var-activate
+			     (DEBUG! "de-activate %s"
+				     ',name)
+			     ,(mk-action pre-deactivate-action
+					 (oref xfeature off-fn)
+					 post-deactivate-action
+					 nil)
+			     (setq ,var-activate nil)))
 
 			 (add-feature-to-scope ',scope
 					       (list ',name
@@ -219,9 +231,14 @@
      ,@(cl-loop for mode in modes
 		collect `(defun ,(mode-function mode)
 			     (origin-fun &rest args)
+                             (DEBUG! "active mode %s entry %s origin %s"
+                                     ',mode ',(mode-function mode)
+                                     origin-fun)
 			     (enter-scope ',scope origin-fun args)))
      ,@(cl-loop for mode in modes
 		collect `(when (config-mode ',mode)
+			   (DEBUG! "hook mode %s using %s"
+				   ',mode ',(mode-function mode))
 			   (push ',mode actived-modes)
 			   (add-hook 'easy-emacs-boot-done-hook
 				     (lambda ()

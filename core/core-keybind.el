@@ -15,7 +15,7 @@
 	       ,@args)))
 
 (defmacro define-key-in-major-map (&rest args)
-  `(easy-emacs/define-key (current-local-map)
+  `(easy-emacs/define-key (evil-normal-state-local-map)
 			  ,@args))
 
 (provide 'core-keybind)
