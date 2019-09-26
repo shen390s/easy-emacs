@@ -39,6 +39,7 @@
 	  magit
           forge
 	  golden-ratio
+	  icicles
 	  (slime :activate
 		 (:pre ((setq inferior-lisp-program "/opt/pkg/bin/sbcl")
 			(setq slime-contribs '(slime-fancy)))))))
@@ -47,6 +48,7 @@
 (enable! prog-lang
 	 (smartparens
 	  which-func
+	  gxref
 	  rainbow-delimiters
 	  rainbow-identifiers
 	  -flymake
