@@ -56,6 +56,7 @@
 	  vimish-fold
 	  ruler
 	  ;;origami
+	  auto-fill
 	  hlinum))
 
 ;; features in c/c++
@@ -120,3 +121,4 @@
 (attach! clojure lang/clojure-mode)
 ;;(attach! markdown lang/markdown-mode lang/gfm-mode markdown-mode gfm-mode)
 (attach! poly-mode lang/poly-markdown-mode lang/poly-R-mode lang/poly-org-mode)
+(attach! racket lang/racket-mode)
