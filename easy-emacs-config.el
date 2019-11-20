@@ -122,3 +122,4 @@
 ;;(attach! markdown lang/markdown-mode lang/gfm-mode markdown-mode gfm-mode)
 (attach! poly-mode lang/poly-markdown-mode lang/poly-R-mode lang/poly-org-mode)
 (attach! racket lang/racket-mode)
+(attach! racket lang/pollen-mode)
