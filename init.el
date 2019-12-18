@@ -5,13 +5,13 @@
 (defvar easy-emacs-dir (file-truename user-emacs-directory)
   "Directory for easy-emacs")
 
-(defvar easy-emacs-core-dir (concat easy-emacs-dir "core")
+(defvar easy-emacs-core-dir (concat easy-emacs-dir "/core")
   "Directory of easy-emacs core components")
 
-(defvar easy-emacs-modules-dir (concat easy-emacs-dir "modules")
+(defvar easy-emacs-modules-dir (concat easy-emacs-dir "/modules")
   "Directory of easy-emacs modules")
 
-(defvar easy-emacs-etc-dir (concat easy-emacs-dir ".local/etc/")
+(defvar easy-emacs-etc-dir (concat easy-emacs-dir "/.local/etc/")
   "Directory of customized easy-emacs settings")
 
 (push easy-emacs-core-dir load-path)
@@ -23,8 +23,8 @@
 (easy-emacs-bootstrap-core)
 
 (easy-emacs-bootstrap easy-emacs-modules-dir
-		      (concat user-emacs-directory
-			      "easy-emacs-config.el"))
+		      (concat easy-emacs-config-dir
+			      "/easy-emacs-config.el"))
 ;; Enter global scope
 (enter-global)
 
