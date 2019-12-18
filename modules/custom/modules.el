@@ -4,6 +4,7 @@
 (defun enable-load-custom ()
   (custom-set-variables
    '(lsp-prefer-flymake nil))
+  (INFO! "Loading custom file %s" custom-file)
   (load custom-file t t))
 
 (feature! load-custom
