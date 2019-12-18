@@ -18,7 +18,7 @@
   (let ((easy-emacs-data (getenv "EASYEMACSDATA")))
     (if easy-emacs-data
         easy-emacs-data
-      (concat easy-emacs-dir ".local/etc/")))
+      (concat easy-emacs-dir "/.local")))
   "Directory of customized easy-emacs settings")
 
 (setq custom-file (concat easy-emacs-config-dir "/custom.el"))
@@ -37,10 +37,6 @@
     (easy-emacs-bootstrap-core)
     (easy-emacs-bootstrap easy-emacs-modules-dir
                           easy-emacs-config-file)))
-
-(easy-emacs-bootstrap easy-emacs-modules-dir
-		      (concat easy-emacs-config-dir
-			      "/easy-emacs-config.el"))
 
 ;; Enter global scope
 (enter-global)
