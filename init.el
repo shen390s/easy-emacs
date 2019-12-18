@@ -11,8 +11,17 @@
 (defvar easy-emacs-modules-dir (concat easy-emacs-dir "modules")
   "Directory of easy-emacs modules")
 
-(defvar easy-emacs-etc-dir (concat easy-emacs-dir ".local/etc/")
+(defvar easy-emacs-config "easy-emacs-config.el"
+  "Configuration filename(without directory part) for easy-emacs")
+
+(defvar easy-emacs-config-dir
+  (let ((easy-emacs-data (getenv "EASYEMACSDATA")))
+    (if easy-emacs-data
+        easy-emacs-data
+      (concat easy-emacs-dir ".local/etc/")))
   "Directory of customized easy-emacs settings")
+
+(setq custom-file (concat easy-emacs-config-dir "/custom.el"))
 
 (push easy-emacs-core-dir load-path)
 
@@ -20,11 +29,15 @@
 
 (require 'core)
 
-(easy-emacs-bootstrap-core)
+(let ((easy-emacs-config-file (concat easy-emacs-config-dir "/" easy-emacs-config)))
+  (progn
+    (unless (file-exists-p easy-emacs-config-file)
+      (copy-file (concat easy-emacs-dir "/" easy-emacs-config)
+                 easy-emacs-config-file))
+    (easy-emacs-bootstrap-core)
+    (easy-emacs-bootstrap easy-emacs-modules-dir
+                          easy-emacs-config-file)))
 
-(easy-emacs-bootstrap easy-emacs-modules-dir
-		      (concat user-emacs-directory
-			      "easy-emacs-config.el"))
 ;; Enter global scope
 (enter-global)
 

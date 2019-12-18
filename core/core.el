@@ -8,8 +8,8 @@
 (require 'core-features)
 (require 'core-modules)
 
-(unless (file-exists-p easy-emacs-etc-dir)
-  (make-directory easy-emacs-etc-dir t))
+(unless (file-exists-p easy-emacs-config-dir)
+  (make-directory easy-emacs-config-dir t))
 
 (defvar easy-emacs-file-name-handler-alist file-name-handler-alist)
 
@@ -56,8 +56,6 @@
     (run-hooks 'easy-emacs-boot-done-hook))
   (INFO! "EasyEMACS boot OK"))
 
-
-(setq custom-file (concat easy-emacs-etc-dir "custom.el"))
 
 (defun easy-emacs-bootstrap-core ()
   (bootstrap-package "straight")
