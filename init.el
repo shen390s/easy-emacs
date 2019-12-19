@@ -21,7 +21,10 @@
       (concat easy-emacs-dir "/.local")))
   "Directory of customized easy-emacs settings")
 
-(setq custom-file (concat easy-emacs-config-dir "/custom.el"))
+(defalias 'dynamic-setting-handle-config-changed-event 'ignore)
+
+(unless custom-file
+   (setq custom-file (concat easy-emacs-config-dir "/custom.el")))
 
 (push easy-emacs-core-dir load-path)
 
