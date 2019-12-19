@@ -286,20 +286,23 @@
   (DEBUG! "activing scope %s for buffer %s"
 	  scope (buffer-name))
   (let ((current-scope scope))
-    (when-bind! xscope (get-scope scope)
-      (progn
-	(DEBUG2! "xscope %s" (Object/to-string xscope))
-	(cl-loop for active-fn in (mapcar #'(lambda (x)
-					      (second x))
-					  (oref xscope features))
-		 do (progn
-		      (DEBUG! "active-fn %s"
-			      active-fn)
-		      (when active-fn
-			(condition-case err
-			    (funcall active-fn)
-			  (error (WARN! "%s"
-					(error-message-string err)))))))))))
+    (unless (boundp 'buffer-activate-scope)
+      (set (make-local-variable 'buffer-activate-scope) nil))
+    (unless (string= buffer-activated-scope scope)
+      (when-bind! xscope (get-scope scope)
+	(progn
+	  (DEBUG2! "xscope %s" (Object/to-string xscope))
+	  (cl-loop for active-fn in (mapcar #'(lambda (x)
+						(second x))
+					    (oref xscope features))
+		   do (progn
+			(DEBUG! "active-fn %s"
+				active-fn)
+			(when active-fn
+			  (condition-case err
+			      (funcall active-fn)
+			    (error (WARN! "%s"
+					  (error-message-string err))))))))))))
 
 (defun deactivate-scope (scope)
   (let ((current-scope scope))

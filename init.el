@@ -1,6 +1,10 @@
-;; -*- lexical-binding: t; -*-
-;; Configuration file
-;; for easy-emacs
+;;; init.el --- init file for easy-emacs  -*- lexical-binding: t; -*-
+;;  Author: Rongsong  Shen <rshen@shenrs.eu>
+;;
+;;; Commentary:
+;;
+;; Configuration file for easy-emacs
+;;
 
 (defvar easy-emacs-dir (file-truename user-emacs-directory)
   "Directory for easy-emacs")
