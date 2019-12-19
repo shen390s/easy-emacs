@@ -2,8 +2,6 @@
   t)
 
 (defun enable-load-custom ()
-  (custom-set-variables
-   '(lsp-prefer-flymake nil))
   (load custom-file t t))
 
 (feature! load-custom
