@@ -6,7 +6,11 @@
 ;; Configuration file for easy-emacs
 ;;
 
-(defvar easy-emacs-dir (file-truename user-emacs-directory)
+(defvar easy-emacs-dir
+  (let ((dir (getenv "EASYEMACSDIR")))
+    (if dir
+	dir
+      (file-truename user-emacs-directory)))
   "Directory for easy-emacs")
 
 (defvar easy-emacs-core-dir (concat easy-emacs-dir "/core")
