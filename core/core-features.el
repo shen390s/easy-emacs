@@ -204,16 +204,28 @@
 					(oref xscope features)))
 			    (hash-table-values all-scopes))))))
 
+(defun enter-scope-prepare (scope)
+  (DEBUG! "Prepare to enter scope %s mode %s"
+	  scope major-mode)
+  (when scope
+    (install-packages-for-scope scope)
+    (funcall (scope-function scope 'entry :pre-activate))))
+
+(defun enter-scope-final (scope)
+  (DEBUG! "Activate scope %s mode %s"
+	  scope major-mode)
+  (when scope
+    (funcall (scope-function scope 'entry :activate))
+    (funcall (scope-function scope 'entry :post-activate))))
+
 (defun enter-scope (scope entry args)
   (DEBUG! "Entering scope %s args %s"
 	  scope args)
-  (install-packages-for-scope scope)
-  (funcall (scope-function scope 'entry :pre-activate))
+  (enter-scope-prepare scope)
   (let ((res (if entry
 		 (apply entry args)
 	       t)))
-    (funcall (scope-function scope 'entry :activate))
-    (funcall (scope-function scope 'entry :post-activate))
+    (enter-scope-final scope)
     res))
   
 
@@ -227,31 +239,35 @@
   `(progn
      ,@(cl-loop for mode in modes
 		collect `(setf mode-scope-alist
-			       (plist-put mode-scope-alist ',mode ',scope)))
-     ,@(cl-loop for mode in modes
-		collect `(defun ,(mode-function mode)
-			     (origin-fun &rest args)
-                             (DEBUG! "active mode %s entry %s origin %s"
-                                     ',mode ',(mode-function mode)
-                                     origin-fun)
-			     (enter-scope ',scope origin-fun args)))
-     ,@(cl-loop for mode in modes
-		collect `(when (config-mode ',mode)
-			   (DEBUG! "hook mode %s using %s"
-				   ',mode ',(mode-function mode))
-			   (push ',mode actived-modes)
-			   (add-hook 'easy-emacs-boot-done-hook
-				     (lambda ()
-				       (advice-add ',mode
-						   :around
-						   #',(mode-function mode))))))))
+			       (plist-put mode-scope-alist ',mode ',scope)))))
 
 (defun mode-scope (mode)
   (plist-get mode-scope-alist mode))
 
 ;; create global scope
 ;;
+
+(defun prepare-scope ()
+  (let ((scope (mode-scope major-mode)))
+    (enter-scope-prepare scope)))
+
+(defun turn-on-scope ()
+  (let ((scope (mode-scope major-mode)))
+    (enter-scope-final scope)))
+
+(defun turn-off-scope ()
+  (let ((scope (mode-scope major-mode)))
+    (DEBUG! "Leaving scope %s mode %s"
+	    scope major-mode)
+    (deactivate-scope scope)))
+
 (defun global-scope ()
+  (add-hook 'change-major-mode-after-body-hook
+	    #'prepare-scope)
+  (add-hook 'after-change-major-mode-hook
+	    #'turn-on-scope)
+  (add-hook 'change-major-mode-hook
+	    #'turn-off-scope)
   t)
 
 (scope! global nil)
