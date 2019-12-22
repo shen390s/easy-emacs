@@ -238,10 +238,11 @@
 (defmacro attach! (scope &rest modes)
   `(progn
      ,@(cl-loop for mode in modes
-		collect `(setf mode-scope-alist
+		collect `(when (config-mode ',mode)
+			   (setf mode-scope-alist
 			       (plist-put mode-scope-alist
 					  ',(local-or-rmode-name mode)
-					  ',scope)))))
+					  ',scope))))))
 
 (defun mode-scope (mode)
   (plist-get mode-scope-alist mode))
