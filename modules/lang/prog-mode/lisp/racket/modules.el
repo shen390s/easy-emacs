@@ -24,11 +24,11 @@
 	     "racket-mode"
 	     t)
 
-(mode! lang/racket-mode
-       "Emacs mode for racket edit and REPL"
-       (racket-mode)
-       config-racket
-       racket-mode)
+(rmode! lang/racket-mode
+	"Emacs mode for racket edit and REPL"
+	(racket-mode)
+	config-racket
+	racket-mode)
 
 (autoload-r! pollen-mode
 	     (pollen-mode)
@@ -47,8 +47,8 @@
 		 '("\\.pp\\'" . lang/pollen-mode))
     t))
 
-(mode! lang/pollen-mode
-       "Emacs mode for editing pollen markup language"
-       (pollen-mode)
-       config-pollen
-       pollen-mode)
+(rmode! lang/pollen-mode
+	"Emacs mode for editing pollen markup language"
+	(pollen-mode)
+	config-pollen
+	pollen-mode)

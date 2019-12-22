@@ -16,9 +16,9 @@
 	     "rust-mode"
 	     t)
 
-(mode! lang/rust-mode
-       "Emacs mode for rust program language"
-       (rust-mode)
-       config-rust
-       rust-mode)
+(rmode! lang/rust-mode
+	"Emacs mode for rust program language"
+	(rust-mode)
+	config-rust
+	rust-mode)
 

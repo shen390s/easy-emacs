@@ -15,9 +15,9 @@
 	     "plantuml-mode"
 	     t)
 
-(mode! lang/plantuml-mode
-       "Emacs mode for plantuml"
-       (plantuml)
-       config-plantuml
-       plantuml-mode)
+(rmode! lang/plantuml-mode
+	"Emacs mode for plantuml"
+	(plantuml)
+	config-plantuml
+	plantuml-mode)
 

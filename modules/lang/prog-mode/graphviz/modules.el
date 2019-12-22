@@ -29,9 +29,9 @@
 	     "graphviz-dot-mode"
 	     t)
 
-(mode! graphviz-mode
-       "Emacs mode to edit graphviz files"
-       (graphviz)
-       config-graphviz
-       graphviz-dot-mode)
+(rmode! graphviz-mode
+	"Emacs mode to edit graphviz files"
+	(graphviz)
+	config-graphviz
+	graphviz-dot-mode)
 

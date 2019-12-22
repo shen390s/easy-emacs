@@ -239,7 +239,9 @@
   `(progn
      ,@(cl-loop for mode in modes
 		collect `(setf mode-scope-alist
-			       (plist-put mode-scope-alist ',mode ',scope)))))
+			       (plist-put mode-scope-alist
+					  ',(local-or-rmode-name mode)
+					  ',scope)))))
 
 (defun mode-scope (mode)
   (plist-get mode-scope-alist mode))

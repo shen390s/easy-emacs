@@ -338,4 +338,18 @@
 	   (fset ',fn my-self))))
      (setf remote-autoload-pkgs (append remote-autoload-pkgs ',pkgs))))
 
+(defvar rmodes-alist nil
+  "remote/local mode alist")
+
+(defmacro rmode! (name docstring pkgs config-fn lmode)
+  `(progn
+     (mode! ,name ,docstring ,pkgs ,config-fn ,lmode)
+     (setf rmodes-alist (plist-put rmodes-alist ',name ',lmode))))
+
+(defun local-or-rmode-name (mode)
+  (let ((m (plist-get rmodes-alist mode)))
+    (if m
+	m
+      mode)))
+
 (provide 'core-modules)

@@ -17,9 +17,9 @@
 	     "clojure-mode"
 	     t)
 
-(mode! lang/clojure-mode
-       "Emacs mode for clojure"
-       (clojure-mode)
-       config-clojure
-       clojure-mode)
+(rmode! lang/clojure-mode
+	"Emacs mode for clojure"
+	(clojure-mode)
+	config-clojure
+	clojure-mode)
 

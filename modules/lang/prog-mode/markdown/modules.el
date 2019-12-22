@@ -35,11 +35,11 @@
   (attach! markdown markdown-mode)
   (markdown-mode))
 
-(mode! lang/markdown-mode
-       "Emacs mode for markdown"
-       (markdown-mode)
-       config-markdown
-       activate-markdown)
+(rmode! lang/markdown-mode
+	"Emacs mode for markdown"
+	(markdown-mode)
+	config-markdown
+	activate-markdown)
 
 (autoload-r! gfm-mode
 	     (markdown-mode)
@@ -50,11 +50,11 @@
   (attach! markdown gfm-mode)
   (gfm-mode))
 
-(mode! lang/gfm-mode
-       "README.md"
-       (markdown-mode)
-       config-markdown
-       activate-gfm)
+(rmode! lang/gfm-mode
+	"README.md"
+	(markdown-mode)
+	config-markdown
+	activate-gfm)
 
 (defun enable-vmd ()
   (vmd-mode))

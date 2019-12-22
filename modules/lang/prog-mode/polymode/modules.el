@@ -47,11 +47,11 @@
   (hack-markdown)
   (attach! poly-mode poly-markdown-mode markdown-mode))
 
-(mode! lang/poly-markdown-mode
-       "Emacs mode for poly markdown"
-       (polymode poly-markdown markdown-mode)
-       config-poly-markdown
-       activate-poly-markdown)
+(rmode! lang/poly-markdown-mode
+	"Emacs mode for poly markdown"
+	(polymode poly-markdown markdown-mode)
+	config-poly-markdown
+	activate-poly-markdown)
 
 (defun config-poly-R ()
   (progn
@@ -68,11 +68,11 @@
   (poly-noweb+r-mode)
   (attach! poly-mode poly-noweb+r-mode))
 
-(mode! lang/poly-R-mode
-       "Emacs mode for poly R"
-       (polymode poly-R ess)
-       config-poly-R
-       activate-poly-R)
+(rmode! lang/poly-R-mode
+	"Emacs mode for poly R"
+	(polymode poly-R ess)
+	config-poly-R
+	activate-poly-R)
 
 (defun config-poly-org ()
   (progn
@@ -89,9 +89,9 @@
   (poly-org-mode)
   (attach! poly-mode poly-org-mode))
 
-(mode! lang/poly-org-mode
-       "Emacs mode for poly ORG"
-       (polymode poly-org)
-       config-poly-org
-       activate-poly-org)
+(rmode! lang/poly-org-mode
+	"Emacs mode for poly ORG"
+	(polymode poly-org)
+	config-poly-org
+	activate-poly-org)
 
