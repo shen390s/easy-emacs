@@ -31,30 +31,22 @@
 	     "markdown-mode"
 	     t)
 
-(defun activate-markdown ()
-  (attach! markdown markdown-mode)
-  (markdown-mode))
-
 (rmode! lang/markdown-mode
 	"Emacs mode for markdown"
 	(markdown-mode)
 	config-markdown
-	activate-markdown)
+	markdown-mode)
 
 (autoload-r! gfm-mode
 	     (markdown-mode)
 	     "markdown-mode"
 	     t)
 
-(defun activate-gfm ()
-  (attach! markdown gfm-mode)
-  (gfm-mode))
-
 (rmode! lang/gfm-mode
 	"README.md"
 	(markdown-mode)
 	config-markdown
-	activate-gfm)
+	gfm-mode)
 
 (defun enable-vmd ()
   (vmd-mode))

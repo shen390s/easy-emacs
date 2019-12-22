@@ -25,16 +25,9 @@
 		    :host github
 		    :repo "emacsmirror/poly-R"))
 
-(defun hack-markdown ()
-    (setq auto-mode-alist (rassq-delete-all 'markdown-mode auto-mode-alist))
-    (add-to-list 'auto-mode-alist '("\\.md$" . lang/poly-markdown-mode)))
-
 (defun config-poly-markdown ()
   (progn
     (INFO! "configuring poly-markdown mode ...")
-    (hack-markdown)
-    (with-eval-after-load "markdown-mode"
-      (hack-markdown))
     t))
 
 (autoload-r! poly-markdown-mode
@@ -42,16 +35,11 @@
 	     "poly-markdown"
 	     t)
 
-(defun activate-poly-markdown ()
-  (poly-markdown-mode)
-  (hack-markdown)
-  (attach! poly-mode poly-markdown-mode markdown-mode))
-
 (rmode! lang/poly-markdown-mode
 	"Emacs mode for poly markdown"
 	(polymode poly-markdown markdown-mode)
 	config-poly-markdown
-	activate-poly-markdown)
+	poly-markdown-mode)
 
 (defun config-poly-R ()
   (progn
@@ -64,15 +52,11 @@
 	     "poly-R"
 	     t)
 
-(defun activate-poly-R ()
-  (poly-noweb+r-mode)
-  (attach! poly-mode poly-noweb+r-mode))
-
 (rmode! lang/poly-R-mode
 	"Emacs mode for poly R"
 	(polymode poly-R ess)
 	config-poly-R
-	activate-poly-R)
+	poly-noweb+r-mode)
 
 (defun config-poly-org ()
   (progn
@@ -85,13 +69,9 @@
 	     "poly-org"
 	     t)
 
-(defun activate-poly-org ()
-  (poly-org-mode)
-  (attach! poly-mode poly-org-mode))
-
 (rmode! lang/poly-org-mode
 	"Emacs mode for poly ORG"
 	(polymode poly-org)
 	config-poly-org
-	activate-poly-org)
+	poly-org-mode)
 
