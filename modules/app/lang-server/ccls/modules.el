@@ -14,8 +14,8 @@
 (defun config-ccls ()
   (if (conflict-features current-scope 'cquery)
       (progn
-	(message "C/C++ language server `cquery' has already been enabled in scope %s `ccls' language server will be disabled"
-		 current-scope)
+	(INFO! "C/C++ language server `cquery' has already been enabled in scope %s `ccls' language server will be disabled"
+	       current-scope)
 	  nil)
     (progn
       (config-lang-client-ccls)

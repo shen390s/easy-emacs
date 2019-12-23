@@ -28,6 +28,8 @@
 (defun config-poly-markdown ()
   (progn
     (INFO! "configuring poly-markdown mode ...")
+    (add-to-list 'auto-mode-alist
+		 '("\\.md\\'" . lang/poly-markdown-mode))
     t))
 
 (autoload-r! poly-markdown-mode
@@ -43,7 +45,6 @@
 
 (defun config-poly-R ()
   (progn
-    (rassq-delete-all 'r-mode auto-mode-alist)
     (add-to-list 'auto-mode-alist '("\\.r\\'" . lang/poly-R-mode))
     t))
 
@@ -60,7 +61,6 @@
 
 (defun config-poly-org ()
   (progn
-    (rassq-delete-all 'org-mode auto-mode-alist)
     (add-to-list 'auto-mode-alist '("\\.org\\'" . lang/poly-org-mode))
     t))
 
