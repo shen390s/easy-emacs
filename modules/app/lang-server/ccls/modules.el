@@ -4,9 +4,6 @@
 		      :host github
 		      :repo "MaskRay/emacs-ccls"))
 
-(defvar ccls-program nil
-  "executable binary of ccls")
-
 (defun config-lang-client-ccls ()
   (when (eq (lang-server-client) 'eglot)
     (with-eval-after-load "eglot"
@@ -40,10 +37,6 @@
 
 (defun ccls-on ()
   (require 'ccls)
-  ;; customize ccls
-  (when ccls-program
-    (setq ccls-executable ccls-program))
-
   (cond
    ((eq (lang-server-client) 'eglot) (ccls/eglot-on))
    (t (ccls/lsp-on))))
