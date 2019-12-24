@@ -1,7 +1,8 @@
-(package!
- powerline
- "Emacs version of the VIM powerline"
- (powerline :type git :host github :repo "milkypostman/powerline"))
+(package! :name powerline
+	  :docstring "Emacs version of the VIM powerline"
+	  :pkginfo (powerline :type git
+			      :host github
+			      :repo "milkypostman/powerline"))
 
 (defun enable-powerline ()
   (require 'powerline)

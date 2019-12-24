@@ -1,8 +1,8 @@
-(package! emacs-cquery
-	  "Use cquery as c/c++ language server"
-	  (emacs-cquery :type git
-			:host github
-			:repo "cquery-project/emacs-cquery"))
+(package! :name emacs-cquery
+	  :docstring "Use cquery as c/c++ language server"
+	  :pkginfo (emacs-cquery :type git
+				 :host github
+				 :repo "cquery-project/emacs-cquery"))
 
 (defun config-lang-client-cquery ()
   (when (eq (lang-server-client) 'eglot)

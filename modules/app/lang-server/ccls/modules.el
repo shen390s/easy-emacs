@@ -1,8 +1,8 @@
-(package! emacs-ccls
-	  "Use ccls as c/c++ language server"
-	  (emacs-ccls :type git
-		      :host github
-		      :repo "MaskRay/emacs-ccls"))
+(package! :name emacs-ccls
+	  :docstring "Use ccls as c/c++ language server"
+	  :pkginfo (emacs-ccls :type git
+			       :host github
+			       :repo "MaskRay/emacs-ccls"))
 
 (defun config-lang-client-ccls ()
   (when (eq (lang-server-client) 'eglot)

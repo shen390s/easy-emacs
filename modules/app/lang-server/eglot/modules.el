@@ -1,8 +1,8 @@
-(package! eglot
-	  "A client for Language Server Protocol servers "
-	  (eglot :type git
-		 :host github
-		 :repo "joaotavora/eglot"))
+(package! :name eglot
+	  :docstring "A client for Language Server Protocol servers "
+	  :pkginfo (eglot :type git
+			  :host github
+			  :repo "joaotavora/eglot"))
 
 (defun config-eglot ()
   t)

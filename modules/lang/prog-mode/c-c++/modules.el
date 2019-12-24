@@ -8,11 +8,11 @@
 (add-hook (scope-function 'c-c++ 'hook :after)
 	  #'c-c++-after-setup)
 
-(package! google-c-style
-	  "Google C/C++ style"
-	  (google-c-style :type git
-			  :host github
-			  :repo "emacsmirror/google-c-style"))
+(package! :name google-c-style
+	  :docstring "Google C/C++ style"
+	  :pkginfo (google-c-style :type git
+				   :host github
+				   :repo "emacsmirror/google-c-style"))
 
 (defun enable-google-c-style ()
   (google-set-c-style))

@@ -1,8 +1,8 @@
-(package! zenburn-emacs
-	  "The Zenburn colour theme ported to Emacs"
-	  (zenburn-emacs :type git
-			 :host github
-			 :repo "bbatsov/zenburn-emacs"))
+(package! :name zenburn-emacs
+	  :docstring "The Zenburn colour theme ported to Emacs"
+	  :pkginfo (zenburn-emacs :type git
+				  :host github
+				  :repo "bbatsov/zenburn-emacs"))
 
 (defun config-zenburn-emacs ()
   t)

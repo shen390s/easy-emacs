@@ -1,8 +1,8 @@
-(package! boon
-	  "An Ergonomic Command mode"
-	  (boon :type git
-		:host github
-		:repo "emacsmirror/boon"))
+(package! :name boon
+	  :docstring "An Ergonomic Command mode"
+	  :pkginfo (boon :type git
+			 :host github
+			 :repo "emacsmirror/boon"))
 
 (defun config-boon ()
   t)

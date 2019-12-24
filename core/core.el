@@ -25,7 +25,7 @@
 		   :host github
 		   :repo "justbur/emacs-bind-map")
 	'el-patch)
-  "list of packages which will be used by easy-emacs")
+  "list of packages which will be used by easy-emacsi core")
 
 (defvar easy-emacs-deferred-packages nil
   "List of deferred installed packages")

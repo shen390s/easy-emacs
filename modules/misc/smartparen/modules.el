@@ -1,8 +1,8 @@
-(package! smartparen-module
-	  "smartparen in buffer"
-	  (smartparens :type git
-		       :host github
-		       :repo "Fuco1/smartparens"))
+(package! :name smartparen-module
+	  :docstring "smartparen in buffer"
+	  :pkginfo (smartparens :type git
+				:host github
+				:repo "Fuco1/smartparens"))
 
 (defun enable-smartparens ()
   ;;(backtrace)

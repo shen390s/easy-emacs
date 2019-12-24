@@ -1,6 +1,6 @@
-(package! rainbow-delimiters
-	  "rainbow delimiters"
-	  rainbow-delimiters)
+(package! :name rainbow-delimiters
+	  :docstring "rainbow delimiters"
+	  :pkginfo rainbow-delimiters)
 
 
 (defun activate-rainbow-delimiters ()

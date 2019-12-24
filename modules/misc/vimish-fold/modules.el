@@ -1,6 +1,6 @@
-(package! vimish-fold
-	  "Vim-like text folding for Emacs"
-	  vimish-fold)
+(package! :name vimish-fold
+	  :docstring "Vim-like text folding for Emacs"
+	  :pkginfo vimish-fold)
 
 (defun activate-vimish-fold ()
   (require 'vimish-fold)

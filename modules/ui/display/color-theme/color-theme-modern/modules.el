@@ -1,9 +1,8 @@
-(package!
- color-theme-modern
- "color theme modern"
- (color-theme-modern :type git
-		     :host github
-		     :repo "emacs-jp/replace-colorthemes"))
+(package! :name color-theme-modern
+	  :docstring "color theme modern"
+	  :pkginfo (color-theme-modern :type git
+				       :host github
+				       :repo "emacs-jp/replace-colorthemes"))
 
 (defvar color-theme-used 'billw
   "The default color theme will be used when this feature has been turned")

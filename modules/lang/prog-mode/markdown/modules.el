@@ -1,14 +1,14 @@
 (scope! markdown prog-lang)
 
-(package! markdown-mode
-	  "A major Emacs mode for edit markdown document"
-	  markdown-mode)
+(package! :name markdown-mode
+	  :docstring "A major Emacs mode for edit markdown document"
+	  :pkginfo markdown-mode)
 
-(package! vmd-mode
-	  "Snappy Markdown preview minor mode for emacs"
-	  (vmd-mode :type git
-		    :host github
-		    :repo "blak3mill3r/vmd-mode"))
+(package! :name vmd-mode
+	  :docstring "Snappy Markdown preview minor mode for emacs"
+	  :pkginfo (vmd-mode :type git
+			     :host github
+			     :repo "blak3mill3r/vmd-mode"))
 
 (defun hack-markdown ()
   (setq auto-mode-alist

@@ -1,7 +1,8 @@
-(package!
- lsp-java
- "LSP support for Java"
- (lsp-java :type git :host github :repo "emacs-lsp/lsp-java"))
+(package! :name lsp-java
+	  :docstring "LSP support for Java"
+	  :pkginfo (lsp-java :type git
+			     :host github
+			     :repo "emacs-lsp/lsp-java"))
 
 (defun enable-java-lsp ()
   (require 'lsp-java)

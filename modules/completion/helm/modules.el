@@ -1,8 +1,8 @@
-(package! helm
-	  "Helm is an Emacs framework for incremental completions and narrowing selections. "
-	  (helm :type git
-		:host github
-		:repo "emacs-helm/helm"))
+(package! :name helm
+	  :docstring "Helm is an Emacs framework for incremental completions and narrowing selections. "
+	  :pkginfo (helm :type git
+			 :host github
+			 :repo "emacs-helm/helm"))
 
 (defun config-helm ()
   (require 'helm-config)

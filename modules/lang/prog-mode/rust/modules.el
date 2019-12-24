@@ -1,10 +1,10 @@
 (scope! rust prog-lang)
 
-(package! rust-mode
-	  "A major Emacs mode for edit Rust source code"
-	  (rust-mode :type git
-		     :host github
-		     :repo "rust-lang/rust-mode"))
+(package! :name rust-mode
+	  :docstring "A major Emacs mode for edit Rust source code"
+	  :pkginfo (rust-mode :type git
+			      :host github
+			      :repo "rust-lang/rust-mode"))
 
 (defun config-rust ()
   (add-to-list 'auto-mode-alist

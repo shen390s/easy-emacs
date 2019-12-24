@@ -1,29 +1,29 @@
 (scope! poly-mode
 	prog-lang)
 
-(package! polymode
-	  "Extensible framework for multiple major modes"
-	  (polymode :type git
-		    :host github
-		    :repo "emacsmirror/polymode"))
+(package! :name polymode
+	  :docstring "Extensible framework for multiple major modes"
+	  :pkginfo (polymode :type git
+			     :host github
+			     :repo "emacsmirror/polymode"))
 
-(package! poly-markdown
-	  "polymode for markdown mode"
-	  (poly-markdown :type git
-			 :host github
-			 :repo "emacsmirror/poly-markdown"))
+(package! :name poly-markdown
+	  :docstring "polymode for markdown mode"
+	  :pkginfo (poly-markdown :type git
+				  :host github
+				  :repo "emacsmirror/poly-markdown"))
 
-(package! poly-org
-	  "Poly org mode"
-	  (poly-org :type git
-		    :host github
-		    :repo "emacsmirror/poly-org"))
+(package! :name poly-org
+	  :docstring "Poly org mode"
+	  :pkginfo (poly-org :type git
+			     :host github
+			     :repo "emacsmirror/poly-org"))
 
-(package! poly-R
-	  "Poly R mode"
-	  (poly-R :type git
-		    :host github
-		    :repo "emacsmirror/poly-R"))
+(package! :name poly-R
+	  :docstring "Poly R mode"
+	  :pkginfo (poly-R :type git
+			   :host github
+			   :repo "emacsmirror/poly-R"))
 
 (defun config-poly-markdown ()
   (progn

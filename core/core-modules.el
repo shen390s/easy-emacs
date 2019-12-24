@@ -16,6 +16,10 @@
 	 :initform "Anonymous")
    (docstring :initarg :docstring
 	      :initform "")
+   (init :initarg :init
+	 :initform nil)
+   (config :initarg :config
+	   :initform nil)
    (pkg-info :initarg :pkg-info
 	     :initform nil)
    (installed :initarg :installed
@@ -134,14 +138,23 @@
 (defvar current-scope nil
   "The current scope which will be activated")
 
-(defmacro package! (name docstring pkginfo)
-  `(let ((package (make-instance 'Package
-				 :name ',name
-				 :docstring ,docstring
-				 :pkg-info ',pkginfo
-				 :installed nil)))
-     (progn
-       (puthash ',name package all-packages))))
+(defmacro package! (&rest args)
+  `(let ((name (plist-get ',args :name))
+	 (docstring (plist-get ',args :docstring))
+	 (pkginfo (plist-get ',args :pkginfo))
+	 (init-fn (lambda ()
+		    ,(plist-get args :init)))
+	 (config-fn (lambda ()
+		      ,(plist-get args :config))))
+     (let ((package (make-instance 'Package
+				   :name name
+				   :docstring docstring
+				   :pkg-info pkginfo
+				   :init init-fn
+				   :config config-fn
+				   :installed nil)))
+       (progn
+	 (puthash name package all-packages)))))
 
 (defmacro feature! (name docstring pkgs config-fn on-fn off-fn)
   `(let ((feature (make-instance 'Feature

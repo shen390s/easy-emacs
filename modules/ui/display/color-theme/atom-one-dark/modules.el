@@ -1,8 +1,8 @@
-(package! atom-one-dark
-	  "Atom One Dark theme for Emacs from Atom.io"
-          (atom-one-dark :type git
-			 :host github
-                         :repo "emacsmirror/atom-one-dark-theme"))
+(package! :name atom-one-dark
+	  :docstring "Atom One Dark theme for Emacs from Atom.io"
+          :pkginfo (atom-one-dark :type git
+				  :host github
+				  :repo "emacsmirror/atom-one-dark-theme"))
 
 (defun config-atom-one-dark ()
   t)
