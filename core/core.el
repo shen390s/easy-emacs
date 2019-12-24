@@ -11,7 +11,8 @@
 (unless (file-exists-p easy-emacs-config-dir)
   (make-directory easy-emacs-config-dir t))
 
-(defvar easy-emacs-file-name-handler-alist file-name-handler-alist)
+(defvar easy-emacs-file-name-handler-alist
+  file-name-handler-alist)
 
 (defvar easy-emacs-boot-done-hook nil
   "Hooks which will be called when easy-emacs boot done")
