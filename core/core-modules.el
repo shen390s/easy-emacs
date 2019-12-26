@@ -259,8 +259,8 @@
     (if feature
 	(DEBUG2! "get-feature : %s"
 		 (Object/to-string feature))
-      (DEBUG! "get-feature %s not found, all-features %s"
-	      f all-features))
+      (DEBUG! "get-feature %s not found"
+	      f ))
     feature))
 
 (defun get-mode (m)
