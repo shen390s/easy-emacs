@@ -86,9 +86,7 @@
 (defun defer-package-install (features)
   (DEBUG! "defer packages for feature %s" features)
   (setf easy-emacs-deferred-packages
-	(delete-dups (append (packages (mapcar #'(lambda (f)
-						    (plist-get f :name))
-                                               features))
+	(delete-dups (append (packages features)
 			     remote-autoload-pkgs)))
   (DEBUG! "Defer to install packages: %s"
 	  easy-emacs-deferred-packages)
