@@ -267,7 +267,7 @@
     (DEBUG! "Leaving scope %s mode %s"
 	    scope major-mode)
     (let ((action `(lambda ()
-		     (deactivate-scope ',scope))))
+		     (deactivate-scope ,scope))))
       (funcall action))))
 
 (defun global-scope ()

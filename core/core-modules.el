@@ -64,7 +64,7 @@
 		 nil))))
     (DEBUG2! "configure feature %s return %s"
 	     (Object/to-string feature) result)
-	result))
+    result))
 
 (defmethod Feature/pkglist ((feature Feature))
   (let ((pkgs (oref feature pkgs)))
@@ -194,11 +194,11 @@
 (defmacro scope! (name parent)
   `(progn
      (let ((scope (make-instance 'Scope
-			       :name ',name
-			       :parent ,(if parent 
-					    `',parent 
- 					   nil)
-			       :features nil)))
+				 :name ',name
+				 :parent ,(if parent 
+					      `',parent 
+ 					    nil)
+				 :features nil)))
        (puthash ',name scope all-scopes))
      (defvar ,(scope-function name 'hook :before) nil
        "Hooks run before scope ,name has been activated")
@@ -218,7 +218,7 @@
 	 (let ((zscope (get-scope ',name)))
 	   (cl-loop for pkg in
 		    (packages (mapcar #'(lambda (f)
-					   (plist-get f :name))
+					  (plist-get f :name))
 				      (oref zscope features)))
 		    do (install-package-by-name pkg)))
 	 (setf ,(scope-function name 'var :pkg-installed) t)))
@@ -233,7 +233,7 @@
 
      (defun ,(scope-function name 'entry :activate) ()
        (,(scope-function parent 'entry :activate))
-       (activate-scope ',name))
+       (activate-scope ,name))
 
      (defun ,(scope-function name 'entry :deactivate) ()
        ;;(deactivate-scope ',parent)
@@ -253,7 +253,7 @@
 			     :installed nil))
       (puthash pkg package all-packages))
     (DEBUG2! "get-package %s"
-	    (Object/to-string package))
+	     (Object/to-string package))
     package))
 
 (defun get-feature (f)
@@ -305,6 +305,7 @@
 	     do (load-module-definition module-file))))
 
 (defmacro activate-scope (scope)
+  (DEBUG! "activate-scope %s" scope)
   `(progn
      (,(scope-function scope 'entry :enable-features))
      (,(scope-function scope 'entry :disable-features))))
