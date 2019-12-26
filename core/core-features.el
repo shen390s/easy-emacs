@@ -100,30 +100,33 @@
   (let ((xfeature (get-feature feature)))
     (let ((fn (oref xfeature on-fn)))
       (if fn
-	  tn
-	dummy-fn))))
+	  fn
+	#'dummy-fn))))
 
 (defun get-feature-deactivate-fn (feature)
   (let ((xfeature (get-feature feature)))
     (let ((fn (oref xfeature off-fn)))
       (if fn
-	  tn
-	dummy-fn))))
+	  fn
+	#'dummy-fn))))
 
 (defun activate-feature (feature)
   (mk-action (plist-get feature :pre-activate-action)
 	     (get-feature-activate-fn (plist-get feature :name))
-	     (plist-get feature :post-activate-action)))
+	     (plist-get feature :post-activate-action)
+	     (plist-get feature :args)))
 
 (defun disable-feature (feature)
   (mk-action nil
 	     (get-feature-deactivate-fn (plist-get feature :name))
+	     nil
 	     nil))
 
 (defun deactivate-feature (feature)
   (mk-action (plist-get feature :pre-deactivate-action)
 	     (get-feature-activate-fn (plist-get feature :name))
-	     (plist-get feature :post-deactivate-action)))
+	     (plist-get feature :post-deactivate-action)
+	     nil))
 
 (eval-and-compile
   (defun add-feature-to-scope (scope feature)
@@ -131,7 +134,8 @@
 	    feature scope)
     
     (let ((zfeature (get-feature (plist-get feature :name))))
-      (when (Feature/configure zfeature)
+      (when (and zfeature
+		 (Feature/configure zfeature))
 	(Scope/add-feature (get-scope scope) feature)))))
 
 (defun make-use-xfeature (scope feature)
@@ -139,8 +143,8 @@
   	  feature scope)
  
   (let ((zfeature (parse-feature feature)))
-    (add-feature-to-scope (get-scope scope)
-			  feature)))
+    (add-feature-to-scope scope
+			  zfeature)))
 
 (defun conflict-feature (scope feature)
   (member scope (feature-enabled feature)))
