@@ -217,7 +217,9 @@
 
 	 (let ((zscope (get-scope ',name)))
 	   (cl-loop for pkg in
-		    (packages (oref zscope features))
+		    (packages (mapcar #'(lambda (f)
+					   (plist-get f :name))
+				      (oref zscope features)))
 		    do (install-package-by-name pkg)))
 	 (setf ,(scope-function name 'var :pkg-installed) t)))
 
