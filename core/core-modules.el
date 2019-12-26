@@ -255,7 +255,7 @@
     package))
 
 (defun get-feature (f)
-  (let ((feature (gethash (plist-get f :name) all-features)))
+  (let ((feature (gethash f all-features)))
     (if feature
 	(DEBUG2! "get-feature : %s"
 		 (Object/to-string feature))
