@@ -203,7 +203,8 @@
     (delete-dups
      (collect-lists mode-features
 		    (mapcar #'(lambda (xscope)
-				(mapcar #'car
+				(mapcar #'(lambda (f)
+                                             (plist-get f :name))
 					(oref xscope features)))
 			    (hash-table-values all-scopes))))))
 
@@ -266,7 +267,7 @@
     (DEBUG! "Leaving scope %s mode %s"
 	    scope major-mode)
     (let ((action `(lambda ()
-		     (deactivate ',scope))))
+		     (deactivate-scope ',scope))))
       (funcall action))))
 
 (defun global-scope ()

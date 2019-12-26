@@ -195,7 +195,9 @@
   `(progn
      (let ((scope (make-instance 'Scope
 			       :name ',name
-			       :parent ',parent
+			       :parent ,(if parent 
+					    `',parent 
+ 					   nil)
 			       :features nil)))
        (puthash ',name scope all-scopes))
      (defvar ,(scope-function name 'hook :before) nil
@@ -215,7 +217,7 @@
 
 	 (let ((zscope (get-scope ',name)))
 	   (cl-loop for pkg in
-		    (packages (mapcar #'car (oref zscope features)))
+		    (packages (oref zscope features))
 		    do (install-package-by-name pkg)))
 	 (setf ,(scope-function name 'var :pkg-installed) t)))
 
@@ -232,7 +234,7 @@
        (activate-scope ',name))
 
      (defun ,(scope-function name 'entry :deactivate) ()
-       (deactivate-scope ',parent)
+       ;;(deactivate-scope ',parent)
        (,(scope-function name 'entry :deactivate)))))
 
 (defun install-package-by-name (pkg)
@@ -281,7 +283,8 @@
 
 (defun packages(features)
   (DEBUG! "Get packages for features: %s"
-	  features)
+  	  features)
+  ;;(unless features (edebug))
   (delete-dups
    (collect-lists nil
 		  (cl-loop for f in features
