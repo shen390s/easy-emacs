@@ -96,11 +96,41 @@
        ,@(mk-pre-post-call post-action)
        result)))
 
+(defun get-feature-activate-fn (feature)
+  (let ((xfeature (get-feature feature)))
+    (let ((fn (oref xfeature on-fn)))
+      (if fn
+	  tn
+	dummy-fn))))
+
+(defun get-feature-deactivate-fn (feature)
+  (let ((xfeature (get-feature feature)))
+    (let ((fn (oref xfeature off-fn)))
+      (if fn
+	  tn
+	dummy-fn))))
+
+(defun activate-feature (feature)
+  (mk-action (plist-get feature :pre-activate-action)
+	     (get-feature-activate-fn (plist-get feature :name))
+	     (plist-get feature :post-activate-action)))
+
+(defun disable-feature (feature)
+  (mk-action nil
+	     (get-feature-deactivate-fn (plist-get feature :name))
+	     nil))
+
+(defun deactivate-feature (feature)
+  (mk-action (plist-get feature :pre-deactivate-action)
+	     (get-feature-activate-fn (plist-get feature :name))
+	     (plist-get feature :post-deactivate-action)))
+
 (eval-and-compile
   (defun add-feature-to-scope (scope feature)
     (DEBUG! "add feature %s to scope %s"
 	    feature scope)
-    (let ((zfeature (get-feature (car feature))))
+    
+    (let ((zfeature (get-feature (plist-get feature :name))))
       (when (Feature/configure zfeature)
 	(Scope/add-feature (get-scope scope) feature)))))
 
@@ -109,56 +139,8 @@
   	  feature scope)
  
   (let ((zfeature (parse-feature feature)))
-    (let ((name (plist-get zfeature :name))
-	  (disabled (plist-get zfeature :disabled))
-	  (pre-activate-action (plist-get zfeature :pre-activate-action))
-	  (post-activate-action (plist-get zfeature :post-activate-action))
-	  (pre-deactivate-action (plist-get zfeature :pre-deactivate-action))
-	  (post-deactivate-action (plist-get zfeature :post-deactivate-action))
-	  (args (plist-get zfeature :args)))
-      (let ((fn-deactive1 (scope-function scope	name
-					  :deactive-no-hook))
-	    (fn-activate (scope-function scope  name
-					 :activate))
-	    (fn-deactivate (scope-function scope name
-					   :deactivate))
-	    (var-activate (intern (concat (symbol-name name)
-					  "-actived"))))
-	(when-bind! xfeature (get-feature name)
-		    (if disabled
-			`(progn
-			   (defun ,fn-deactive1 ()
-			     ,(mk-action nil (oref xfeature off-fn)
-					 nil nil))
-			   (add-hook ',(scope-function scope
-						       :hook :after)
-				     ',fn-deactive1))
-		      `(progn
-			 (defun ,fn-activate ()
-			   (unless ,var-activate
-			     (DEBUG! "activate %s"
-				     ',name)
-			     ,(mk-action pre-activate-action
-					 (oref xfeature on-fn)
-					 post-activate-action
-					 args)
-			     (make-local-variable  ',var-activate)
-			     (setq ,var-activate t)))
-
-			 (defun ,fn-deactivate ()
-			   (when ,var-activate
-			     (DEBUG! "de-activate %s"
-				     ',name)
-			     ,(mk-action pre-deactivate-action
-					 (oref xfeature off-fn)
-					 post-deactivate-action
-					 nil)
-			     (setq ,var-activate nil)))
-
-			 (add-feature-to-scope ',scope
-					       (list ',name
-						     ',fn-activate
-						     ',fn-deactivate)))))))))
+    (add-feature-to-scope (get-scope scope)
+			  feature)))
 
 (defun conflict-feature (scope feature)
   (member scope (feature-enabled feature)))
@@ -176,18 +158,35 @@
 ;;                 ...)
 (defmacro enable! (scope features)
   `(progn
-     ,@(cl-loop for feature in features
-		collect (let ((zcode (make-use-xfeature scope feature)))
-			  (DEBUG2! "zcode %s" zcode)
-			  zcode))))
+     ,(cl-loop for feature in features
+	       do (make-use-xfeature scope feature))
+     (defun ,(scope-function scope 'entry :enable-features) ()
+       ,@(cl-loop for feature in (oref (get-scope scope) features)
+		  collect (unless (plist-get feature :disabled)
+			    ;; call activate feature
+			    (activate-feature feature))))
+
+     (defun ,(scope-function scope 'entry :disable-features) ()
+       ,@(cl-loop for feature in (oref (get-scope scope) features)
+		  collect (when (plist-get feature :disabled)
+			    ;; call disable feature
+			    (disable-feature feature))))
+
+     (defun ,(scope-function scope 'entry :deactivate) ()
+       ,@(cl-loop for feature in (oref (get-scope scope) features)
+		  collect (unless (plist-get feature :disabled)
+			    (deactivate-feature feature))))))
 
 ;; Return a list of scopes when the feature has been activated
 (defun feature-enabled (feature)
   (let ((enabled-scope
 	 (cl-loop for scope in (hash-table-keys all-scopes)
 		  collect (let ((features-in-scope
-				 (mapcar #'car
-					 (oref (gethash scope all-scopes) features))))
+				 (mapcar #'(lambda (feature)
+					     (plist-get feature :name))
+					 (oref (gethash scope
+							all-scopes)
+					       features))))
 			    (when (member feature features-in-scope)
 			      scope)))))
     (delq nil enabled-scope)))
@@ -262,7 +261,9 @@
   (let ((scope (mode-scope major-mode)))
     (DEBUG! "Leaving scope %s mode %s"
 	    scope major-mode)
-    (deactivate-scope scope)))
+    (let ((action `(lambda ()
+		     (deactivate ',scope))))
+      (funcall action))))
 
 (defun global-scope ()
   (add-hook 'change-major-mode-after-body-hook

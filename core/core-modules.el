@@ -229,7 +229,11 @@
 
      (defun ,(scope-function name 'entry :activate) ()
        (,(scope-function parent 'entry :activate))
-       (activate-scope ',name))))
+       (activate-scope ',name))
+
+     (defun ,(scope-function name 'entry :deactivate) ()
+       (deactivate-scope ',parent)
+       (,(scope-function name 'entry :deactivate)))))
 
 (defun install-package-by-name (pkg)
   (DEBUG! "installing package %s..." pkg)
@@ -295,33 +299,15 @@
     (cl-loop for module-file in module-files
 	     do (load-module-definition module-file))))
 
-(defun activate-scope (scope)
-  (DEBUG! "activing scope %s for buffer %s"
-	  scope (buffer-name))
-  (let ((current-scope scope))
-    (when-bind! xscope (get-scope scope)
-      (progn
-	(DEBUG2! "xscope %s" (Object/to-string xscope))
-	(cl-loop for active-fn in (mapcar #'(lambda (x)
-					      (second x))
-					  (oref xscope features))
-		 do (progn
-		      (DEBUG! "active-fn %s"
-			      active-fn)
-		      (when active-fn
-			(condition-case err
-			    (funcall active-fn)
-			  (error (WARN! "%s"
-					(error-message-string err)))))))))))
+(defmacro activate-scope (scope)
+  `(progn
+     (,(scope-function scope 'entry :enable-features))
+     (,(scope-function scope 'entry :disable-features))))
 
-(defun deactivate-scope (scope)
-  (let ((current-scope scope))
-    (when-bind! xscope (get-scope scope)
-      (cl-loop for leave-fn in (mapcar #'(lambda (x)
-					   (third x))
-				       (oref xscope features))
-	       do (when leave-fn
-		    (funcall leave-fn))))))
+
+(defmacro deactivate-scope (scope)
+  `(progn
+     (,(scope-function scope 'entry :deactivate-features))))
 
 (defun install-packages-for-scope (scope)
   (let ((pkg-install-fn (scope-function scope 'entry :install-pkgs)))
