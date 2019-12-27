@@ -2,11 +2,14 @@
 ;; Configuration for easy-emacs
 ;; this file will be loaded
 
+(setq use-polymode t)
+
 ;; Enable features
 ;;  features in global scope
 (enable! global
 	 ((settings java-home
-		    "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home")
+		    "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home"
+		    use-polymode t)
 	  smex
 	  emacs-server
 	  ;;treemacs
@@ -128,7 +131,18 @@
 	 java-mode)
 (attach! clojure
 	 lang/clojure-mode)
-;;(attach! markdown lang/markdown-mode lang/gfm-mode markdown-mode gfm-mode)
+(if use-polymode
+    (attach! poly-mode
+	     lang/markdown-mode
+	     lang/gfm-mode
+	     markdown-mode
+	     gfm-mode)
+  (attach! markdown
+	   lang/markdown-mode
+	   lang/gfm-mode
+	   markdown-mode
+	   gfm-mode))
+
 (attach! poly-mode
 	 lang/poly-markdown-mode
 	 lang/poly-R-mode

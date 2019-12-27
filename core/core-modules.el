@@ -231,9 +231,17 @@
        (run-hooks ',(scope-function name 'hook :after))
        (,(scope-function parent 'entry :post-activate)))
 
+     (defun ,(scope-function name 'entry :enable-parent-features) ()
+       (,(scope-function parent 'entry :enable-features)))
+
+     (defun ,(scope-function name 'entry :disable-parent-features) ()
+       (,(scope-function parent 'entry :disable-features)))
+     
      (defun ,(scope-function name 'entry :activate) ()
-       (,(scope-function parent 'entry :activate))
-       (activate-scope ,name))
+       ;;(,(scope-function parent 'entry :activate))
+       ;;(activate-scope ,name)
+       (,(scope-function name 'entry :enable-features))
+       (,(scope-function name 'entry :disable-features)))
 
      (defun ,(scope-function name 'entry :deactivate) ()
        (unless ,parent 
@@ -308,9 +316,7 @@
 (defmacro activate-scope (scope)
   (DEBUG! "activate-scope %s" scope)
   `(progn
-     (,(scope-function scope 'entry :enable-features))
-     (,(scope-function scope 'entry :disable-features))))
-
+     (,(scope-function scope 'entry :activate))))
 
 (defmacro deactivate-scope (scope)
   `(progn
