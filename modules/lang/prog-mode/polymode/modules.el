@@ -24,12 +24,24 @@
 			   :host github
 			   :repo "emacsmirror/poly-R"))
 
+(defun reassoc-md-ext ()
+  (unassoc-ext "\\.md\\'")
+  (unassoc-ext "\\.markdown\\'")
+  (add-to-list 'auto-mode-alist
+	       '("\\.md\\'" . lang/poly-markdown-mode))
+  (add-to-list 'auto-mode-alist
+	       '("\\.markdown\\'" . lang/poly-markdown-mode)))
+
 (defun config-poly-markdown ()
   (progn
     (INFO! "configuring poly-markdown mode ...")
-    (add-to-list 'auto-mode-alist
-		 '("\\.md\\'" . lang/poly-markdown-mode))
-    t))
+    (if use-polymode
+      (progn 
+	(reassoc-md-ext)
+      	(with-eval-after-load "markdown-mode"
+		(reassoc-md-ext))
+	t)
+    nil)))
 
 (autoload-r! poly-markdown-mode
 	     (polymode poly-markdown markdown-mode)
@@ -42,10 +54,17 @@
 	config-poly-markdown
 	poly-markdown-mode)
 
+(defun reassoc-R-ext ()
+  (unassoc-ext "\\.r\\'")
+  (add-to-list 'auto-mode-alist '("\\.r\\'" . lang/poly-R-mode)))
+
 (defun config-poly-R ()
   (progn
-    (add-to-list 'auto-mode-alist '("\\.r\\'" . lang/poly-R-mode))
-    t))
+    (if use-polymode
+	(progn
+	  (reassoc-R-ext)
+	  t)
+      nil)))
 
 (autoload-r! poly-noweb+r-mode
 	     (polymode poly-R ess)
