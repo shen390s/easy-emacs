@@ -1,5 +1,4 @@
-(scope! poly-mode
-	prog-lang)
+(scope! poly-mode prog-lang)
 
 (package! :name polymode
 	  :docstring "Extensible framework for multiple major modes"

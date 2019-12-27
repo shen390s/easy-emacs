@@ -236,7 +236,8 @@
        (activate-scope ,name))
 
      (defun ,(scope-function name 'entry :deactivate) ()
-       ;;(deactivate-scope ',parent)
+       (unless ,parent 
+           (deactivate-scope ,parent))
        (,(scope-function name 'entry :deactivate)))))
 
 (defun install-package-by-name (pkg)
@@ -313,7 +314,7 @@
 
 (defmacro deactivate-scope (scope)
   `(progn
-     (,(scope-function scope 'entry :deactivate-features))))
+     (,(scope-function scope 'entry :deactivate))))
 
 (defun install-packages-for-scope (scope)
   (let ((pkg-install-fn (scope-function scope 'entry :install-pkgs)))
