@@ -75,4 +75,8 @@
     (intern (concat (symbol-name mode)
 		    ":entry"))))
 
+(defmacro unassoc-ext (ext)
+  `(setq auto-mode-alist
+	 (assq-delete-all ,ext auto-mode-alist)))
+
 (provide 'core-lib)

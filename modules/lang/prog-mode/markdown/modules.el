@@ -11,20 +11,23 @@
 			     :repo "blak3mill3r/vmd-mode"))
 
 (defun hack-markdown ()
-  (setq auto-mode-alist
-	(rassq-delete-all 'markdown-mode auto-mode-alist))
-  (setq auto-mode-alist
-	(rassq-delete-all 'gfm-mode auto-mode-alist)))
-
-(defun config-markdown ()
-  (hack-markdown)
+  (unassoc-ext "\\.md\\'")
+  (unassoc-ext "\\.markdown\\'")
+  (unassoc-ext "README\\.md\\'")
   (add-to-list 'auto-mode-alist
 	       '("\\.md\\'" . lang/markdown-mode))
   (add-to-list 'auto-mode-alist
 	       '("\\.markdown\\'" . lang/markdown-mode))
   (add-to-list 'auto-mode-alist
-	       '("README\\.md\\'" . lang/gfm-mode))
-  t)
+		 '("README\\.md\\'" . lang/gfm-mode)))
+
+(defun config-markdown ()
+  (DEBUG! "configure markdown")
+  (if (not use-polymode)
+      (progn
+	(hack-markdown)
+	t)
+    nil))
 
 (autoload-r! markdown-mode
 	     (markdown-mode)

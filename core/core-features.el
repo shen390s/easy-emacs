@@ -165,6 +165,7 @@
      ,(cl-loop for feature in features
 	       do (make-use-xfeature scope feature))
      (defun ,(scope-function scope 'entry :enable-features) ()
+       (,(scope-function scope 'entry :enable-parent-features))
        ,@(cl-loop for feature in (oref (get-scope scope) features)
 		  collect (unless (plist-get feature :disabled)
 			    ;; call activate feature
@@ -174,7 +175,8 @@
        ,@(cl-loop for feature in (oref (get-scope scope) features)
 		  collect (when (plist-get feature :disabled)
 			    ;; call disable feature
-			    (disable-feature feature))))
+			    (disable-feature feature)))
+       (,(scope-function scope 'entry :disable-parent-features)))
 
      (defun ,(scope-function scope 'entry :deactivate) ()
        ,@(cl-loop for feature in (oref (get-scope scope) features)
@@ -280,6 +282,11 @@
   t)
 
 (scope! global nil)
+
+(declare-function global-scope-entry:enable-features
+		  "easy-emacs-config")
+(declare-function global-scope-entry:disable-features
+		  "easy-emacs-config")
 
 (defun enter-global ()
   (when (fboundp 'easy-emacs-boot-done)

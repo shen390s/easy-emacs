@@ -1,2 +1,1 @@
-(scope! elisp
-	prog-lang)
+(scope! elisp prog-lang)
