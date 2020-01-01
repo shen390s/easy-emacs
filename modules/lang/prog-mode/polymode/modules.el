@@ -33,15 +33,13 @@
 	       '("\\.markdown\\'" . lang/poly-markdown-mode)))
 
 (defun config-poly-markdown ()
-  (progn
-    (INFO! "configuring poly-markdown mode ...")
-    (if use-polymode
-      (progn 
-	(reassoc-md-ext)
-      	(with-eval-after-load "markdown-mode"
-		(reassoc-md-ext))
-	t)
-    nil)))
+  (INFO! "configuring poly-markdown mode ...")
+  (and use-polymode
+       (progn 
+	 (reassoc-md-ext)
+      	 (with-eval-after-load "markdown-mode"
+	   (reassoc-md-ext))
+	 t)))
 
 (autoload-r! poly-markdown-mode
 	     (polymode poly-markdown markdown-mode)
@@ -55,16 +53,15 @@
 	poly-markdown-mode)
 
 (defun reassoc-R-ext ()
-  (unassoc-ext "\\.r\\'")
-  (add-to-list 'auto-mode-alist '("\\.r\\'" . lang/poly-R-mode)))
+  (unassoc-ext "\\.Rmd\\'")
+  (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . lang/poly-R-mode)))
 
 (defun config-poly-R ()
-  (progn
-    (if use-polymode
-	(progn
-	  (reassoc-R-ext)
-	  t)
-      nil)))
+  (and use-polymode
+       (progn
+	 (reassoc-R-ext)
+	 (with-eval-after-load "")
+	 t))))
 
 (autoload-r! poly-noweb+r-mode
 	     (polymode poly-R ess)

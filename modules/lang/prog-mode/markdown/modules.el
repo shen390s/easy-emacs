@@ -19,15 +19,14 @@
   (add-to-list 'auto-mode-alist
 	       '("\\.markdown\\'" . lang/markdown-mode))
   (add-to-list 'auto-mode-alist
-		 '("README\\.md\\'" . lang/gfm-mode)))
+	       '("README\\.md\\'" . lang/gfm-mode)))
 
 (defun config-markdown ()
   (DEBUG! "configure markdown")
-  (if (not use-polymode)
-      (progn
-	(hack-markdown)
-	t)
-    nil))
+  (and (not use-polymode)
+       (progn
+	 (hack-markdown)
+	 t)))
 
 (autoload-r! markdown-mode
 	     (markdown-mode)
