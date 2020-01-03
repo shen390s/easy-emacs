@@ -60,7 +60,7 @@
   (and use-polymode
        (progn
 	 (reassoc-R-ext)
-	 (with-eval-after-load "ess-autoloads"
+	 (with-eval-after-load "ess"
 	   (reassoc-R-ext))
 	 t)))
 
@@ -71,9 +71,9 @@
 
 (rmode! lang/poly-R-mode
 	"Emacs mode for poly R"
-	(polymode poly-R ess)
+	(polymode poly-R ess markdown-mode)
 	config-poly-R
-	poly-noweb+r-mode)
+	poly-markdown+R-mode)
 
 (defun hack-poly-org ()
        (unassoc-ext "\\.org\\'")
