@@ -79,4 +79,25 @@
   `(setq auto-mode-alist
 	 (assq-delete-all ,ext auto-mode-alist)))
 
+(eval-and-compile
+  (defun dummy-fn ()
+    t))
+
+(defun mk-action (action)
+  (if action
+      `,@action
+    `((dummy-fn))))
+
+(defmacro trace! (fn &optional action)
+  `(advice-add ',fn
+	       :around
+	       #'(lambda (origin-fun &rest args)
+		   ,@(mk-action action)
+		   (DEBUG! "call %s args: %s"
+			   origin-fun args)
+		   (let ((result (apply origin-fun args)))
+		     (progn
+		       (DEBUG! "result: %s" result)
+		       result)))))
+
 (provide 'core-lib)

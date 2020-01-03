@@ -75,25 +75,16 @@
 	     :post-deactivate-action post-deactivate-action
 	     :args args)))))
 
-(eval-and-compile
-  (defun dummy-fn ()
-  t))
-
 (defun mk-function-call (fn args)
   (if fn
       `(,fn ,@args)
     `(dummy-fn)))
 
-(defun mk-pre-post-call (action)
-  (if action
-      `,@action
-    `((dummy-fn))))
-
-(defun mk-action (pre-action fn post-action args)
+(defun mk-activate (pre-action fn post-action args)
   `(progn
-     ,@(mk-pre-post-call pre-action)
+     ,@(mk-action pre-action)
      (let ((result ,(mk-function-call fn args)))
-       ,@(mk-pre-post-call post-action)
+       ,@(mk-action post-action)
        result)))
 
 (defun get-feature-activate-fn (feature)
@@ -111,19 +102,19 @@
 	#'dummy-fn))))
 
 (defun activate-feature (feature)
-  (mk-action (plist-get feature :pre-activate-action)
+  (mk-activate (plist-get feature :pre-activate-action)
 	     (get-feature-activate-fn (plist-get feature :name))
 	     (plist-get feature :post-activate-action)
 	     (plist-get feature :args)))
 
 (defun disable-feature (feature)
-  (mk-action nil
+  (mk-activate nil
 	     (get-feature-deactivate-fn (plist-get feature :name))
 	     nil
 	     nil))
 
 (defun deactivate-feature (feature)
-  (mk-action (plist-get feature :pre-deactivate-action)
+  (mk-activate (plist-get feature :pre-deactivate-action)
 	     (get-feature-activate-fn (plist-get feature :name))
 	     (plist-get feature :post-deactivate-action)
 	     nil))
