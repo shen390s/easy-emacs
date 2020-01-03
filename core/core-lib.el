@@ -1,6 +1,8 @@
 ;; -*- lexical-binding: t -*-
 ;; enable lexical scope
 
+;;(require 'subr)
+
 (defun collect-lists (acc lists)
   (if (null lists)
       acc
@@ -75,9 +77,9 @@
     (intern (concat (symbol-name mode)
 		    ":entry"))))
 
-(defmacro unassoc-ext (ext)
-  `(setq auto-mode-alist
-	 (assq-delete-all ,ext auto-mode-alist)))
+(defun unassoc-ext (ext)
+  (setq auto-mode-alist
+	(assoc-delete-all ext auto-mode-alist)))
 
 (eval-and-compile
   (defun dummy-fn ()

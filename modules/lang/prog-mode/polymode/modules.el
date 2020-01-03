@@ -37,7 +37,7 @@
   (and use-polymode
        (progn 
 	 (reassoc-md-ext)
-      	 (with-eval-after-load "markdown-mode-autoloads"
+      	 (with-eval-after-load "markdown-mode"
 	   (reassoc-md-ext))
 	 t)))
 
