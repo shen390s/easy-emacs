@@ -53,9 +53,13 @@
 (defun enable-vmd ()
   (vmd-mode))
 
+(defun deactivate-vmd ()
+  (unless vmd-process
+    (delete-process vmd-process)))
+
 (feature! vmd
 	  "Snappy Markdown preview minor mode for emacs"
 	  (vmd-mode)
 	  nil
 	  enable-vmd
-	  nil)
+	  deactivate-vmd)
