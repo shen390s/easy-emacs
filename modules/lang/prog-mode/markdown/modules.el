@@ -51,6 +51,9 @@
 	gfm-mode)
 
 (defun enable-vmd ()
+  (let ((file (buffer-file-name)))
+    (unless (file-exists-p file)
+      (save-buffer)))
   (vmd-mode))
 
 (defun deactivate-vmd ()
