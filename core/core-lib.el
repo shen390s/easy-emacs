@@ -77,9 +77,15 @@
     (intern (concat (symbol-name mode)
 		    ":entry"))))
 
+(defun remove-all-assoc (key alist)
+  (let ((e (assoc key alist)))
+    (if e
+	(remove-all-assoc key (delq e alist))
+      alist)))
+
 (defun unassoc-ext (ext)
   (setq auto-mode-alist
-	(assoc-delete-all ext auto-mode-alist)))
+	(remove-all-assoc ext auto-mode-alist)))
 
 (eval-and-compile
   (defun dummy-fn ()
