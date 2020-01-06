@@ -7,6 +7,7 @@
 (defvar ccls-program nil
   "executable binary of ccls")
 
+(with-eval-after-load )
 (defun config-lang-client-ccls ()
   (when (eq (lang-server-client) 'eglot)
     (with-eval-after-load "eglot"
