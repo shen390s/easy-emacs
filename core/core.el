@@ -11,7 +11,8 @@
 (unless (file-exists-p easy-emacs-config-dir)
   (make-directory easy-emacs-config-dir t))
 
-(defvar easy-emacs-file-name-handler-alist file-name-handler-alist)
+(defvar easy-emacs-file-name-handler-alist
+  file-name-handler-alist)
 
 (defvar easy-emacs-boot-done-hook nil
   "Hooks which will be called when easy-emacs boot done")
@@ -24,7 +25,7 @@
 		   :host github
 		   :repo "justbur/emacs-bind-map")
 	'el-patch)
-  "list of packages which will be used by easy-emacs")
+  "list of packages which will be used by easy-emacsi core")
 
 (defvar easy-emacs-deferred-packages nil
   "List of deferred installed packages")
@@ -41,7 +42,7 @@
 	file-name-handler-alist nil)
   ;; Initialize log system
   ;;
-  (log-init! INFO)
+  (log-init! DEBUG)
   (INFO! "Booting EasyEMACS..."))
 
 (add-hook 'easy-emacs-boot-done-hook
@@ -83,6 +84,7 @@
   (defer-package-install (actived-features)))
 
 (defun defer-package-install (features)
+  (DEBUG! "defer packages for feature %s" features)
   (setf easy-emacs-deferred-packages
 	(delete-dups (append (packages features)
 			     remote-autoload-pkgs)))

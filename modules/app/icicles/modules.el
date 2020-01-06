@@ -1,8 +1,8 @@
-(package! icicles
-	  "Minibuffer input completion and cycling"
-	  (icicles :type git
-		   :host github
-		   :repo "emacsmirror/icicles"))
+(package! :name icicles
+	  :docstring "Minibuffer input completion and cycling"
+	  :pkginfo (icicles :type git
+			    :host github
+			    :repo "emacsmirror/icicles"))
 
 
 (defun activate-icicles ()

@@ -1,6 +1,6 @@
-(package! ess
-	  "Emacs Speaks Statistics"
-          ess)
+(package! :name ess
+	  :docstring "Emacs Speaks Statistics"
+          :pkginfo ess)
 
 (defun config-ess ()
   (executable-find "R"))

@@ -1,8 +1,8 @@
-(package! ergoemacs
-	  "ErgoEmacs"
-          (ergoemacs :type git
-		     :host github
-                     :repo "ergoemacs/ergoemacs-mode"))
+(package! :name ergoemacs
+	  :docstring "ErgoEmacs"
+          :pkginfo (ergoemacs :type git
+			      :host github
+			      :repo "ergoemacs/ergoemacs-mode"))
 
 (defun config-ergoemacs ()
   t)

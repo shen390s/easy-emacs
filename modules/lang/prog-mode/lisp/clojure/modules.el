@@ -1,10 +1,10 @@
 (scope! clojure prog-lang )
 
-(package! clojure-mode
-	  "A major Emacs mode for edit Clojure source code"
-	  (clojure-mode :type git
-	                :host github
-			:repo "clojure-emacs/clojure-mode"))
+(package! :name clojure-mode
+	  :docstring "A major Emacs mode for edit Clojure source code"
+	  :pkginfo (clojure-mode :type git
+				 :host github
+				 :repo "clojure-emacs/clojure-mode"))
 
 (defun config-clojure ()
   (progn

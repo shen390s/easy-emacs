@@ -1,11 +1,8 @@
-(package! emacs-ccls
-	  "Use ccls as c/c++ language server"
-	  (emacs-ccls :type git
-		      :host github
-		      :repo "MaskRay/emacs-ccls"))
-
-(defvar ccls-program nil
-  "executable binary of ccls")
+(package! :name emacs-ccls
+	  :docstring "Use ccls as c/c++ language server"
+	  :pkginfo (emacs-ccls :type git
+			       :host github
+			       :repo "MaskRay/emacs-ccls"))
 
 (with-eval-after-load )
 (defun config-lang-client-ccls ()
@@ -41,10 +38,6 @@
 
 (defun ccls-on ()
   (require 'ccls)
-  ;; customize ccls
-  (when ccls-program
-    (setq ccls-executable ccls-program))
-
   (cond
    ((eq (lang-server-client) 'eglot) (ccls/eglot-on))
    (t (ccls/lsp-on))))

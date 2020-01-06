@@ -1,8 +1,8 @@
-(package! parinfer
-    "Parinfer is a proof-of-concept editor mode for Lisp programming languages. It will infer some changes to keep Parens and Indentation inline with one another. "
-    (parinfer :type git
-        :host github
-        :repo "DogLooksGood/parinfer-mode"))
+(package! :name parinfer
+	  :docstring "Parinfer is a proof-of-concept editor mode for Lisp programming languages. It will infer some changes to keep Parens and Indentation inline with one another. "
+	  :pkginfo (parinfer :type git
+			     :host github
+			     :repo "DogLooksGood/parinfer-mode"))
 
 (defun config-parinfer ()
   (progn

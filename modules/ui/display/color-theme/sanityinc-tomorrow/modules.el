@@ -1,8 +1,8 @@
-(package! sanityinc-tomorrow
-	  "A set of comprehensive Emacs color themes based on Chris Kempson's 'tomorrow' themes"
-	  (sanityinc-tomorrow :type git
-			      :host github
-			      :repo "purcell/color-theme-sanityinc-tomorrow"))
+(package! :name sanityinc-tomorrow
+	  :docstring "A set of comprehensive Emacs color themes based on Chris Kempson's 'tomorrow' themes"
+	  :pkginfo (sanityinc-tomorrow :type git
+				       :host github
+				       :repo "purcell/color-theme-sanityinc-tomorrow"))
 
 (defun config-sanityinc-tomorrow ()
   t)

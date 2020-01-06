@@ -16,6 +16,10 @@
 	 :initform "Anonymous")
    (docstring :initarg :docstring
 	      :initform "")
+   (init :initarg :init
+	 :initform nil)
+   (config :initarg :config
+	   :initform nil)
    (pkg-info :initarg :pkg-info
 	     :initform nil)
    (installed :initarg :installed
@@ -60,7 +64,7 @@
 		 nil))))
     (DEBUG2! "configure feature %s return %s"
 	     (Object/to-string feature) result)
-	result))
+    result))
 
 (defmethod Feature/pkglist ((feature Feature))
   (let ((pkgs (oref feature pkgs)))
@@ -134,14 +138,23 @@
 (defvar current-scope nil
   "The current scope which will be activated")
 
-(defmacro package! (name docstring pkginfo)
-  `(let ((package (make-instance 'Package
-				 :name ',name
-				 :docstring ,docstring
-				 :pkg-info ',pkginfo
-				 :installed nil)))
-     (progn
-       (puthash ',name package all-packages))))
+(defmacro package! (&rest args)
+  `(let ((name (plist-get ',args :name))
+	 (docstring (plist-get ',args :docstring))
+	 (pkginfo (plist-get ',args :pkginfo))
+	 (init-fn (lambda ()
+		    ,(plist-get args :init)))
+	 (config-fn (lambda ()
+		      ,(plist-get args :config))))
+     (let ((package (make-instance 'Package
+				   :name name
+				   :docstring docstring
+				   :pkg-info pkginfo
+				   :init init-fn
+				   :config config-fn
+				   :installed nil)))
+       (progn
+	 (puthash name package all-packages)))))
 
 (defmacro feature! (name docstring pkgs config-fn on-fn off-fn)
   `(let ((feature (make-instance 'Feature
@@ -181,9 +194,11 @@
 (defmacro scope! (name parent)
   `(progn
      (let ((scope (make-instance 'Scope
-			       :name ',name
-			       :parent ',parent
-			       :features nil)))
+				 :name ',name
+				 :parent ,(if parent 
+					      `',parent 
+ 					    nil)
+				 :features nil)))
        (puthash ',name scope all-scopes))
      (defvar ,(scope-function name 'hook :before) nil
        "Hooks run before scope ,name has been activated")
@@ -202,7 +217,9 @@
 
 	 (let ((zscope (get-scope ',name)))
 	   (cl-loop for pkg in
-		    (packages (mapcar #'car (oref zscope features)))
+		    (packages (mapcar #'(lambda (f)
+					  (plist-get f :name))
+				      (oref zscope features)))
 		    do (install-package-by-name pkg)))
 	 (setf ,(scope-function name 'var :pkg-installed) t)))
 
@@ -214,9 +231,22 @@
        (run-hooks ',(scope-function name 'hook :after))
        (,(scope-function parent 'entry :post-activate)))
 
+     (defun ,(scope-function name 'entry :enable-parent-features) ()
+       (,(scope-function parent 'entry :enable-features)))
+
+     (defun ,(scope-function name 'entry :disable-parent-features) ()
+       (,(scope-function parent 'entry :disable-features)))
+     
      (defun ,(scope-function name 'entry :activate) ()
-       (,(scope-function parent 'entry :activate))
-       (activate-scope ',name))))
+       ;;(,(scope-function parent 'entry :activate))
+       ;;(activate-scope ,name)
+       (,(scope-function name 'entry :enable-features))
+       (,(scope-function name 'entry :disable-features)))
+
+     (defun ,(scope-function name 'entry :deactivate) ()
+       (unless ,parent 
+           (deactivate-scope ,parent))
+       (,(scope-function name 'entry :deactivate)))))
 
 (defun install-package-by-name (pkg)
   (DEBUG! "installing package %s..." pkg)
@@ -232,7 +262,7 @@
 			     :installed nil))
       (puthash pkg package all-packages))
     (DEBUG2! "get-package %s"
-	    (Object/to-string package))
+	     (Object/to-string package))
     package))
 
 (defun get-feature (f)
@@ -241,7 +271,7 @@
 	(DEBUG2! "get-feature : %s"
 		 (Object/to-string feature))
       (DEBUG! "get-feature %s not found"
-	      f))
+	      f ))
     feature))
 
 (defun get-mode (m)
@@ -264,7 +294,8 @@
 
 (defun packages(features)
   (DEBUG! "Get packages for features: %s"
-	  features)
+  	  features)
+  ;;(unless features (edebug))
   (delete-dups
    (collect-lists nil
 		  (cl-loop for f in features
@@ -282,33 +313,14 @@
     (cl-loop for module-file in module-files
 	     do (load-module-definition module-file))))
 
-(defun activate-scope (scope)
-  (DEBUG! "activing scope %s for buffer %s"
-	  scope (buffer-name))
-  (let ((current-scope scope))
-    (when-bind! xscope (get-scope scope)
-      (progn
-	(DEBUG2! "xscope %s" (Object/to-string xscope))
-	(cl-loop for active-fn in (mapcar #'(lambda (x)
-					      (second x))
-					  (oref xscope features))
-		 do (progn
-		      (DEBUG! "active-fn %s"
-			      active-fn)
-		      (when active-fn
-			(condition-case err
-			    (funcall active-fn)
-			  (error (WARN! "%s"
-					(error-message-string err)))))))))))
+(defmacro activate-scope (scope)
+  (DEBUG! "activate-scope %s" scope)
+  `(progn
+     (,(scope-function scope 'entry :activate))))
 
-(defun deactivate-scope (scope)
-  (let ((current-scope scope))
-    (when-bind! xscope (get-scope scope)
-      (cl-loop for leave-fn in (mapcar #'(lambda (x)
-					   (third x))
-				       (oref xscope features))
-	       do (when leave-fn
-		    (funcall leave-fn))))))
+(defmacro deactivate-scope (scope)
+  `(progn
+     (,(scope-function scope 'entry :deactivate))))
 
 (defun install-packages-for-scope (scope)
   (let ((pkg-install-fn (scope-function scope 'entry :install-pkgs)))

@@ -1,6 +1,6 @@
-(package! ggtags
-	  "Emacs frontend to GNU Global source code tagging system. "
-	  ggtags)
+(package! :name ggtags
+	  :docstring "Emacs frontend to GNU Global source code tagging system. "
+	  :pkginfo ggtags)
 
 (defun config-ggtags ()
   t)

@@ -1,10 +1,10 @@
 (scope! graphviz prog-lang )
 
-(package! graphviz
-	  "Emacs mode for the graphviz"
-	  (graphviz-dot-mode :type git
-			     :host github
-			     :repo "ppareit/graphviz-dot-mode"))
+(package! :name graphviz
+	  :docstring "Emacs mode for the graphviz"
+	  :pkginfo (graphviz-dot-mode :type git
+				      :host github
+				      :repo "ppareit/graphviz-dot-mode"))
 
 (defun config-graphviz ()
   (progn

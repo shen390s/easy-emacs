@@ -1,8 +1,8 @@
-(package! origami
-	  "A text folding minor mode for EMACS"
-	  (origami :type git
-		   :host github
-		   :repo "gregsexton/origami.el"))
+(package! :name origami
+	  :docstring "A text folding minor mode for EMACS"
+	  :pkginfo (origami :type git
+			    :host github
+			    :repo "gregsexton/origami.el"))
 
 (defun origami-key-binds ()
   t)

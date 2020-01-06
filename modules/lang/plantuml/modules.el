@@ -1,8 +1,8 @@
 (scope! plantuml prog-lang)
 
-(package! plantuml
-	  "A major mode for editing PlantUML sources in Emacs"
-	  plantuml-mode)
+(package! :name plantuml
+	  :docstring "A major mode for editing PlantUML sources in Emacs"
+	  :pkginfo plantuml-mode)
 
 (defun config-plantuml ()
   (progn

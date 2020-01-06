@@ -1,8 +1,8 @@
-(package! forge
-	  "Work with git forge from comfort of magit"
-          (forge :type git
-		 :host github
-                 :repo "magit/forge"))
+(package! :name forge
+	  :docstring "Work with git forge from comfort of magit"
+          :pkginfo (forge :type git
+			  :host github
+			  :repo "magit/forge"))
 
 (defun config-forge ()
   t)

@@ -1,20 +1,20 @@
-(package! ivy
-	  "Ivy is for quick and easy selection from a list. When Emacs prompts for a string from a list of several possible choices, Ivy springs into action to assist in narrowing and picking the right string from a vast number of choices. "
-	  ivy)
+(package! :name ivy
+	  :docstring "Ivy is for quick and easy selection from a list. When Emacs prompts for a string from a list of several possible choices, Ivy springs into action to assist in narrowing and picking the right string from a vast number of choices. "
+	  :pkginfo ivy)
 
-(package! counsel
-	  "Ivy counsel"
-	  counsel)
+(package! :name counsel
+	  :docstring "Ivy counsel"
+	  :pkginfo counsel)
 
-(package! swiper
-	  "Ivy swiper"
-	  swiper)
+(package! :name swiper
+	  :docstring "Ivy swiper"
+	  :pkginfo swiper)
 
-(package! ivy-posframe
-	  "Using posframe to show Ivy"
-          (ivy-posframe :type git
-			 :host github
-                         :repo "emacsmirror/ivy-posframe"))
+(package! :name ivy-posframe
+	  :docstring "Using posframe to show Ivy"
+          :pkginfo (ivy-posframe :type git
+				 :host github
+				 :repo "emacsmirror/ivy-posframe"))
 
 ;;(setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)))
 

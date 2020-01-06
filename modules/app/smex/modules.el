@@ -1,8 +1,8 @@
-(package! smex
-	  "Smex is a M-x enhancement for Emacs"
-	  (smex :type git
-		:host github
-		:repo "nonsequitur/smex"))
+(package! :name smex
+	  :docstring "Smex is a M-x enhancement for Emacs"
+	  :pkginfo (smex :type git
+			 :host github
+			 :repo "nonsequitur/smex"))
 
 (defun smex-bind-keys ()
   (global-set-key (kbd "M-x") 'smex)

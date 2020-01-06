@@ -1,10 +1,10 @@
 (defun config-load-custom ()
   t)
 
-(defun enable-load-custom (theme)
+(defun enable-load-custom (&optional theme)
   (load custom-file t t)
   (when theme
-      (load-theme theme)))
+      (load-theme theme t)))
 
 (feature! load-custom
 	  "load customization file"

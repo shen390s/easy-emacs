@@ -1,8 +1,8 @@
-(package! format-all
-	  "Auto-format c,c++,JS,Python and more"
-          (format-all :type git
-		      :host github
-                      :repo "emacsmirror/format-all"))
+(package! :name format-all
+	  :docstring "Auto-format c,c++,JS,Python and more"
+          :pkginfo (format-all :type git
+			       :host github
+			       :repo "emacsmirror/format-all"))
 
 (defun activate-format-all ()
   (require 'format-all)

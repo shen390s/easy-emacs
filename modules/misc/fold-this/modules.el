@@ -1,8 +1,8 @@
-(package! fold-this
-	  "Fold the active region"
-          (fold-this :type git
-		     :host github
-                     :repo "magnars/fold-this.el"))
+(package! :name fold-this
+	  :docstring "Fold the active region"
+          :pkginfo (fold-this :type git
+			      :host github
+			      :repo "magnars/fold-this.el"))
 
 (defun config-fold-this ()
   t)

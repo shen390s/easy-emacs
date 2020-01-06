@@ -1,27 +1,22 @@
-(package!
- treemacs
- "Treemacs can be extended to display arbitrary nodes as well as be used as a general rendering backend for any tree-like structures."
- treemacs)
+(package! :name treemacs
+	  :docstring "Treemacs can be extended to display arbitrary nodes as well as be used as a general rendering backend for any tree-like structures."
+	  :pkginfo treemacs)
 
-(package!
- treemacs-evil
- "treemacs evil integration"
- treemacs-evil)
+(package! :name treemacs-evil
+	  :docstring "treemacs evil integration"
+	  :pkginfo treemacs-evil)
 
-(package!
- treemacs-magit
- "treemacs magit integration"
- treemacs-magit)
+(package! :name treemacs-magit
+	  :docstring "treemacs magit integration"
+	  :pkginfo treemacs-magit)
 
-(package!
- treemacs-projectile
- "treemacs projectile integration"
- treemacs-projectile)
+(package! :name treemacs-projectile
+	  :docstring "treemacs projectile integration"
+	  :pkginfo treemacs-projectile)
 
-(package!
- treemacs-icons-dired
- "treemacs with icons dired"
- treemacs-icons-dired)
+(package! :name treemacs-icons-dired
+	  :docstring "treemacs with icons dired"
+	  :pkginfo treemacs-icons-dired)
 
 (defun treemacs-pkgs ()
   (let ((pkgs '(treemacs treemacs-icons-dired)))

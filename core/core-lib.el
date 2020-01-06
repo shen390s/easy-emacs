@@ -1,6 +1,8 @@
 ;; -*- lexical-binding: t -*-
 ;; enable lexical scope
 
+;;(require 'subr)
+
 (defun collect-lists (acc lists)
   (if (null lists)
       acc
@@ -61,6 +63,8 @@
     t)
 
   (defun scope-function (scope tag subtag)
+    (DEBUG! "scope-function (%s %s %s)"
+	    scope tag subtag)
     (if scope
 	(intern (concat (symbol-name scope)
 			"-scope-"
@@ -72,5 +76,36 @@
   (defun mode-function (mode)
     (intern (concat (symbol-name mode)
 		    ":entry"))))
+
+(defun remove-all-assoc (key alist)
+  (let ((e (assoc key alist)))
+    (if e
+	(remove-all-assoc key (delq e alist))
+      alist)))
+
+(defun unassoc-ext (ext)
+  (setq auto-mode-alist
+	(remove-all-assoc ext auto-mode-alist)))
+
+(eval-and-compile
+  (defun dummy-fn ()
+    t))
+
+(defun mk-action (action)
+  (if action
+      `,@action
+    `((dummy-fn))))
+
+(defmacro trace! (fn &optional action)
+  `(advice-add ',fn
+	       :around
+	       #'(lambda (origin-fun &rest args)
+		   ,@(mk-action action)
+		   (DEBUG! "call %s args: %s"
+			   origin-fun args)
+		   (let ((result (apply origin-fun args)))
+		     (progn
+		       (DEBUG! "result: %s" result)
+		       result)))))
 
 (provide 'core-lib)
