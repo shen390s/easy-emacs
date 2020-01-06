@@ -4,7 +4,6 @@
 			       :host github
 			       :repo "MaskRay/emacs-ccls"))
 
-(with-eval-after-load )
 (defun config-lang-client-ccls ()
   (when (eq (lang-server-client) 'eglot)
     (with-eval-after-load "eglot"
