@@ -22,7 +22,7 @@
 	  ;;color-theme-modern
 	  (load-custom 'rshen)
 	  ;;zenburn-emacs
-	  (sanityinc-tomorrow 'blue)
+	  ;;(sanityinc-tomorrow 'blue)
           ;;atom-one-dark
           ;;aanila
           ;;tango-dark
@@ -113,6 +113,10 @@
 
 (enable! plantuml ())
 
+(enable! tex
+	 (magic-latex
+	  auctex))
+
 (attach! graphviz
 	 graphviz-mode)
 (attach! rust
@@ -151,3 +155,6 @@
 	 lang/racket-mode)
 (attach! racket
 	 lang/pollen-mode)
+
+(attach! tex LaTeX-mode
+	 latex-mode)
