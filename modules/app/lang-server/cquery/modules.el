@@ -4,6 +4,10 @@
 				 :host github
 				 :repo "cquery-project/emacs-cquery"))
 
+(defvar cquery-enabled-path-list nil
+  "list of directories when cquery can be enabled when open files in
+  the subdirectories of these directories")
+
 (defun config-lang-client-cquery ()
   (when (eq (lang-server-client) 'eglot)
     (with-eval-after-load "eglot"

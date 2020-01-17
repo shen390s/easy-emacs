@@ -31,6 +31,22 @@
        nil
      (pop ,lst)))
       
+(defun file-is-under-directory (file dir)
+  (defun in-dir (f d)
+    (let ((f (string-trim-right f "/"))
+	  (d (string-trim-right d "/")))
+      (cond ((string= f "") nil)
+	    ((string= f d) t)
+	    (t (in-dir (file-name-directory f) d)))))
+  (let ((full-name (expand-file-name file))
+	(full-dir (expand-file-name dir)))
+    (in-dir full-name full-dir)))
+
+(defun file-in-path-list (file l)
+  (cond ((null l) nil)
+	((file-is-under-directory file (car l)) t)
+	(t (file-in-path-list file (cdr l)))))
+
 (defmacro when-bind! (var exp &rest body)
   (declare (indent defun))
   `(let ((,var ,exp))
