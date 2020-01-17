@@ -3,6 +3,8 @@
 ;; this file will be loaded
 
 (setq use-polymode t)
+(add-to-list 'cquery-enabled-path-list
+	     "/Users/rshen/workspace")
 
 ;; Enable features
 ;;  features in global scope
@@ -22,7 +24,7 @@
 	  ;;color-theme-modern
 	  (load-custom 'rshen)
 	  ;;zenburn-emacs
-	  (sanityinc-tomorrow 'blue)
+	  ;;(sanityinc-tomorrow 'blue)
           ;;atom-one-dark
           ;;aanila
           ;;tango-dark
@@ -66,7 +68,12 @@
 	  (lsp-ui
 	   ;;stickyfunc-enhance
 	   ;;eglot
-	   (cquery :activate
+	   (cquery :when (let ((b (buffer-file-name)))
+			   (if b
+			       (file-in-path-list b
+						  cquery-enabled-path-list)
+			     t))
+		   :activate
 	   	   (:pre ((setq cquery-executable "/opt/tools/cquery/bin/cquery"))))
 	   ggtags
 	   (call-graph
@@ -113,6 +120,10 @@
 
 (enable! plantuml ())
 
+(enable! tex
+	 (magic-latex
+	  auctex))
+
 (attach! graphviz
 	 graphviz-mode)
 (attach! rust
@@ -151,3 +162,6 @@
 	 lang/racket-mode)
 (attach! racket
 	 lang/pollen-mode)
+
+(attach! tex LaTeX-mode
+	 latex-mode)
