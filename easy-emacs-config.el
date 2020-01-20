@@ -3,6 +3,8 @@
 ;; this file will be loaded
 
 (setq use-polymode t)
+(add-to-list 'cquery-enabled-path-list
+	     "/Users/rshen/workspace")
 
 ;; Enable features
 ;;  features in global scope
@@ -66,7 +68,12 @@
 	  (lsp-ui
 	   ;;stickyfunc-enhance
 	   ;;eglot
-	   (cquery :activate
+	   (cquery :when (let ((b (buffer-file-name)))
+			   (if b
+			       (file-in-path-list b
+						  cquery-enabled-path-list)
+			     t))
+		   :activate
 	   	   (:pre ((setq cquery-executable "/opt/tools/cquery/bin/cquery"))))
 	   ggtags
 	   (call-graph

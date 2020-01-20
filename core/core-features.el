@@ -7,7 +7,7 @@
 (require 'core-log)
 (require 'core-modules)
 
-(defvar feature-key-args '(:activate :deactivate)
+(defvar feature-key-args '(:activate :deactivate :when)
   "Key args for feature")
   
 (defvar actived-modes nil
@@ -51,6 +51,11 @@
       (cl-getf (cl-getf (cdr feature) tag) subtag)
     nil))
 
+(defun extract-active-condition (feature)
+  (if (consp feature)
+      (cl-getf (cdr feature) :when t)
+    t))
+
 (defun parse-feature (feature)
   (pcase (extract-feature-name feature)
     (`(,is-disabled . ,feature-name)
@@ -66,9 +71,11 @@
 	   (post-deactivate-action (extract-hook-action feature
 							:deactivate
 							:post))
+	   (active-condition (extract-active-condition feature))
 	   (args (extract-feature-args feature)))
        (list :name feature-name
 	     :disabled is-disabled
+	     :active-condition active-condition
 	     :pre-activate-action pre-activate-action
 	     :post-activate-action post-activate-action
 	     :pre-deactivate-action pre-deactivate-action
@@ -80,8 +87,8 @@
       `(,fn ,@args)
     `(dummy-fn)))
 
-(defun mk-activate (pre-action fn post-action args)
-  `(progn
+(defun mk-activate (condition pre-action fn post-action args)
+  `(when ,condition
      ,@(mk-action pre-action)
      (let ((result ,(mk-function-call fn args)))
        ,@(mk-action post-action)
@@ -102,22 +109,25 @@
 	#'dummy-fn))))
 
 (defun activate-feature (feature)
-  (mk-activate (plist-get feature :pre-activate-action)
-	     (get-feature-activate-fn (plist-get feature :name))
-	     (plist-get feature :post-activate-action)
-	     (plist-get feature :args)))
+  (mk-activate (plist-get feature :active-condition)
+	       (plist-get feature :pre-activate-action)
+	       (get-feature-activate-fn (plist-get feature :name))
+	       (plist-get feature :post-activate-action)
+	       (plist-get feature :args)))
 
 (defun disable-feature (feature)
-  (mk-activate nil
-	     (get-feature-deactivate-fn (plist-get feature :name))
-	     nil
-	     nil))
+  (mk-activate t
+	       nil
+	       (get-feature-deactivate-fn (plist-get feature :name))
+	       nil
+	       nil))
 
 (defun deactivate-feature (feature)
-  (mk-activate (plist-get feature :pre-deactivate-action)
-	     (get-feature-activate-fn (plist-get feature :name))
-	     (plist-get feature :post-deactivate-action)
-	     nil))
+  (mk-activate  (plist-get feature :active-condition)
+	        (plist-get feature :pre-deactivate-action)	
+	        (get-feature-activate-fn (plist-get feature :name))
+	        (plist-get feature :post-deactivate-action)
+	        nil))
 
 (eval-and-compile
   (defun add-feature-to-scope (scope feature)
@@ -134,6 +144,8 @@
   	  feature scope)
  
   (let ((zfeature (parse-feature feature)))
+    (DEBUG! "make-use-xfeature zfeature %s"
+	    zfeature)
     (add-feature-to-scope scope
 			  zfeature)))
 
