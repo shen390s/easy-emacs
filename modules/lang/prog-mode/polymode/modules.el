@@ -1,5 +1,4 @@
-(scope! poly-mode
-	prog-lang)
+(scope! poly-mode prog-lang)
 
 (package! :name polymode
 	  :docstring "Extensible framework for multiple major modes"
@@ -25,12 +24,22 @@
 			   :host github
 			   :repo "emacsmirror/poly-R"))
 
+(defun reassoc-md-ext ()
+  (unassoc-ext "\\.md\\'")
+  (unassoc-ext "\\.markdown\\'")
+  (add-to-list 'auto-mode-alist
+	       '("\\.md\\'" . lang/poly-markdown-mode))
+  (add-to-list 'auto-mode-alist
+	       '("\\.markdown\\'" . lang/poly-markdown-mode)))
+
 (defun config-poly-markdown ()
-  (progn
-    (INFO! "configuring poly-markdown mode ...")
-    (add-to-list 'auto-mode-alist
-		 '("\\.md\\'" . lang/poly-markdown-mode))
-    t))
+  (DEBUG! "configuring poly-markdown mode ...")
+  (and use-polymode
+       (progn 
+	 (reassoc-md-ext)
+      	 (with-eval-after-load "markdown-mode"
+	   (reassoc-md-ext))
+	 t)))
 
 (autoload-r! poly-markdown-mode
 	     (polymode poly-markdown markdown-mode)
@@ -43,10 +52,17 @@
 	config-poly-markdown
 	poly-markdown-mode)
 
+(defun reassoc-R-ext ()
+  (unassoc-ext "\\.Rmd\\'")
+  (add-to-list 'auto-mode-alist '("\\.Rmd\\'" . lang/poly-R-mode)))
+
 (defun config-poly-R ()
-  (progn
-    (add-to-list 'auto-mode-alist '("\\.r\\'" . lang/poly-R-mode))
-    t))
+  (and use-polymode
+       (progn
+	 (reassoc-R-ext)
+	 (with-eval-after-load "ess-autoloads"
+	   (reassoc-R-ext))
+	 t)))
 
 (autoload-r! poly-noweb+r-mode
 	     (polymode poly-R ess)
@@ -59,10 +75,17 @@
 	config-poly-R
 	poly-noweb+r-mode)
 
+(defun hack-poly-org ()
+       (unassoc-ext "\\.org\\'")
+       (add-to-list 'auto-mode-alist '("\\.org\\'" . lang/poly-org-mode)))
+
 (defun config-poly-org ()
-  (progn
-    (add-to-list 'auto-mode-alist '("\\.org\\'" . lang/poly-org-mode))
-    t))
+  (and use-polymode
+       (progn
+	 (hack-poly-org)
+	 (with-eval-after-load "org"
+	   (hack-poly-org))
+	 t)))
 
 (autoload-r! poly-org-mode
 	     (polymode poly-org)

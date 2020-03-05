@@ -2,11 +2,14 @@
 ;; Configuration for easy-emacs
 ;; this file will be loaded
 
+(setq use-polymode t)
+
 ;; Enable features
 ;;  features in global scope
 (enable! global
 	 ((settings java-home
-		    "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home")
+		    "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home"
+		    use-polymode t)
 	  smex
 	  emacs-server
 	  ;;treemacs
@@ -17,7 +20,7 @@
 	  ;;projectile
 	  ;;color-theme-solarized
 	  ;;color-theme-modern
-	  load-custom
+	  (load-custom 'rshen)
 	  ;;zenburn-emacs
 	  (sanityinc-tomorrow 'blue)
           ;;atom-one-dark
@@ -48,16 +51,15 @@
 (enable! prog-lang
 	 (smartparens
 	  which-func
-	  gxref
 	  rainbow-delimiters
 	  rainbow-identifiers
 	  -flymake
 	  ;;fold-this
 	  vimish-fold
-	  ruler
 	  ;;origami
-	  auto-fill
-	  hlinum))
+	  ruler
+          auto-fill
+          hlinum))
 
 ;; features in c/c++
 (enable!  c-c++
@@ -70,6 +72,8 @@
 	   (call-graph
 	    :activate (:pre ((setq cg-initial-max-depth 3))))
 	   ;;ccls
+	   ;;(ccls :activate
+	   ;;      (:pre ((setq ccls-executable "/opt/tools/ccls/bin/ccls"))))
 	   ;;clangd
 	   (set-c-style :activate
 			(:pre ((c-set-style "cc-mode"))))))
@@ -102,28 +106,53 @@
 	 ())
 
 (enable! markdown
-	 (hlinum
-	  ;;format-all
+	 (;;format-all
 	  vmd))
 
 (enable! poly-mode
-	 (hlinum
-	  ;;format-all
+	 (;;format-all
 	  vmd
 	  ))
 
 (enable! plantuml ())
 
-(attach! graphviz graphviz-mode)
-(attach! rust lang/rust-mode)
-(attach! fish lang/fish-mode)
-(attach! plantuml lang/plantuml-mode)
-(attach! elisp emacs-lisp-mode)
-(attach! python python-mode)
-(attach! c-c++ c-mode c++-mode)
-(attach! java java-mode)
-(attach! clojure lang/clojure-mode)
-;;(attach! markdown lang/markdown-mode lang/gfm-mode markdown-mode gfm-mode)
-(attach! poly-mode lang/poly-markdown-mode lang/poly-R-mode lang/poly-org-mode)
-(attach! racket lang/racket-mode)
-(attach! racket lang/pollen-mode)
+(attach! graphviz
+	 graphviz-mode)
+(attach! rust
+	 lang/rust-mode)
+(attach! fish
+	 lang/fish-mode)
+(attach! plantuml
+	 lang/plantuml-mode)
+(attach! elisp
+	 emacs-lisp-mode
+	 lisp-interaction-mode)
+(attach! python
+	 python-mode)
+(attach! c-c++
+	 c-mode
+	 c++-mode)
+(attach! java
+	 java-mode)
+(attach! clojure
+	 lang/clojure-mode)
+(if use-polymode
+    (attach! poly-mode
+	     lang/markdown-mode
+	     lang/gfm-mode
+	     markdown-mode
+	     gfm-mode)
+  (attach! markdown
+	   lang/markdown-mode
+	   lang/gfm-mode
+	   markdown-mode
+	   gfm-mode))
+
+(attach! poly-mode
+	 lang/poly-markdown-mode
+	 lang/poly-R-mode
+	 lang/poly-org-mode)
+(attach! racket
+	 lang/racket-mode)
+(attach! racket
+	 lang/pollen-mode)

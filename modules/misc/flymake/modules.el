@@ -15,6 +15,8 @@
 
 (defun disable-flymake ()
   ;;(message "disable-flymake for buffer %s" (buffer-name))
+  (DEBUG! "disable flymake for buffer %s"
+	  (buffer-name))
   (flymake-mode -1))
 
 ;; disable flymake as default
