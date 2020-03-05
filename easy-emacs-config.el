@@ -90,6 +90,9 @@
 	 (rls
           ))
 
+(enable! fish
+	 ())
+
 ;; features in java scope
 (enable! java
 	 (lsp-java
@@ -113,6 +116,7 @@
 
 (attach! graphviz graphviz-mode)
 (attach! rust lang/rust-mode)
+(attach! fish lang/fish-mode)
 (attach! plantuml lang/plantuml-mode)
 (attach! elisp emacs-lisp-mode)
 (attach! python python-mode)
