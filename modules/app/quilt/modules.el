@@ -12,7 +12,7 @@
 				     dir)
 			     "QUILT Output")
 	  (shell-command (format "cd %s && quilt add %s"
-				 dir file)
+				 dir (file-name-nondirectory file))
 			 "QUILT Output"))))))
 
 (defun activate-emacs-quilt ()
