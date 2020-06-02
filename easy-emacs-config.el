@@ -45,6 +45,7 @@
           forge
 	  golden-ratio
 	  icicles
+	  emacs-quilt ;; to enable emacs and quilt integration
 	  (slime :activate
 		 (:pre ((setq inferior-lisp-program "/opt/pkg/bin/sbcl")
 			(setq slime-contribs '(slime-fancy)))))))
@@ -101,6 +102,9 @@
 	 (rls
           ))
 
+(enable! fish
+	 ())
+
 ;; features in java scope
 (enable! java
 	 (lsp-java
@@ -128,6 +132,8 @@
 	 graphviz-mode)
 (attach! rust
 	 lang/rust-mode)
+(attach! fish
+         lang/fish-mode)
 (attach! plantuml
 	 lang/plantuml-mode)
 (attach! elisp
