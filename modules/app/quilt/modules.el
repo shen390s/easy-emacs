@@ -1,9 +1,19 @@
+(defvar QUILT (executable-find "quilt")
+  "The executable file of quilt")
+
 (defun emacs-quilt-check ()
-  t)
+  QUILT)
 
 (defun emacs-quilt ()
-  (INFO! "emacs-quilt")
-  t)
+  (when QUILT
+    (let ((file (buffer-file-name)))
+      (let ((dir (file-name-directory file)))
+	(when (shell-command (format "cd %s && quilt top"
+				     dir)
+			     "QUILT Output")
+	  (shell-command (format "cd %s && quilt add %s"
+				 dir file)
+			 "QUILT Output"))))))
 
 (defun activate-emacs-quilt ()
   (add-hook 'before-save-hook #'emacs-quilt))
