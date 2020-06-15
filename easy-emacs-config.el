@@ -171,3 +171,7 @@
 
 (attach! tex LaTeX-mode
 	 latex-mode)
+
+(attach! prog-lang
+	 makefile-mode
+	 makefile-bsdmake-mode)
