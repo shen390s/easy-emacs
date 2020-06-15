@@ -45,6 +45,7 @@
           forge
 	  golden-ratio
 	  icicles
+	  emacs-quilt ;; to enable emacs and quilt integration
 	  (slime :activate
 		 (:pre ((setq inferior-lisp-program "/opt/pkg/bin/sbcl")
 			(setq slime-contribs '(slime-fancy)))))))
