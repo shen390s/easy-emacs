@@ -21,11 +21,10 @@
 (defun deactivate-emacs-quilt ()
   (remove-hook 'before-save-hook #'emacs-quilt))
 
-(feature!
- emacs-quilt
- "Emacs Editor Quilt"
- nil
- emacs-quilt-check
- activate-emacs-quilt
- deactivate-emacs-quilt)
+(feature! emacs-quilt
+	  "Emacs Editor Quilt"
+	  nil
+	  emacs-quilt-check
+	  activate-emacs-quilt
+	  deactivate-emacs-quilt)
 
