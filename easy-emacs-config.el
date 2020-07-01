@@ -128,6 +128,9 @@
 	 (magic-latex
 	  auctex))
 
+(enable! ascii-doctor
+	 ())
+
 (attach! graphviz
 	 graphviz-mode)
 (attach! rust
@@ -175,3 +178,6 @@
 (attach! prog-lang
 	 makefile-mode
 	 makefile-bsdmake-mode)
+
+(attach! ascii-doctor
+         lang/adoc-mode)

@@ -2,7 +2,7 @@
 
 (package! :name adoc-mode
 	  :docstring "A major Emacs mode for edit ascii-doctor document"
-	  :pkginfo (fish-mode :type git
+	  :pkginfo (adoc-mode :type git
 			      :host github
 			      :repo "sensorflo/adoc-mode"))
 
@@ -13,7 +13,7 @@
 
 (autoload-r! adoc-mode
 	     (adoc-mode)
-	     "ascii-doctor mode"
+	     "adoc-mode"
 	     t)
 
 (rmode! lang/adoc-mode
