@@ -181,7 +181,7 @@
 			    (disable-feature feature)))
        (,(scope-function scope 'entry :disable-parent-features)))
 
-     (defun ,(scope-function scope 'entry :deactivate) ()
+     (defun ,(scope-function scope 'entry :deactivate-features) ()
        ,@(cl-loop for feature in (oref (get-scope scope) features)
 		  collect (unless (plist-get feature :disabled)
 			    (deactivate-feature feature))))))
