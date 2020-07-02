@@ -376,7 +376,8 @@
 	  (,',mode -1))
 	(feature! ,',feature
 		  ,',docstring
-		  nil nil
+		  ,',pkgs
+		  nil
 		  ,activate-fn
 		  ,deactivate-fn))))
 
