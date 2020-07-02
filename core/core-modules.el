@@ -232,21 +232,26 @@
        (,(scope-function parent 'entry :post-activate)))
 
      (defun ,(scope-function name 'entry :enable-parent-features) ()
-       (,(scope-function parent 'entry :enable-features)))
+       (when (fboundp ',(scope-function parent 'entry :enable-features))
+	 (,(scope-function parent 'entry :enable-features))))
 
      (defun ,(scope-function name 'entry :disable-parent-features) ()
-       (,(scope-function parent 'entry :disable-features)))
+       (when (fboundp ',(scope-function parent 'entry :disable-features))
+	 (,(scope-function parent 'entry :disable-features))))
      
      (defun ,(scope-function name 'entry :activate) ()
        ;;(,(scope-function parent 'entry :activate))
        ;;(activate-scope ,name)
-       (,(scope-function name 'entry :enable-features))
-       (,(scope-function name 'entry :disable-features)))
+       (when (fboundp ',(scope-function name 'entry :enable-features))
+	 (,(scope-function name 'entry :enable-features)))
+       (when (fboundp ',(scope-function name 'entry :disable-features))
+	 (,(scope-function name 'entry :disable-features))))
 
      (defun ,(scope-function name 'entry :deactivate) ()
        (unless ,parent 
            (deactivate-scope ,parent))
-       (,(scope-function name 'entry :deactivate)))))
+       (when (fboundp ',(scope-function name 'entry :deactivate-features))
+	 (,(scope-function name 'entry :deactivate-features))))))
 
 (defun install-package-by-name (pkg)
   (DEBUG! "installing package %s..." pkg)
@@ -320,7 +325,8 @@
 
 (defmacro deactivate-scope (scope)
   `(progn
-     (,(scope-function scope 'entry :deactivate))))
+     (when (fboundp ',(scope-function scope 'entry :deactivate))
+       (,(scope-function scope 'entry :deactivate)))))
 
 (defun install-packages-for-scope (scope)
   (let ((pkg-install-fn (scope-function scope 'entry :install-pkgs)))
