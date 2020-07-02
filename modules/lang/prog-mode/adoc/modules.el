@@ -4,7 +4,7 @@
 	  :docstring "A major Emacs mode for edit ascii-doctor document"
 	  :pkginfo (adoc-mode :type git
 			      :host github
-			      :repo "sensorflo/adoc-mode"))
+			      :repo "shen390s/adoc-mode"))
 
 (defun config-adoc ()
   (add-to-list 'auto-mode-alist
