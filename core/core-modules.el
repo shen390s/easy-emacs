@@ -239,13 +239,20 @@
        (when (fboundp ',(scope-function parent 'entry :disable-features))
 	 (,(scope-function parent 'entry :disable-features))))
      
-     (defun ,(scope-function name 'entry :activate) ()
-       ;;(,(scope-function parent 'entry :activate))
-       ;;(activate-scope ,name)
+     (defun ,(scope-function name 'entry :activate-1) ()
+       (,(scope-function parent 'entry :activate-1))
        (when (fboundp ',(scope-function name 'entry :enable-features))
-	 (,(scope-function name 'entry :enable-features)))
+	 (,(scope-function name 'entry :enable-features))))
+
+     (defun ,(scope-function name 'entry :activate-2) ()
        (when (fboundp ',(scope-function name 'entry :disable-features))
-	 (,(scope-function name 'entry :disable-features))))
+	 (,(scope-function name 'entry :disable-features)))
+       (,(scope-function parent 'entry :activate-2)))
+     
+     (defun ,(scope-function name 'entry :activate) ()
+       (progn
+	 (,(scope-function name 'entry :activate-1))
+	 (,(scope-function name 'entry :activate-2))))
 
      (defun ,(scope-function name 'entry :deactivate) ()
        (unless ,parent 

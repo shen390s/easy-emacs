@@ -168,7 +168,6 @@
      ,(cl-loop for feature in features
 	       do (make-use-xfeature scope feature))
      (defun ,(scope-function scope 'entry :enable-features) ()
-       (,(scope-function scope 'entry :enable-parent-features))
        ,@(cl-loop for feature in (oref (get-scope scope) features)
 		  collect (unless (plist-get feature :disabled)
 			    ;; call activate feature
@@ -178,8 +177,7 @@
        ,@(cl-loop for feature in (oref (get-scope scope) features)
 		  collect (when (plist-get feature :disabled)
 			    ;; call disable feature
-			    (disable-feature feature)))
-       (,(scope-function scope 'entry :disable-parent-features)))
+			    (disable-feature feature))))
 
      (defun ,(scope-function scope 'entry :deactivate-features) ()
        ,@(cl-loop for feature in (oref (get-scope scope) features)
