@@ -87,8 +87,8 @@
 			(:pre ((c-set-style "cc-mode"))))))
 
 ;; features in elisp scope
-(enable! elisp
-	 ())
+;;(enable! elisp
+;;	 ())
 
 ;; features in python scope
 (enable! python
@@ -102,16 +102,16 @@
 	 (rls
           ))
 
-(enable! fish
-	 ())
+;;(enable! fish
+;;	 ())
 
 ;; features in java scope
 (enable! java
 	 (lsp-java
 	  ggtags))
 
-(enable! graphviz
-	 ())
+;;(enable! graphviz
+;;	 ())
 
 (enable! markdown
 	 (;;format-all
@@ -122,11 +122,14 @@
 	  vmd
 	  ))
 
-(enable! plantuml ())
+;;(enable! plantuml ())
 
 (enable! tex
 	 (magic-latex
 	  auctex))
+
+;;(enable! ascii-doctor
+;;	 ())
 
 (attach! graphviz
 	 graphviz-mode)
@@ -171,3 +174,10 @@
 
 (attach! tex LaTeX-mode
 	 latex-mode)
+
+(attach! prog-lang
+	 makefile-mode
+	 makefile-bsdmake-mode)
+
+(attach! ascii-doctor
+         lang/adoc-mode)

@@ -232,21 +232,33 @@
        (,(scope-function parent 'entry :post-activate)))
 
      (defun ,(scope-function name 'entry :enable-parent-features) ()
-       (,(scope-function parent 'entry :enable-features)))
+       (when (fboundp ',(scope-function parent 'entry :enable-features))
+	 (,(scope-function parent 'entry :enable-features))))
 
      (defun ,(scope-function name 'entry :disable-parent-features) ()
-       (,(scope-function parent 'entry :disable-features)))
+       (when (fboundp ',(scope-function parent 'entry :disable-features))
+	 (,(scope-function parent 'entry :disable-features))))
+     
+     (defun ,(scope-function name 'entry :activate-1) ()
+       (,(scope-function parent 'entry :activate-1))
+       (when (fboundp ',(scope-function name 'entry :enable-features))
+	 (,(scope-function name 'entry :enable-features))))
+
+     (defun ,(scope-function name 'entry :activate-2) ()
+       (when (fboundp ',(scope-function name 'entry :disable-features))
+	 (,(scope-function name 'entry :disable-features)))
+       (,(scope-function parent 'entry :activate-2)))
      
      (defun ,(scope-function name 'entry :activate) ()
-       ;;(,(scope-function parent 'entry :activate))
-       ;;(activate-scope ,name)
-       (,(scope-function name 'entry :enable-features))
-       (,(scope-function name 'entry :disable-features)))
+       (progn
+	 (,(scope-function name 'entry :activate-1))
+	 (,(scope-function name 'entry :activate-2))))
 
      (defun ,(scope-function name 'entry :deactivate) ()
        (unless ,parent 
            (deactivate-scope ,parent))
-       (,(scope-function name 'entry :deactivate)))))
+       (when (fboundp ',(scope-function name 'entry :deactivate-features))
+	 (,(scope-function name 'entry :deactivate-features))))))
 
 (defun install-package-by-name (pkg)
   (DEBUG! "installing package %s..." pkg)
@@ -320,7 +332,8 @@
 
 (defmacro deactivate-scope (scope)
   `(progn
-     (,(scope-function scope 'entry :deactivate))))
+     (when (fboundp ',(scope-function scope 'entry :deactivate))
+       (,(scope-function scope 'entry :deactivate)))))
 
 (defun install-packages-for-scope (scope)
   (let ((pkg-install-fn (scope-function scope 'entry :install-pkgs)))
@@ -363,5 +376,22 @@
     (if m
 	m
       mode)))
+
+(defmacro mode2feature! (mode feature pkgs docstring)
+  `(let ((activate-fn (intern (concat "activate-" (symbol-name
+						 ',feature))))
+	 (deactivate-fn (intern (concat "deactivate-" (symbol-name
+						     ',feature)))))
+     `(progn
+	(defun ,activate-fn ()
+	  (,',mode))
+	(defun ,deactivate-fn ()
+	  (,',mode -1))
+	(feature! ,',feature
+		  ,',docstring
+		  ,',pkgs
+		  nil
+		  ,activate-fn
+		  ,deactivate-fn))))
 
 (provide 'core-modules)
