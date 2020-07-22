@@ -1,8 +1,8 @@
 (package! :name emacs-livemarkup
 	  :docstring "live preview for org and asciidoc"
-	  :pkginfo (forge :type git
-			  :host github
-			  :repo "dawsers/emacs-livemarkup"))
+	  :pkginfo (emacs-livemarkup :type git
+			             :host github
+			             :repo "dawsers/emacs-livemarkup"))
 
 (defun livemarkup-config ()
   (setq livemarkup-output-directory "/tmp"
