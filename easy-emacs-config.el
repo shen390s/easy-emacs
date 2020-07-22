@@ -128,8 +128,8 @@
 	 (magic-latex
 	  auctex))
 
-;;(enable! ascii-doctor
-;;	 ())
+(enable! ascii-doctor
+	 (livemarkup))
 
 (attach! graphviz
 	 graphviz-mode)
