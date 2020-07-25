@@ -1,14 +1,12 @@
-(defvar emacs-server-host-port 3861
-  "The tcp port which emacs server will listen")
-(defvar emacs-server-auth-key "Br-x;aX(SIP.{<3]AKY8Q\\KAgen]}nS98S$dt?x8|}IKn]eT{FM=h[m6jRg@KW,u"
-  "auth key for emacs connection")
 
-(defun emacs-server-check ()
+(defun emacs-server-config ()
   (progn
-    (setq server-use-tcp t
-	  server-host (system-name)
-	  server-port emacs-server-host-port
-	  server-auth-key emacs-server-auth-key)
+    (setq server-port (getenv "EMACS_SERVER_PORT")
+	  server-auth-key (getenv "EMACS_SERVER_AUTH"))
+    (when (and server-port
+	       server-auth-key)
+      (setq server-use-tcp t
+	    server-host (system-name)))
     t))
 
 (defun activate-emacs-server ()
@@ -20,7 +18,7 @@
 (feature! emacs-server
 	  "Emacs Editor Server"
 	  nil
-	  emacs-server-check
+	  emacs-server-config
 	  activate-emacs-server
 	  deactivate-emacs-server)
 
