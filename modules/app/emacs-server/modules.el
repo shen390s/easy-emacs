@@ -1,6 +1,6 @@
 (defvar emacs-server-host-port 3861
   "The tcp port which emacs server will listen")
-(defvar emacs-server-auth-key "killUS.DOG.2020"
+(defvar emacs-server-auth-key "Br-x;aX(SIP.{<3]AKY8Q\\KAgen]}nS98S$dt?x8|}IKn]eT{FM=h[m6jRg@KW,u"
   "auth key for emacs connection")
 
 (defun emacs-server-check ()
