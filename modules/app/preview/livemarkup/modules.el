@@ -5,7 +5,7 @@
 			             :repo "shen390s/emacs-livemarkup"))
 
 (defun livemarkup-config ()
-  (setq livemarkup-output-directory "/tmp"
+  (setq livemarkup-output-directory nil
 	livemarkup-close-buffer-delete-temp-file t
 	livemarkup-refresh-interval 3)
   t)
