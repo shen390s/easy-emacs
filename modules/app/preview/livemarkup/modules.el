@@ -6,7 +6,7 @@
 
 (defun livemarkup-config ()
   (setq livemarkup-output-directory nil
-	livemarkup-close-buffer-delete-temp-file t
+	livemarkup-close-buffer-delete-temp-files t
 	livemarkup-refresh-interval 3)
   t)
 
