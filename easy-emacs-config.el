@@ -1,6 +1,7 @@
 ;; -*- lexical-binding: t -*-
 ;; Configuration for easy-emacs
 ;; this file will be loaded
+(require 'tramp)
 
 (setq use-polymode t)
 (add-to-list 'cquery-enabled-path-list
@@ -70,7 +71,8 @@
 	   ;;stickyfunc-enhance
 	   ;;eglot
 	   (cquery :when (let ((b (buffer-file-name)))
-			   (if b
+			   (if (and b
+				    (not (tramp-tramp-file-p b)))
 			       (file-in-path-list b
 						  cquery-enabled-path-list)
 			     t))
@@ -129,7 +131,7 @@
 	  auctex))
 
 (enable! ascii-doctor
-	 (livemarkup))
+         (livemarkup))
 
 (attach! graphviz
 	 graphviz-mode)
@@ -176,8 +178,9 @@
 	 latex-mode)
 
 (attach! prog-lang
-	 makefile-mode
+         makefile-mode
 	 makefile-bsdmake-mode)
 
 (attach! ascii-doctor
-         lang/adoc-mode)
+         lang/adoc-mode
+         adoc-mode)
