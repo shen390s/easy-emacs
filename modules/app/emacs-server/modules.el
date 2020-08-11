@@ -6,7 +6,7 @@
     (when (and server-port
 	       server-auth-key)
       (setq server-use-tcp t
-	    server-host (system-name)))
+	    server-host "127.0.0.1"))
     t))
 
 (defun activate-emacs-server ()
