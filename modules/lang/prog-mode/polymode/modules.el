@@ -24,6 +24,11 @@
 			   :host github
 			   :repo "emacsmirror/poly-R"))
 
+(package! :name poly-asciidoc
+	  :docstring "Poly asciidoc mode"
+	  :pkginfo (poly-asciidoc :type git
+				  :host github
+				  :repo "shen390s/poly-asciidoc"))
 (defun reassoc-md-ext ()
   (unassoc-ext "\\.md\\'")
   (unassoc-ext "\\.markdown\\'")
@@ -98,3 +103,26 @@
 	config-poly-org
 	poly-org-mode)
 
+(defun reassoc-adoc-ext ()
+  (unassoc-ext "\\.adoc\\'")
+  (add-to-list 'auto-mode-alist
+	       '("\\.adoc\\'" . lang/poly-asciidoc-mode)))
+
+(defun config-poly-asciidoc ()
+  (and use-polymode
+       (progn
+	 (reassoc-adoc-ext)
+	 (with-eval-after-load "adoc-mode"
+	   (reassoc-adoc-ext))
+	 t)))
+
+(autoload-r! poly-asciidoc-mode
+	     (polymode poly-asciidoc-mode adoc-mode)
+	     "poly-asciidoc"
+	     t)
+
+(rmode! lang/poly-asciidoc-mode
+	"Emacs mode for poly asciidoc"
+	(polymode poly-asciidoc-mode adoc-mode)
+	config-poly-asciidoc
+	poly-asciidoc-mode)
