@@ -117,12 +117,12 @@
 	 t)))
 
 (autoload-r! poly-asciidoc-mode
-	     (polymode poly-asciidoc-mode adoc-mode)
+	     (polymode poly-asciidoc adoc-mode)
 	     "poly-asciidoc"
 	     t)
 
 (rmode! lang/poly-asciidoc-mode
 	"Emacs mode for poly asciidoc"
-	(polymode poly-asciidoc-mode adoc-mode)
+	(polymode poly-asciidoc adoc-mode)
 	config-poly-asciidoc
 	poly-asciidoc-mode)
