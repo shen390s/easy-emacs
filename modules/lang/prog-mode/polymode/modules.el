@@ -113,8 +113,8 @@
     (require 'evil)
     
     (define-key-in-major-map
-      "gc" #'poly-asciidoc-compile
-      "gv" #'poly-asciidoc-view)))
+      "gcc" #'poly-asciidoc-compile
+      "gcv" #'poly-asciidoc-view)))
 
 (defun config-poly-asciidoc ()
   (and use-polymode
