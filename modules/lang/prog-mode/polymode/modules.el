@@ -108,12 +108,22 @@
   (add-to-list 'auto-mode-alist
 	       '("\\.adoc\\'" . lang/poly-asciidoc-mode)))
 
+(defun poly-asciidoc-keybind ()
+  (when (feature-enabled 'evil)
+    (require 'evil)
+    
+    (define-key-in-major-map
+      "gc" #'poly-asciidoc-compile
+      "gv" #'poly-asciidoc-view)))
+
 (defun config-poly-asciidoc ()
   (and use-polymode
        (progn
 	 (reassoc-adoc-ext)
 	 (with-eval-after-load "adoc-mode"
 	   (reassoc-adoc-ext))
+	 (with-eval-after-load "poly-asciidoc"
+	   (poly-asciidoc-keybind))
 	 t)))
 
 (autoload-r! poly-asciidoc-mode

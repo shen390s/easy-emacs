@@ -190,5 +190,7 @@
 
 (attach! prog-lang
          makefile-mode
+	 lang/yaml-mode
+	 yaml-mode
 	 makefile-bsdmake-mode)
 
