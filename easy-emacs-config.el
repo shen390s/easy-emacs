@@ -158,17 +158,25 @@
 	     lang/markdown-mode
 	     lang/gfm-mode
 	     markdown-mode
+	     gfm-mode
+	     adoc-mode
+	     lang/poly-asciidoc-mode)
+  (progn
+    (attach! markdown
+	     lang/markdown-mode
+	     lang/gfm-mode
+	     markdown-mode
 	     gfm-mode)
-  (attach! markdown
-	   lang/markdown-mode
-	   lang/gfm-mode
-	   markdown-mode
-	   gfm-mode))
+    (attach! ascii-doctor
+	     lang/adoc-mode
+	     adoc-mode)))
 
 (attach! poly-mode
 	 lang/poly-markdown-mode
 	 lang/poly-R-mode
-	 lang/poly-org-mode)
+	 lang/poly-org-mode
+	 lang/poly-asciidoc-mode)
+
 (attach! racket
 	 lang/racket-mode)
 (attach! racket
@@ -181,6 +189,3 @@
          makefile-mode
 	 makefile-bsdmake-mode)
 
-(attach! ascii-doctor
-         lang/adoc-mode
-         adoc-mode)
