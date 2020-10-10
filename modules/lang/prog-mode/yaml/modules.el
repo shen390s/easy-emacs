@@ -7,6 +7,7 @@
 			      :repo "yaml/yaml-mode"))
 
 (defun config-yaml ()
+  (DEBUG! "configuring yam mode...")
   (progn
     (add-to-list 'auto-mode-alist
 		 '("\\.yml\\'" . lang/yaml-mode))
