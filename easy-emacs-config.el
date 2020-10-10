@@ -154,13 +154,14 @@
 (attach! clojure
 	 lang/clojure-mode)
 (if use-polymode
-    (attach! poly-mode
-	     lang/markdown-mode
-	     lang/gfm-mode
-	     markdown-mode
-	     gfm-mode
-	     adoc-mode
-	     lang/poly-asciidoc-mode)
+    (progn
+      (attach! poly-mode
+	       lang/markdown-mode
+	       lang/gfm-mode
+	       markdown-mode
+	       gfm-mode)
+      (attach! ascii-doctor
+	       lang/poly-asciidoc-mode))
   (progn
     (attach! markdown
 	     lang/markdown-mode
@@ -168,14 +169,16 @@
 	     markdown-mode
 	     gfm-mode)
     (attach! ascii-doctor
-	     lang/adoc-mode
-	     adoc-mode)))
+	     lang/adoc-mode)))
 
 (attach! poly-mode
 	 lang/poly-markdown-mode
 	 lang/poly-R-mode
 	 lang/poly-org-mode
 	 lang/poly-asciidoc-mode)
+
+(attach! ascii-doctor
+	 adoc-mode)
 
 (attach! racket
 	 lang/racket-mode)
