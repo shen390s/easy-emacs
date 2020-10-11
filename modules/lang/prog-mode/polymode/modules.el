@@ -108,7 +108,7 @@
   (add-to-list 'auto-mode-alist
 	       '("\\.adoc\\'" . lang/poly-asciidoc-mode)))
 
-(defun poly-asciidoc-keybind ()
+(defun activate-poly-asciidoc-keybind ()
   (when (feature-enabled 'evil)
     (require 'evil)
     
@@ -117,14 +117,19 @@
       "gcv" #'poly-asciidoc-view
       "gcf" #'poly-asciidoc-set-output-format)))
 
+(feature! poly-asciidoc-keybind
+	  "Bind keys for poly-asciidoc mode"
+	  nil
+	  nil
+	  activate-poly-asciidoc-keybind
+	  nil)
+
 (defun config-poly-asciidoc ()
   (and use-polymode
        (progn
 	 (reassoc-adoc-ext)
 	 (with-eval-after-load "adoc-mode"
 	   (reassoc-adoc-ext))
-	 (with-eval-after-load "poly-asciidoc"
-	   (poly-asciidoc-keybind))
 	 t)))
 
 (autoload-r! poly-asciidoc-mode

@@ -130,8 +130,11 @@
 	 (magic-latex
 	  auctex))
 
-(enable! ascii-doctor
-         (livemarkup))
+(if use-polymode
+    (enable! ascii-doctor
+	     (livemarkup  poly-asciidoc-keybind))
+  (enable! ascii-doctor
+	   (livemarkup)))
 
 (attach! graphviz
 	 graphviz-mode)
@@ -153,6 +156,7 @@
 	 java-mode)
 (attach! clojure
 	 lang/clojure-mode)
+
 (if use-polymode
     (progn
       (attach! poly-mode
