@@ -114,7 +114,8 @@
     
     (define-key-in-major-map
       "gcc" #'poly-asciidoc-compile
-      "gcv" #'poly-asciidoc-view)))
+      "gcv" #'poly-asciidoc-view
+      "gcf" #'poly-asciidoc-set-output-format)))
 
 (defun config-poly-asciidoc ()
   (and use-polymode
