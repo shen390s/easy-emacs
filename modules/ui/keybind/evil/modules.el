@@ -9,6 +9,9 @@
 				    :repo "emacs-evil/evil-collection"))
 
 ;;(setq evil-want-keybinding nil)
+(defun config-evil ()
+  (setq evil-want-keybinding nil)
+  t)
 
 (defun make-evil ()
   ;;(setq evil-want-integration t)
@@ -20,6 +23,6 @@
 (feature! evil
 	  "Evil is an extensible vi layer for Emacs. It emulates the main features of Vim, and provides facilities for writing custom extensions. "
 	  (evil undo-tree evil-collection)
-	  nil
+	  config-evil
 	  make-evil
 	  nil)
