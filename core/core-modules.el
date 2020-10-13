@@ -191,13 +191,11 @@
        (let ((mode (get-mode ',name)))
 	 (apply (Mode/active-fn mode) args)))))
 
-(defmacro scope! (name parent)
+(defmacro scope! (name &optional parent)
   `(progn
      (let ((scope (make-instance 'Scope
 				 :name ',name
-				 :parent ,(if parent 
-					      `',parent 
- 					    nil)
+				 :parent ',parent
 				 :features nil)))
        (puthash ',name scope all-scopes))
      (defvar ,(scope-function name 'hook :before) nil
@@ -255,7 +253,7 @@
 	 (,(scope-function name 'entry :activate-2))))
 
      (defun ,(scope-function name 'entry :deactivate) ()
-       (unless ,parent 
+       (unless ',parent 
            (deactivate-scope ,parent))
        (when (fboundp ',(scope-function name 'entry :deactivate-features))
 	 (,(scope-function name 'entry :deactivate-features))))))

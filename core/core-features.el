@@ -282,7 +282,7 @@
 	    #'turn-off-scope)
   t)
 
-(scope! global nil)
+(scope! global)
 
 (declare-function global-scope-entry:enable-features
 		  "easy-emacs-config")
