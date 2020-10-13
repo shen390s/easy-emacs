@@ -15,7 +15,7 @@
 
 (autoload-r! mermaid-mode
 	     (mermaid-mode)
-	     "mermaid-mode"
+	     "mermaid"
 	     t)
 
 (rmode! lang/mermaid-mode
