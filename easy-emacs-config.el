@@ -79,6 +79,7 @@
 		   :activate
 	   	   (:pre ((setq cquery-executable "/opt/tools/cquery/bin/cquery"))))
 	   ggtags
+	   ;;tree-sitter
 	   (call-graph
 	    :activate (:pre ((setq cg-initial-max-depth 3))))
 	   ;;ccls
@@ -97,11 +98,13 @@
 	 ((lsp-python-ms :activate
 			 (:pre ((setq lsp-python-ms-executable
 				      "/opt/tools/mspyls/Microsoft.Python.LanguageServer"))))
-	 ))
+	  ;;tree-sitter
+	  ))
 
 ;; features in rust scope
 (enable! rust
 	 (rls
+	  ;;tree-sitter
           ))
 
 ;;(enable! fish
@@ -110,7 +113,9 @@
 ;; features in java scope
 (enable! java
 	 (lsp-java
-	  ggtags))
+	  ggtags
+	  ;;tree-sitter
+	  ))
 
 ;;(enable! graphviz
 ;;	 ())
