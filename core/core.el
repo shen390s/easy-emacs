@@ -48,6 +48,11 @@
 	(car br-name)
       "unknown")))
 
+(defun my-version ()
+  (format "%s-%s"
+	  easy-emacs-version
+	  (my-branch)))
+
 (defun easy-emacs-boot-start ()
   (setq gc-cons-threshold 402653184
 	gc-cons-percentage 0.6
@@ -55,9 +60,8 @@
   ;; Initialize log system
   ;;
   (log-init! DEBUG)
-  (INFO! "Booting EasyEMACS[%s-$s]..."
-	 easy-emacs-version
-	 (my-branch)))
+  (INFO! "Booting EasyEMACS[%s]..."
+	 (my-version)))
 
 (add-hook 'easy-emacs-boot-done-hook
 	  (lambda ()
@@ -69,7 +73,8 @@
 (defun easy-emacs-boot-done ()
   (unless easy-emacs-boot-ok
     (run-hooks 'easy-emacs-boot-done-hook))
-  (INFO! "EasyEMACS boot OK"))
+  (INFO! "EasyEMACS[%s] boot OK"
+	 (my-version)))
 
 
 (defun easy-emacs-bootstrap-core ()
