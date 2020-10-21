@@ -42,6 +42,12 @@
 (defvar easy-emacs-idle-time 30
   "Idle time*(seconds) to trigger deferred package installation")
 
+(defun my-branch ()
+  (let ((br-name (cdr (split-string easy-emacs-branch " "))))
+    (if br-name
+	(car br-name)
+      "unknown")))
+
 (defun easy-emacs-boot-start ()
   (setq gc-cons-threshold 402653184
 	gc-cons-percentage 0.6
@@ -51,7 +57,7 @@
   (log-init! DEBUG)
   (INFO! "Booting EasyEMACS[%s-$s]..."
 	 easy-emacs-version
-	 easy-emacs-branch))
+	 (my-branch)))
 
 (add-hook 'easy-emacs-boot-done-hook
 	  (lambda ()
