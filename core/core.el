@@ -37,12 +37,6 @@
 (defvar easy-emacs-idle-time 30
   "Idle time*(seconds) to trigger deferred package installation")
 
-(defun my-branch ()
-  (let ((pattern "\\$Branch:[ \t]*\\([a-zA-Z_0-9]*\\)[ \t]*\\$"))
-    (if (string-match pattern easy-emacs-branch)
-	(match-string-no-properties 1 easy-emacs-branch)
-      "unknown")))
-
 (defun my-version ()
   (format "%s-%s"
 	  easy-emacs-version
