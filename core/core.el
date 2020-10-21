@@ -8,6 +8,12 @@
 (require 'core-features)
 (require 'core-modules)
 
+(defvar easy-emacs-version "0.1"
+  "The version of EasyEmacs")
+
+(defvar easy-emacs-branch "$Branch"
+  "The branch of EasyEmacs")
+
 (unless (file-exists-p easy-emacs-config-dir)
   (make-directory easy-emacs-config-dir t))
 
@@ -43,7 +49,9 @@
   ;; Initialize log system
   ;;
   (log-init! DEBUG)
-  (INFO! "Booting EasyEMACS..."))
+  (INFO! "Booting EasyEMACS[%s-$s]..."
+	 easy-emacs-version
+	 easy-emacs-branch))
 
 (add-hook 'easy-emacs-boot-done-hook
 	  (lambda ()
