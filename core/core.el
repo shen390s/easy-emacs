@@ -11,7 +11,7 @@
 (defvar easy-emacs-version "0.1"
   "The version of EasyEmacs")
 
-(defvar easy-emacs-branch "$Branch"
+(defvar easy-emacs-branch "$Branch$"
   "The branch of EasyEmacs")
 
 (unless (file-exists-p easy-emacs-config-dir)
