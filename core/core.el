@@ -7,12 +7,7 @@
 (require 'core-package)
 (require 'core-features)
 (require 'core-modules)
-
-(defvar easy-emacs-version "0.1"
-  "The version of EasyEmacs")
-
-(defvar easy-emacs-branch "$Branch$"
-  "The branch of EasyEmacs")
+(require 'easy-emacs-version)
 
 (unless (file-exists-p easy-emacs-config-dir)
   (make-directory easy-emacs-config-dir t))
@@ -43,9 +38,9 @@
   "Idle time*(seconds) to trigger deferred package installation")
 
 (defun my-branch ()
-  (let ((br-name (cdr (split-string easy-emacs-branch " "))))
-    (if br-name
-	(car br-name)
+  (let ((pattern "\\$Branch:[ \t]*\\([a-zA-Z_0-9]*\\)[ \t]*\\$"))
+    (if (string-match pattern easy-emacs-branch)
+	(match-string-no-properties 1 easy-emacs-branch)
       "unknown")))
 
 (defun my-version ()
