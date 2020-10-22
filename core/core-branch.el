@@ -2,7 +2,7 @@
 ;; easy-emacs-version.el
 
 (defconst easy-emacs-branch
-  "develop"
+  "master"
   "The branch name")
 
 (defun my-branch ()
