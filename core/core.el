@@ -7,7 +7,11 @@
 (require 'core-package)
 (require 'core-features)
 (require 'core-modules)
-(require 'easy-emacs-version)
+(require 'core-branch)
+
+(defconst easy-emacs-version
+  "0.1"
+  "The version of EasyEmacs")
 
 (unless (file-exists-p easy-emacs-config-dir)
   (make-directory easy-emacs-config-dir t))

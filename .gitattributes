@@ -1,1 +1,1 @@
-core/easy-emacs-version.el filter=kw
+core/core-branch.el merge=ours
