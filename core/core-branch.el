@@ -6,6 +6,9 @@
   "The branch name")
 
 (defun my-branch ()
-  easy-emacs-branch)
+  (progn
+    (DEBUG! "my base directory is %s"
+	    (file-name-directory load-file-name))
+    easy-emacs-branch))
 
 (provide 'core-branch)
