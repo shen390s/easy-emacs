@@ -7,7 +7,6 @@
 (require 'core-package)
 (require 'core-features)
 (require 'core-modules)
-(require 'core-branch)
 
 (defconst easy-emacs-version
   "0.1"
@@ -42,7 +41,8 @@
   "Idle time*(seconds) to trigger deferred package installation")
 
 (defun my-branch ()
-  "develop")
+  (let ((dir (file-name-directory load-file-name)))
+    (git-branch dir)))
 
 (defun my-version ()
   (format "%s-%s"

@@ -124,4 +124,13 @@
 		       (DEBUG! "result: %s" result)
 		       result)))))
 
+(defun git-branch (dir)
+  (replace-regexp-in-string
+   "[ \t]+" ":"
+   (replace-regexp-in-string
+    "[\n\r]+" ""
+    (shell-command-to-string
+     (format "cd %s && git branch --show-current"
+	     dir)) "\n")))
+
 (provide 'core-lib)
