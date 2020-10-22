@@ -41,6 +41,9 @@
 (defvar easy-emacs-idle-time 30
   "Idle time*(seconds) to trigger deferred package installation")
 
+(defun my-branch ()
+  "develop")
+
 (defun my-version ()
   (format "%s-%s"
 	  easy-emacs-version
