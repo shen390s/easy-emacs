@@ -43,7 +43,12 @@
           ;;ergoemacs
 	  yasnippet
 	  magit
-          forge
+          (forge :activate
+		 (:post ((add-to-list 'forge-alist
+				    '("github.ibm.com"
+				      "api.github.ibm.com"
+				      "github.ibm.com"
+				      forge-github-repository)))))
 	  golden-ratio
 	  icicles
 	  emacs-quilt ;; to enable emacs and quilt integration
