@@ -6,6 +6,8 @@
 (setq use-polymode t)
 (add-to-list 'cquery-enabled-path-list
 	     "/Users/rshen/workspace")
+(add-to-list 'cquery-enabled-path-list
+             "/Users/rshen/ibm.github")
 
 ;; Enable features
 ;;  features in global scope
@@ -208,3 +210,6 @@
 	 yaml-mode
 	 makefile-bsdmake-mode)
 
+(attach! shell-script
+         shell-script-mode
+         sh-mode)
