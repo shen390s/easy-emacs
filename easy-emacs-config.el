@@ -7,7 +7,7 @@
 (add-to-list 'cquery-enabled-path-list
 	     "/Users/rshen/workspace")
 (add-to-list 'cquery-enabled-path-list
-             "/Users/rshen/ibm.github")
+             "/Users/rshen/sources")
 
 ;; Enable features
 ;;  features in global scope
