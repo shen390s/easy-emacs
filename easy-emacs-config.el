@@ -7,7 +7,7 @@
 (add-to-list 'cquery-enabled-path-list
 	     "/Users/rshen/workspace")
 (add-to-list 'cquery-enabled-path-list
-             "/Users/rshen/ibm.github")
+             "/Users/rshen/sources")
 
 ;; Enable features
 ;;  features in global scope
@@ -142,6 +142,9 @@
 	 (magic-latex
 	  auctex))
 
+(enable! go
+         (lsp))
+
 (if use-polymode
     (enable! ascii-doctor
 	     (livemarkup  poly-asciidoc-keybind))
@@ -213,3 +216,7 @@
 (attach! shell-script
          shell-script-mode
          sh-mode)
+
+(attach! go
+         go-mode
+         lang/go-mode)
