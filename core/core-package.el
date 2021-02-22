@@ -20,7 +20,7 @@
   (let ((patch-dir (concat easy-emacs-dir "/patches"))
         (straight-dir (concat user-emacs-directory "/straight/repos/straight.el")))
        (progn 
-            (do-patch straight-dir "/01-use-cnpmjs-mirror.diff") 
+            (do-patch straight-dir (concat patch-dir "/01-use-cnpmjs-mirror.diff")) 
             t)))
 
 (defun bootstrap-straight ()
