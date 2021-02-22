@@ -10,6 +10,19 @@
 (defun run-after-all-package-install (func)
   (add-hook 'all-packages-ready-hook func))
 
+(defun do-patch (dir patch)
+  (let ((msg (shell-command-to-string 
+                (format "cd %s && patch <%s"
+                        dir patch))))
+      (message "%s\n" msg)))
+
+(defun patch-straight ()
+  (let ((patch-dir (concat easy-emacs-dir "/patches"))
+        (straight-dir (concat user-emacs-directory "/straight/repos/straight.el")))
+       (progn 
+            (do-patch straight-dir "/01-use-cnpmjs-mirror.diff") 
+            t)))
+
 (defun bootstrap-straight ()
   (let ((bootstrap-file
          (expand-file-name
@@ -23,7 +36,9 @@
            'silent 'inhibit-cookies)
         (goto-char (point-max))
         (eval-print-last-sexp)))
-    (load bootstrap-file nil 'nomessage)))
+    (progn 
+        (patch-straight)
+        (load bootstrap-file nil 'nomessage))))
 
 (defun install-pkg (pkg)
   (when pkg
