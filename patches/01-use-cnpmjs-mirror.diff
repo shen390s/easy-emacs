@@ -1,0 +1,21 @@
+diff --git a/straight.el b/straight.el
+index 0437ab4..54558f6 100644
+--- a/straight.el
++++ b/straight.el
+@@ -1719,6 +1719,7 @@ See also `straight-vc-git--decode-url'."
+     ((or `github `gitlab `bitbucket)
+      (let ((domain (pcase host
+                      (`bitbucket "bitbucket.org")
++		     (`github "github.com.cnpmjs.org")
+                      (_ (format "%s.com" host)))))
+        (pcase (or protocol straight-vc-git-default-protocol)
+          (`https
+@@ -4891,7 +4892,7 @@ action, just return it)."
+          (recipe (straight--convert-recipe melpa-recipe)))
+     (straight--with-plist recipe (host repo)
+       (pcase host
+-        (`github (browse-url (format "https://github.com/%s" repo)))
++        (`github (browse-url (format "https://github.com.cnpmjs.org/%s" repo)))
+         (`gitlab (browse-url (format "https://gitlab.com/%s" repo)))
+         (_ (browse-url (format "%s" repo)))))))
+ 
