@@ -38,6 +38,11 @@
 	 - smartparens
 	 - emacs server
 	 
+  7. for china user
+         - set GITHUB_MIRROR to china mirror of github to speedup package installation
+           - github.com.cnpmjs.org
+           - hub.fastgit.org
+
 ## Hack Easy-Emacs
 
 ### Basic conception
