@@ -10,18 +10,22 @@
 (defun run-after-all-package-install (func)
   (add-hook 'all-packages-ready-hook func))
 
-(defun do-patch (dir patch)
+(defun do-patch (dir patch done-file)
   (let ((msg (shell-command-to-string 
-                (format "cd %s && patch <%s"
-                        dir patch))))
+                (format "cd %s && patch <%s && touch %s"
+                        dir patch done-file))))
       (message "%s\n" msg)))
 
+(defun patch-pkg (pkg patch)
+  (let ((pkg-dir (concat user-emacs-directory "/straight/repos/" pkg)))
+      (let ((patch-done-file (concat pkg-dir "/." patch ".patched")))
+        (unless (file-exists-p patch-done-file)
+           (do-patch pkg-dir
+                     (concat easy-emacs-dir "/patches/" patch)
+                     patch-done-file))))) 
+        
 (defun patch-straight ()
-  (let ((patch-dir (concat easy-emacs-dir "/patches"))
-        (straight-dir (concat user-emacs-directory "/straight/repos/straight.el")))
-       (progn 
-            (do-patch straight-dir (concat patch-dir "/01-use-cnpmjs-mirror.diff")) 
-            t)))
+  (patch-pkg "straight.el" "01-use-github-china-mirror.diff"))
 
 (defun bootstrap-straight ()
   (let ((bootstrap-file
@@ -30,12 +34,13 @@
 	  user-emacs-directory))
         (bootstrap-version 5))
     (unless (file-exists-p bootstrap-file)
-      (with-current-buffer
-          (url-retrieve-synchronously
-           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-           'silent 'inhibit-cookies)
-        (goto-char (point-max))
-        (eval-print-last-sexp)))
+      (let ((local-bootstrap-file (concat easy-emacs-dir "/bootstrap/install.el")))
+        (message "local bootstrap file %s" local-bootstrap-file)
+	(let ((buffer (get-buffer-create "*straight bootstrap*")))
+	  (with-current-buffer buffer
+            (insert-file-contents local-bootstrap-file)
+            (goto-char (point-max))
+            (eval-print-last-sexp)))))
     (progn 
         (patch-straight)
         (load bootstrap-file nil 'nomessage))))
