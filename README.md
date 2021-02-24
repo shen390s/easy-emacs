@@ -39,9 +39,9 @@
 	 - emacs server
 	 
   7. for china user
-         - set GITHUB_MIRROR to china mirror of github to speedup package installation
-           - github.com.cnpmjs.org
-           - hub.fastgit.org
+     - clone https://github.com/shen390s/git_best_mirrors.git
+     - set GIT_BEST_MIRROR_TOOL_DIR to the bin sub-directory of cloned 
+       directory to enable using fast github mirrors from china
 
 ## Hack Easy-Emacs
 
