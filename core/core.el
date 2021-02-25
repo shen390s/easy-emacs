@@ -37,8 +37,8 @@
 (defvar easy-emacs-idle-package-installation-timer nil
   "Timer to trigger package to be installed")
 
-(defvar easy-emacs-idle-time 30
-  "Idle time*(seconds) to trigger deferred package installation")
+(defvar easy-emacs-idle-time (* 60 15)
+  "Idle time(seconds) to trigger deferred package installation")
 
 (defun my-branch ()
   (let ((dir (file-name-directory load-file-name)))
