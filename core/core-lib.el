@@ -79,8 +79,6 @@
     t)
 
   (defun scope-function (scope tag subtag)
-    (DEBUG! "scope-function (%s %s %s)"
-	    scope tag subtag)
     (if scope
 	(intern (concat (symbol-name scope)
 			"-scope-"

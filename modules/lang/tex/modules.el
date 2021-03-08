@@ -28,7 +28,9 @@
 (defun config-auctex ()
   (setq TeX-auto-save t)
   (setq TeX-parse-self t)
-  (setq-default TeX-master nil)
+  (setq-default TeX-master nil))
+
+(defun activate-auctex ()
   (load "auctex.el" nil t t)
   (load "auctex-preview.el" nil t t)
   t)
@@ -37,5 +39,5 @@
 	  "TeX IDE using Emacs"
 	  (auctex)
 	  config-auctex
-	  nil
+	  activate-auctex
 	  nil)
