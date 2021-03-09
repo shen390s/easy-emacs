@@ -6,8 +6,12 @@
 
 
 (defun activate-icicles ()
-  (require 'icicles)
-  (icy-mode 1))
+  (condition-case err
+      ((require 'icicles)
+       (icy-mode 1))
+    (error (INFO! "active icciles failed: %s"
+                  (error-message-string err))
+                  nil)))
 
 (feature! icicles
 	  "minibuffer input completion and cycling"

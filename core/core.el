@@ -96,7 +96,9 @@
   ;; load configuration of
   ;; easy-emacs
   (load-file config)
-  (defer-package-install (actived-features)))
+  (add-hook 'easy-emacs-boot-done-hook
+	    (lambda ()
+	      (defer-package-install (actived-features)))))
 
 (defun defer-package-install (features)
   (DEBUG! "defer packages for feature %s" features)
