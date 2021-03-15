@@ -9,7 +9,7 @@
 
 (defun enable-devdocs ()
     (progn
-      (require 'devdocs-lopokup)
+      (require 'devdocs-lookup)
       (devdocs-setup)
       (global-set-key "\C-cds" #'devdocs-lookup)))
 
