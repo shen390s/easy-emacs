@@ -2,16 +2,15 @@
 	  :docstring "Search the word at point with devdocs"
 	  :pkginfo (devdocs-lookup :type git
 				   :host github
-				   :repo "kaushalmodi/devdocs-lookup"))
+				   :repo "xuchunyang/DevDocs.el"))
 
 (defun config-devdocs ()
   t)
 
 (defun enable-devdocs ()
     (progn
-      (require 'devdocs-lookup)
-      (devdocs-setup)
-      (global-set-key "\C-cds" #'devdocs-lookup)))
+      (require 'devdocs)
+      (global-set-key "\C-cds" #'devdocs-search)))
 
 (feature! devdocs
 	  "Search the word at point with Devdocs"
