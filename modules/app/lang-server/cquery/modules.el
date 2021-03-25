@@ -30,9 +30,8 @@
     (if (feature-enabled 'yasnippet)
 	(setq lsp-enable-snippet t)
       (setq lsp-enable-snippet nil))
-    (let ((feature-actived-scope (feature-enabled 'lsp-ui)))
-      (when (member current-scope feature-actived-scope)
-	(add-hook 'lsp-mode-hook 'lsp-ui-mode)))
+    (when (feature-in-scope 'lsp-ui current-scope)
+      (add-hook 'lsp-mode-hook 'lsp-ui-mode))
     (enable-lsp)))
 
 (defun cquery/eglot-on ()

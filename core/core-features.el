@@ -135,9 +135,10 @@
 	    feature scope)
     
     (let ((zfeature (get-feature (plist-get feature :name))))
-      (when (and zfeature
-		 (Feature/configure zfeature))
-	(Scope/add-feature (get-scope scope) feature)))))
+      (let ((current-scope scope))
+	(when (and zfeature
+		   (Feature/configure zfeature))
+	  (Scope/add-feature (get-scope scope) feature))))))
 
 (defun make-use-xfeature (scope feature)
   (DEBUG! "make-use-xfeature %s scope %s"
@@ -150,7 +151,7 @@
 			  zfeature)))
 
 (defun conflict-feature (scope feature)
-  (member scope (feature-enabled feature)))
+  (member scope (feature-enabled-scopes feature)))
 
 (defun conflict-features (scope &rest features)
   (let ((conflicts 
@@ -184,19 +185,39 @@
 		  collect (unless (plist-get feature :disabled)
 			    (deactivate-feature feature))))))
 
+;; return features of scope
+(defun features-in-scope (scope)
+  (if scope
+      (let ((my-features
+	     (mapcar #'(lambda (feature)
+			 (plist-get feature :name))
+		     (oref (gethash scope all-scopes)
+			   features))))
+	my-features)
+    (progn
+      (debug)
+      (message "Warning: nil scope name passed to features-in-scope")
+      nil)))
+
 ;; Return a list of scopes when the feature has been activated
-(defun feature-enabled (feature)
+(defun feature-enabled-scopes (feature)
   (let ((enabled-scope
 	 (cl-loop for scope in (hash-table-keys all-scopes)
-		  collect (let ((features-in-scope
-				 (mapcar #'(lambda (feature)
-					     (plist-get feature :name))
-					 (oref (gethash scope
-							all-scopes)
-					       features))))
-			    (when (member feature features-in-scope)
+		  collect (let ((my-features (features-in-scope scope)))
+			    (when (member feature my-features)
 			      scope)))))
     (delq nil enabled-scope)))
+
+(defun feature-in-scope (feature &optional scope)
+  (let ((my-features (features-in-scope
+		      (if scope
+			  scope
+			current-scope))))
+    (member feature my-features)))
+
+(defun feature-enabled (feature)
+  (or (feature-in-scope feature current-scope)
+      (feature-in-scope feature 'global)))
 
 ;; All enabled features
 (defun actived-features ()
@@ -215,6 +236,7 @@
   (DEBUG! "Prepare to enter scope %s mode %s"
 	  scope major-mode)
   (when scope
+    (setq current-scope scope)
     (install-packages-for-scope scope)
     (funcall (scope-function scope 'entry :pre-activate))))
 

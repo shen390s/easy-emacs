@@ -3,9 +3,8 @@
 	  :pkginfo (lsp-python-ms :type git :host github :repo "emacs-lsp/lsp-python-ms"))
 
 (defun activate-lsp-python-ms ()
-  (let ((feature-actived-scope (feature-enabled 'lsp-ui)))
-      (when (member current-scope feature-actived-scope)
-	(add-hook 'lsp-mode-hook 'lsp-ui-mode)))
+  (when (feature-in-scope 'lsp-ui current-scope)
+    (add-hook 'lsp-mode-hook 'lsp-ui-mode))
   (require 'lsp-python-ms)
   (lsp))
 

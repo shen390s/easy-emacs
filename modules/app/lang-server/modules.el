@@ -1,5 +1,5 @@
 (defun lang-server-client ()
   (cond
-   ((member current-scope (feature-enabled 'eglot)) 'eglot)
+   ((feature-in-scope 'eglot current-scope) 'eglot)
    (t 'lsp)))
 
