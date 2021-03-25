@@ -20,21 +20,13 @@
   (setq evil-want-keybinding nil)
   t)
 
-(defun my-setup-keys ()
-  (evil-leader/set-key
-    (kbd "b")
-    (if (fboundp 'counsel-switch-buffer)
-	'counsel-switch-buffer
-	'switch-to-buffer)))
-
-(defun make-evil ()
-  ;;(setq evil-want-integration t)
-  ;;(setq evil-want-keybinding nil)
-  (evil-mode 1)
-  ;;(evil-collection-init)
-  (require 'evil-leader)
-  (global-evil-leader-mode)
-  (my-setup-keys))
+(defmacro make-evil (&rest keybinds)
+  `(progn
+     (evil-mode 1)
+     (require 'evil-leader)
+     (global-evil-leader-mode)
+     (when ',keybinds
+       (evil-leader/set-key ,@keybinds))))
 
 (feature! evil
 	  "Evil is an extensible vi layer for Emacs. It emulates the main features of Vim, and provides facilities for writing custom extensions. "

@@ -4,6 +4,11 @@
 (require 'tramp)
 
 (setq use-polymode t)
+(setq byte-compile-debug t)
+
+;; use long idle time for defer package install
+(setq easy-emacs-idle-time (* 15 60))
+
 (add-to-list 'cquery-enabled-path-list
 	     "/Users/rshen/workspace")
 (add-to-list 'cquery-enabled-path-list
@@ -39,7 +44,10 @@
 	  	       (setq ivy-count-format "(%d/%d) "))))
 	  ;;helm
 	  undo-tree
-	  evil
+	  (evil
+	   ;; setup key binding in global scope
+	   (kbd "b") 'counsel-switch-buffer
+	   (kbd "e") 'counsel-find-file)
           show-paren-line
 	  ;;boon
           ;;ergoemacs
@@ -54,6 +62,9 @@
 	  golden-ratio
 	  icicles
 	  emacs-quilt ;; to enable emacs and quilt integration
+	  ;;dash
+	  ;;devdocs
+          ;;eaf
 	  (slime :activate
 		 (:pre ((setq inferior-lisp-program "/opt/pkg/bin/sbcl")
 			(setq slime-contribs '(slime-fancy)))))))
@@ -145,6 +156,9 @@
 (enable! go
          (lsp))
 
+(enable! mermaid
+         ())
+
 (if use-polymode
     (enable! ascii-doctor
 	     (livemarkup  poly-asciidoc-keybind))
@@ -220,3 +234,7 @@
 (attach! go
          go-mode
          lang/go-mode)
+
+(attach! mermaid
+         mermaid-mode
+         lang/mermaid-mode)
