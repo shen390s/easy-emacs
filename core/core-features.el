@@ -307,11 +307,6 @@
 
 (scope! global)
 
-(declare-function global-scope-entry:enable-features
-		  "easy-emacs-config")
-(declare-function global-scope-entry:disable-features
-		  "easy-emacs-config")
-
 (defun enter-global ()
   (when (fboundp 'easy-emacs-boot-done)
     (add-hook (scope-function 'global 'hook :before)

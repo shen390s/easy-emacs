@@ -8,7 +8,7 @@
 (require 'core-log)
 (require 'core-package)
 
-(defgeneric Object/to-string (obj)
+(cl-defgeneric Object/to-string (obj)
   "A generic method to convert object to string")
 
 (defclass Package ()
@@ -26,13 +26,13 @@
 	      :initform nil))
   "Class to describe the package of Emacs")
 
-(defmethod Package/install ((pkg Package))
+(cl-defmethod Package/install ((pkg Package))
   (unless (oref pkg installed)
     (when (fboundp 'install-pkg)
       (install-pkg (oref pkg pkg-info)))
     (setf (oref pkg installed) t)))
 
-(defmethod Object/to-string ((obj Package))
+(cl-defmethod Object/to-string ((obj Package))
   (format "Package name: %s pkginfo: %s installed: %s"
 	  (oref obj name)
 	  (oref obj pkg-info)
@@ -53,7 +53,7 @@
 	   :initform nil))
   "Class to describe the feature of Emacs")
 
-(defmethod Feature/configure ((feature Feature))
+(cl-defmethod Feature/configure ((feature Feature))
   (let ((result t))
     (let ((config-fn (oref feature config-fn)))
       (when config-fn
@@ -66,7 +66,7 @@
 	     (Object/to-string feature) result)
     result))
 
-(defmethod Feature/pkglist ((feature Feature))
+(cl-defmethod Feature/pkglist ((feature Feature))
   (let ((pkgs (oref feature pkgs)))
     (let ((zpkgs (if (functionp pkgs)
 		     (funcall pkgs)
@@ -75,7 +75,7 @@
 	  zpkgs
 	(list zpkgs)))))
 
-(defmethod Object/to-string ((obj Feature))
+(cl-defmethod Object/to-string ((obj Feature))
   (format "Feature name: %s pkgs: %s config-fn: %s on-fn:%s off-fn:%s"
 	  (oref obj name)
 	  (oref obj pkgs)
@@ -88,17 +88,17 @@
 	  :initform nil))
   "Major mode")
 
-(defmethod Mode/bind-scope ((mode Mode) scope)
+(cl-defmethod Mode/bind-scope ((mode Mode) scope)
   (setf (oref mode scope) scope))
 
-(defmethod Mode/active-fn ((mode Mode))
+(cl-defmethod Mode/active-fn ((mode Mode))
   (lambda (&rest args)
     (progn
       (cl-loop for pkg in (Feature/pkglist mode)
 	       do (Package/install (get-package pkg)))
       (apply (oref mode on-fn) args))))
 
-(defmethod Object/to-string ((obj Mode))
+(cl-defmethod Object/to-string ((obj Mode))
   (format "Mode name: %s pkgs: %s on-fn: %s"
 	  (oref obj name)
 	  (oref obj pkgs)
@@ -113,11 +113,11 @@
 	     :initform nil))
   "Class scope for EasyEmacs")
 
-(defmethod Scope/add-feature ((scope Scope) feature)
+(cl-defmethod Scope/add-feature ((scope Scope) feature)
   (progn
     (push feature (oref scope features))))
 
-(defmethod Object/to-string ((scope Scope))
+(cl-defmethod Object/to-string ((scope Scope))
   (format "Scope name:%s parent: %s features: %s"
 	  (oref scope name)
 	  (oref scope parent)
@@ -322,11 +322,6 @@
   (let ((module-files (directory-files-recursively dir "modules.el$")))
     (cl-loop for module-file in module-files
 	     do (load-module-definition module-file))))
-
-(defmacro activate-scope (scope)
-  (DEBUG! "activate-scope %s" scope)
-  `(progn
-     (,(scope-function scope 'entry :activate))))
 
 (defmacro deactivate-scope (scope)
   `(progn
