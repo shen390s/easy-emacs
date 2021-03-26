@@ -20,13 +20,10 @@
   (setq evil-want-keybinding nil)
   t)
 
-(defmacro make-evil (&rest keybinds)
+(defmacro make-evil (&rest body)
   `(progn
      (evil-mode 1)
-     (require 'evil-leader)
-     (global-evil-leader-mode)
-     (when ',keybinds
-       (evil-leader/set-key ,@keybinds))))
+     ,@body))
 
 (feature! evil
 	  "Evil is an extensible vi layer for Emacs. It emulates the main features of Vim, and provides facilities for writing custom extensions. "

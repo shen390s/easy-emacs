@@ -266,6 +266,7 @@
 
 (defmacro attach! (scope &rest modes)
   `(progn
+     (setq current-scope ',scope)
      ,@(cl-loop for mode in modes
 		collect `(when (config-mode ',mode)
 			   (setf mode-scope-alist

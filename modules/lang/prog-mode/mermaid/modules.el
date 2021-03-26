@@ -11,7 +11,22 @@
   (progn
     (add-to-list 'auto-mode-alist
 		 '("\\.mmd\\'" . lang/mermaid-mode))
+    (when (feature-enabled 'evil)
+      (require 'bind-map)
+      (bind-map my-mermaid-leader-map
+       	:evil-keys ("m")
+       	:evil-states (normal visual)
+       	:major-modes (mermaid-mode))
+
+      (bind-map-set-keys my-mermaid-leader-map
+       	"c" 'mermaid-compile
+       	"v" 'mermaid-view))
     t))
+
+(defun activate-mermaid ()
+  (mermaid-mode)
+  ;; FIXME: activate my key bindings
+  (setf my-mermaid-leader-map-active t))
 
 (autoload-r! mermaid-mode
 	     (mermaid-mode)
@@ -22,5 +37,5 @@
 	"Emacs mode for mermaid"
 	(mermaid-mode)
 	config-mermaid
-	mermaid-mode)
+	activate-mermaid)
 
