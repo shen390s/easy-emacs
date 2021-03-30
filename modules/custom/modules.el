@@ -30,8 +30,9 @@
 (defun enable-load-custom (&optional theme)
   (when theme
     (setq custom-themes (gen-theme-list theme)))
-  (add-hook (scope-function 'global 'hook :after)
-	    'custom-global-scope-enter-hook))
+  (add-scope-hook 'global
+		  'after
+		  'custom-global-scope-enter-hook))
 
 (feature! load-custom
 	  "load customization file"

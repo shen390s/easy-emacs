@@ -8,7 +8,7 @@
 (require 'core-log)
 (require 'core-package)
 
-(cl-defgeneric Object/to-string (obj)
+(defgeneric Object/to-string (obj)
   "A generic method to convert object to string")
 
 (defclass Package ()
@@ -26,13 +26,13 @@
 	      :initform nil))
   "Class to describe the package of Emacs")
 
-(cl-defmethod Package/install ((pkg Package))
+(defmethod Package/install ((pkg Package))
   (unless (oref pkg installed)
     (when (fboundp 'install-pkg)
       (install-pkg (oref pkg pkg-info)))
     (setf (oref pkg installed) t)))
 
-(cl-defmethod Object/to-string ((obj Package))
+(defmethod Object/to-string ((obj Package))
   (format "Package name: %s pkginfo: %s installed: %s"
 	  (oref obj name)
 	  (oref obj pkg-info)
@@ -53,7 +53,7 @@
 	   :initform nil))
   "Class to describe the feature of Emacs")
 
-(cl-defmethod Feature/configure ((feature Feature))
+(defmethod Feature/configure ((feature Feature))
   (let ((result t))
     (let ((config-fn (oref feature config-fn)))
       (when config-fn
@@ -66,7 +66,7 @@
 	     (Object/to-string feature) result)
     result))
 
-(cl-defmethod Feature/pkglist ((feature Feature))
+(defmethod Feature/pkglist ((feature Feature))
   (let ((pkgs (oref feature pkgs)))
     (let ((zpkgs (if (functionp pkgs)
 		     (funcall pkgs)
@@ -75,7 +75,7 @@
 	  zpkgs
 	(list zpkgs)))))
 
-(cl-defmethod Object/to-string ((obj Feature))
+(defmethod Object/to-string ((obj Feature))
   (format "Feature name: %s pkgs: %s config-fn: %s on-fn:%s off-fn:%s"
 	  (oref obj name)
 	  (oref obj pkgs)
@@ -88,17 +88,17 @@
 	  :initform nil))
   "Major mode")
 
-(cl-defmethod Mode/bind-scope ((mode Mode) scope)
+(defmethod Mode/bind-scope ((mode Mode) scope)
   (setf (oref mode scope) scope))
 
-(cl-defmethod Mode/active-fn ((mode Mode))
+(defmethod Mode/active-fn ((mode Mode))
   (lambda (&rest args)
     (progn
       (cl-loop for pkg in (Feature/pkglist mode)
 	       do (Package/install (get-package pkg)))
       (apply (oref mode on-fn) args))))
 
-(cl-defmethod Object/to-string ((obj Mode))
+(defmethod Object/to-string ((obj Mode))
   (format "Mode name: %s pkgs: %s on-fn: %s"
 	  (oref obj name)
 	  (oref obj pkgs)
@@ -110,14 +110,128 @@
    (parent :initarg :parent
 	   :initform nil)
    (features :initarg :features
-	     :initform nil))
+	     :initform nil)
+   (pkg-installed :initarg :pkg-installed
+		  :initform nil))
   "Class scope for EasyEmacs")
 
-(cl-defmethod Scope/add-feature ((scope Scope) feature)
+(defun scope-hook-name (scope-name hook-type)
+  (intern (format "scope-%s-%s-hooks"
+		  scope-name
+		  hook-type)))
+
+(defmethod Scope/add-feature ((scope Scope) feature)
   (progn
     (push feature (oref scope features))))
 
-(cl-defmethod Object/to-string ((scope Scope))
+
+(defmethod Scope/parent ((scope Scope))
+  (let ((parent-name (oref scope parent)))
+    (if parent-name
+	(get-scope parent-name)
+      nil)))
+
+(defmethod Scope/install-pkgs ((scope Scope))
+  (let ((pkg-installed (oref scope pkg-installed))
+	(parent-scope (Scope/parent scope)))
+    (unless pkg-installed
+      (when parent-scope
+	(Scope/install-pkgs parent-scope))
+      (cl-loop for pkg in
+	       (packages (mapcar #'(lambda (f)
+				     (plist-get f :name))
+				 (oref scope features)))
+	       do (install-package-by-name pkg))
+      (setf (oref scope pkg-installed) t))))
+
+(defmethod Scope/pre-activate ((scope Scope))
+  (DEBUG! "preactive scope %s"
+	  (oref scope name))
+  (let ((parent-scope (Scope/parent scope)))
+    (progn
+      (when parent-scope
+	(Scope/pre-activate parent-scope))
+      (run-hooks (scope-hook-name (oref scope name)
+				  'before-activate)))))
+
+(defmethod Scope/post-activate ((scope Scope))
+  (DEBUG! "post-activate scope %s"
+	  (oref scope name))
+  (let ((parent-scope (Scope/parent scope)))
+    (progn
+      (run-hooks (scope-hook-name (oref scope name)
+				  'after-activate))
+      (when parent-scope
+	(Scope/post-activate parent-scope)))))
+
+(declare-function activate-feature "core-features")
+(declare-function disable-feature "core-features")
+(declare-function deactivate-feature "core-features")
+
+
+(defmacro call-scope-fun-by-name (scope-name func &rest args)
+  `(let ((fn (intern (format "%s-scope-%s"
+			     ,scope-name
+			     ,func))))
+     (when (fboundp fn)
+       (funcall fn ,@args))))
+
+
+(defmethod Scope/enable-features ((scope Scope))
+  (call-scope-fun-by-name (oref scope name)
+			  'enable-features))
+
+(defmethod Scope/disable-features ((scope Scope))
+  (call-scope-fun-by-name (oref scope name)
+			  'disable-features))
+
+(defmethod Scope/deactivate-features ((scope Scope))
+    (call-scope-fun-by-name (oref scope name)
+			    'deactivate-features))
+
+(defmethod Scope/activate-1 ((scope Scope))
+  (let ((parent-scope (Scope/parent scope)))
+    (when parent-scope
+      (Scope/activate-1 parent-scope)))
+  (Scope/enable-features scope))
+
+(defmethod Scope/activate-2 ((scope Scope))
+  (Scope/disable-features scope)
+  (let ((parent-scope (Scope/parent scope)))
+    (when parent-scope
+      (Scope/activate-2 parent-scope))))
+
+(defmethod Scope/activate ((scope Scope))
+  (Scope/activate-1 scope)
+  (Scope/activate-2 scope))
+
+(defmethod Scope/deactivate ((scope Scope))
+  (Scope/deactivate-features scope)
+  (let ((parent-scope (Scope/parent scope)))
+    (when parent-scope
+      (Scope/deactivate parent-scope))))
+
+(defmethod Scope/add-hook ((scope Scope) hook-type hook-func)
+  (pcase hook-type
+    ('before
+     (add-hook (scope-hook-name (oref scope name)
+				'before-activate)
+	       hook-func))
+    ('after
+     (add-hook (scope-hook-name (oref scope name)
+				'after-activate)
+	       hook-func))
+    (t (progn
+	 (ERR! "Unsupported hook type: %s" hook-type)))))
+
+(defun add-scope-hook (scope-name hook-type hook-fn)
+  (let ((scope (get-scope scope-name)))
+    (when scope
+      (Scope/add-hook scope
+		      hook-type
+		      hook-fn))))
+
+(defmethod Object/to-string ((scope Scope))
   (format "Scope name:%s parent: %s features: %s"
 	  (oref scope name)
 	  (oref scope parent)
@@ -197,66 +311,9 @@
 				 :name ',name
 				 :parent ',parent
 				 :features nil)))
-       (puthash ',name scope all-scopes))
-     (defvar ,(scope-function name 'hook :before) nil
-       "Hooks run before scope ,name has been activated")
-     
-     (defvar ,(scope-function name 'hook :after) nil
-       "Hooks run after scope ,name has been activated")
-     
-     (defvar ,(scope-function name 'var :pkg-installed) nil
-       "Variable to tell us whether the packages of scope has been installed")
-     
-     (defun ,(scope-function name 'entry :install-pkgs) ()
-       (unless ,(scope-function name 'var :pkg-installed)
-	 (DEBUG! "Installing packages for scope %s"
-		 ',name)
-	 (,(scope-function parent 'entry :install-pkgs))
-
-	 (let ((zscope (get-scope ',name)))
-	   (cl-loop for pkg in
-		    (packages (mapcar #'(lambda (f)
-					  (plist-get f :name))
-				      (oref zscope features)))
-		    do (install-package-by-name pkg)))
-	 (setf ,(scope-function name 'var :pkg-installed) t)))
-
-     (defun ,(scope-function name 'entry :pre-activate) ()
-       (,(scope-function parent 'entry :pre-activate))
-       (run-hooks ',(scope-function name 'hook :before)))
-     
-     (defun ,(scope-function name 'entry :post-activate) ()
-       (run-hooks ',(scope-function name 'hook :after))
-       (,(scope-function parent 'entry :post-activate)))
-
-     (defun ,(scope-function name 'entry :enable-parent-features) ()
-       (when (fboundp ',(scope-function parent 'entry :enable-features))
-	 (,(scope-function parent 'entry :enable-features))))
-
-     (defun ,(scope-function name 'entry :disable-parent-features) ()
-       (when (fboundp ',(scope-function parent 'entry :disable-features))
-	 (,(scope-function parent 'entry :disable-features))))
-     
-     (defun ,(scope-function name 'entry :activate-1) ()
-       (,(scope-function parent 'entry :activate-1))
-       (when (fboundp ',(scope-function name 'entry :enable-features))
-	 (,(scope-function name 'entry :enable-features))))
-
-     (defun ,(scope-function name 'entry :activate-2) ()
-       (when (fboundp ',(scope-function name 'entry :disable-features))
-	 (,(scope-function name 'entry :disable-features)))
-       (,(scope-function parent 'entry :activate-2)))
-     
-     (defun ,(scope-function name 'entry :activate) ()
-       (progn
-	 (,(scope-function name 'entry :activate-1))
-	 (,(scope-function name 'entry :activate-2))))
-
-     (defun ,(scope-function name 'entry :deactivate) ()
-       (unless ',parent 
-           (deactivate-scope ,parent))
-       (when (fboundp ',(scope-function name 'entry :deactivate-features))
-	 (,(scope-function name 'entry :deactivate-features))))))
+       (puthash ',name scope all-scopes)
+       (defvar ,(scope-hook-name name 'before-activate) nil)
+       (defvar ,(scope-hook-name name 'after-activate) nil))))
 
 (defun install-package-by-name (pkg)
   (DEBUG! "installing package %s..." pkg)
@@ -323,18 +380,10 @@
     (cl-loop for module-file in module-files
 	     do (load-module-definition module-file))))
 
-(defmacro deactivate-scope (scope)
-  `(progn
-     (when (fboundp ',(scope-function scope 'entry :deactivate))
-       (,(scope-function scope 'entry :deactivate)))))
-
-(defun install-packages-for-scope (scope)
-  (let ((pkg-install-fn (scope-function scope 'entry :install-pkgs)))
-    (DEBUG! "pkg-install-fn %s"
-	    pkg-install-fn)
-    (when (fboundp pkg-install-fn)
-      (funcall pkg-install-fn))))
-
+(defun install-packages-for-scope (scope-name)
+  (let ((scope (get-scope scope-name)))
+    (when scope
+      (Scope/install-pkgs scope))))
 
 (defvar remote-autoload-pkgs nil
   "List of packages used in remote autoload")
@@ -372,9 +421,9 @@
 
 (defmacro mode2feature! (mode feature pkgs docstring)
   `(let ((activate-fn (intern (concat "activate-" (symbol-name
-						 ',feature))))
+						   ',feature))))
 	 (deactivate-fn (intern (concat "deactivate-" (symbol-name
-						     ',feature)))))
+						       ',feature)))))
      `(progn
 	(defun ,activate-fn ()
 	  (,',mode))

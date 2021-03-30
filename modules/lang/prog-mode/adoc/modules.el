@@ -26,8 +26,9 @@
 (defun ascii-doctor-setup ()
   (adoc-tune-faces))
 
-(add-hook (scope-function 'ascii-doctor 'hook :after)
-	  #'ascii-doctor-setup)
+(add-scope-hook 'ascii-doctor
+		'after
+		'ascii-doctor-setup)
 
 (defun config-adoc ()
   (add-to-list 'auto-mode-alist

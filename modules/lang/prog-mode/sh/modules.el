@@ -5,5 +5,6 @@
 
 (scope! shell-script prog-lang)
 
-(add-hook (scope-function 'shell-script 'hook :after)
-	  #'shell-script-after-setup)
+(add-scope-hook 'shell-script
+		'after
+		'shell-script-after-setup)

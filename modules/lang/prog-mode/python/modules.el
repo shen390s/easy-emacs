@@ -3,6 +3,7 @@
 
 (scope! python prog-lang)
 
-(add-hook (scope-function 'python 'hook :after)
-	  'python-after-setup)
+(add-scope-hook 'python
+		'after
+		'python-after-setup)
 

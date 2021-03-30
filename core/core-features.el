@@ -109,6 +109,8 @@
 	#'dummy-fn))))
 
 (defun activate-feature (feature)
+  (DEBUG! "activate feature %s"
+	  feature)
   (mk-activate (plist-get feature :active-condition)
 	       (plist-get feature :pre-activate-action)
 	       (get-feature-activate-fn (plist-get feature :name))
@@ -168,22 +170,29 @@
   `(progn
      ,(cl-loop for feature in features
 	       do (make-use-xfeature scope feature))
-     (defun ,(scope-function scope 'entry :enable-features) ()
+     
+     (defun ,(intern (format "%s-scope-enable-features" scope)) ()
+       (DEBUG! "enable features for scope %s"
+	       ',scope)
        ,@(cl-loop for feature in (oref (get-scope scope) features)
-		  collect (unless (plist-get feature :disabled)
-			    ;; call activate feature
-			    (activate-feature feature))))
+                 collect (unless (plist-get feature :disabled)
+                           ;; call activate feature
+                           (activate-feature feature))))
 
-     (defun ,(scope-function scope 'entry :disable-features) ()
+     (defun ,(intern (format "%s-scope-disable-features" scope)) ()
+       (DEBUG! "disable features for scope %s"
+	       ',scope)
        ,@(cl-loop for feature in (oref (get-scope scope) features)
-		  collect (when (plist-get feature :disabled)
-			    ;; call disable feature
-			    (disable-feature feature))))
+                 collect (when (plist-get feature :disabled)
+                           ;; call disable feature
+                           (disable-feature feature))))
 
-     (defun ,(scope-function scope 'entry :deactivate-features) ()
+     (defun ,(intern (format "%s-scope-deactivate-features" scope)) ()
+       (DEBUG! "deactivate features of scope %s"
+	       scope)
        ,@(cl-loop for feature in (oref (get-scope scope) features)
-		  collect (unless (plist-get feature :disabled)
-			    (deactivate-feature feature))))))
+                 collect (unless (plist-get feature :disabled)
+                           (deactivate-feature feature))))))
 
 ;; return features of scope
 (defun features-in-scope (scope)
@@ -226,26 +235,30 @@
 					 actived-modes)))
     (delete-dups
      (collect-lists mode-features
-		    (mapcar #'(lambda (xscope)
+		    (mapcar #'(lambda (scope)
 				(mapcar #'(lambda (f)
                                              (plist-get f :name))
-					(oref xscope features)))
+					(oref scope features)))
 			    (hash-table-values all-scopes))))))
 
-(defun enter-scope-prepare (scope)
+(defun enter-scope-prepare (scope-name)
   (DEBUG! "Prepare to enter scope %s mode %s"
-	  scope major-mode)
-  (when scope
-    (setq current-scope scope)
-    (install-packages-for-scope scope)
-    (funcall (scope-function scope 'entry :pre-activate))))
+	  scope-name major-mode)
+  (when scope-name
+    (setq current-scope scope-name)
+    (install-packages-for-scope scope-name)
+    (let ((scope (get-scope scope-name)))
+      (when scope
+	(Scope/pre-activate scope)))))
 
-(defun enter-scope-final (scope)
+(defun enter-scope-final (scope-name)
   (DEBUG! "Activate scope %s mode %s"
-	  scope major-mode)
-  (when scope
-    (funcall (scope-function scope 'entry :activate))
-    (funcall (scope-function scope 'entry :post-activate))))
+	  scope-name major-mode)
+  (when scope-name
+    (let ((scope (get-scope scope-name)))
+      (when scope
+	(Scope/activate scope)
+	(Scope/post-activate scope)))))
 
 (defun enter-scope (scope entry args)
   (DEBUG! "Entering scope %s args %s"
@@ -289,12 +302,12 @@
     (enter-scope-final scope)))
 
 (defun turn-off-scope ()
-  (let ((scope (mode-scope major-mode)))
+  (let ((scope-name (mode-scope major-mode)))
     (DEBUG! "Leaving scope %s mode %s"
-	    scope major-mode)
-    (let ((action `(lambda ()
-		     (deactivate-scope ,scope))))
-      (funcall action))))
+	    scope-name major-mode)
+    (let ((scope (get-scope scope-name)))
+        (when scope
+            (Scope/deactivate scope)))))
 
 (defun global-scope ()
   (add-hook 'change-major-mode-after-body-hook
@@ -309,8 +322,10 @@
 
 (defun enter-global ()
   (when (fboundp 'easy-emacs-boot-done)
-    (add-hook (scope-function 'global 'hook :before)
-	      #'easy-emacs-boot-done))
+    (let ((global-scope (get-scope 'global)))
+      (Scope/add-hook global-scope
+		      'before
+		      #'easy-emacs-boot-done)))
   (enter-scope 'global #'global-scope nil))
 
 (provide 'core-features)

@@ -5,8 +5,9 @@
 
 (scope! c-c++ prog-lang)
 
-(add-hook (scope-function 'c-c++ 'hook :after)
-	  #'c-c++-after-setup)
+(add-scope-hook 'c-c++
+		'after
+		'c-c++-after-setup)
 
 (package! :name google-c-style
 	  :docstring "Google C/C++ style"
