@@ -120,7 +120,7 @@
 		  scope-name
 		  hook-type)))
 
-(defmacro when-scope (scope-name scope-var &rest body)
+(defmacro with-scope (scope-name scope-var &rest body)
   `(when ,scope-name
      (let ((,scope-var (get-scope ,scope-name)))
        (when ,scope-var
@@ -140,7 +140,7 @@
 (defmethod Scope/install-pkgs ((scope Scope))
   (let ((pkg-installed (oref scope pkg-installed)))
     (unless pkg-installed
-      (when-scope (oref scope parent)
+      (with-scope (oref scope parent)
 		  parent-scope
 		  (Scope/install-pkgs parent-scope))
       (cl-loop for pkg in
@@ -154,7 +154,7 @@
   (DEBUG! "preactive scope %s"
 	  (oref scope name))
   (progn
-    (when-scope (oref scope parent)
+    (with-scope (oref scope parent)
 		parent-scope
 		(Scope/pre-activate parent-scope))
     (run-hooks (scope-hook-name (oref scope name)
@@ -166,7 +166,7 @@
   (progn
     (run-hooks (scope-hook-name (oref scope name)
 				'after-activate))
-    (when-scope (oref scope parent)
+    (with-scope (oref scope parent)
 		parent-scope
 		(Scope/post-activate parent-scope))))
 
@@ -187,18 +187,18 @@
 			  'disable-features))
 
 (defmethod Scope/deactivate-features ((scope Scope))
-    (call-scope-fun-by-name (oref scope name)
-			    'deactivate-features))
+  (call-scope-fun-by-name (oref scope name)
+			  'deactivate-features))
 
 (defmethod Scope/activate-1 ((scope Scope))
-  (when-scope (oref scope parent)
+  (with-scope (oref scope parent)
 	      parent-scope
 	      (Scope/activate-1 parent-scope))
   (Scope/enable-features scope))
 
 (defmethod Scope/activate-2 ((scope Scope))
   (Scope/disable-features scope)
-  (when-scope (oref scope parent)
+  (with-scope (oref scope parent)
 	      parent-scope
 	      (Scope/activate-2 parent-scope)))
 
@@ -208,7 +208,7 @@
 
 (defmethod Scope/deactivate ((scope Scope))
   (Scope/deactivate-features scope)
-  (when-scope (oref scope parent)
+  (with-scope (oref scope parent)
 	      parent-scope
 	      (Scope/deactivate parent-scope)))
 
@@ -226,7 +226,7 @@
 	 (ERR! "Unsupported hook type: %s" hook-type)))))
 
 (defun add-scope-hook (scope-name hook-type hook-fn)
-  (when-scope scope-name
+  (with-scope scope-name
 	      scope
 	      (Scope/add-hook scope
 			      hook-type
@@ -382,7 +382,7 @@
 	     do (load-module-definition module-file))))
 
 (defun install-packages-for-scope (scope-name)
-  (when-scope scope-name
+  (with-scope scope-name
 	      scope
 	      (Scope/install-pkgs scope)))
 
