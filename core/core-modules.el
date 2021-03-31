@@ -120,6 +120,12 @@
 		  scope-name
 		  hook-type)))
 
+(defmacro when-scope (scope-name scope-var &rest body)
+  `(when ,scope-name
+     (let ((,scope-var (get-scope ,scope-name)))
+       (when ,scope-var
+	 ,@body))))
+
 (defmethod Scope/add-feature ((scope Scope) feature)
   (progn
     (push feature (oref scope features))))
@@ -132,11 +138,11 @@
       nil)))
 
 (defmethod Scope/install-pkgs ((scope Scope))
-  (let ((pkg-installed (oref scope pkg-installed))
-	(parent-scope (Scope/parent scope)))
+  (let ((pkg-installed (oref scope pkg-installed)))
     (unless pkg-installed
-      (when parent-scope
-	(Scope/install-pkgs parent-scope))
+      (when-scope (oref scope parent)
+		  parent-scope
+		  (Scope/install-pkgs parent-scope))
       (cl-loop for pkg in
 	       (packages (mapcar #'(lambda (f)
 				     (plist-get f :name))
@@ -147,27 +153,22 @@
 (defmethod Scope/pre-activate ((scope Scope))
   (DEBUG! "preactive scope %s"
 	  (oref scope name))
-  (let ((parent-scope (Scope/parent scope)))
-    (progn
-      (when parent-scope
-	(Scope/pre-activate parent-scope))
-      (run-hooks (scope-hook-name (oref scope name)
-				  'before-activate)))))
+  (progn
+    (when-scope (oref scope parent)
+		parent-scope
+		(Scope/pre-activate parent-scope))
+    (run-hooks (scope-hook-name (oref scope name)
+				'before-activate))))
 
 (defmethod Scope/post-activate ((scope Scope))
   (DEBUG! "post-activate scope %s"
 	  (oref scope name))
-  (let ((parent-scope (Scope/parent scope)))
-    (progn
-      (run-hooks (scope-hook-name (oref scope name)
-				  'after-activate))
-      (when parent-scope
-	(Scope/post-activate parent-scope)))))
-
-(declare-function activate-feature "core-features")
-(declare-function disable-feature "core-features")
-(declare-function deactivate-feature "core-features")
-
+  (progn
+    (run-hooks (scope-hook-name (oref scope name)
+				'after-activate))
+    (when-scope (oref scope parent)
+		parent-scope
+		(Scope/post-activate parent-scope))))
 
 (defmacro call-scope-fun-by-name (scope-name func &rest args)
   `(let ((fn (intern (format "%s-scope-%s"
@@ -190,16 +191,16 @@
 			    'deactivate-features))
 
 (defmethod Scope/activate-1 ((scope Scope))
-  (let ((parent-scope (Scope/parent scope)))
-    (when parent-scope
-      (Scope/activate-1 parent-scope)))
+  (when-scope (oref scope parent)
+	      parent-scope
+	      (Scope/activate-1 parent-scope))
   (Scope/enable-features scope))
 
 (defmethod Scope/activate-2 ((scope Scope))
   (Scope/disable-features scope)
-  (let ((parent-scope (Scope/parent scope)))
-    (when parent-scope
-      (Scope/activate-2 parent-scope))))
+  (when-scope (oref scope parent)
+	      parent-scope
+	      (Scope/activate-2 parent-scope)))
 
 (defmethod Scope/activate ((scope Scope))
   (Scope/activate-1 scope)
@@ -207,9 +208,9 @@
 
 (defmethod Scope/deactivate ((scope Scope))
   (Scope/deactivate-features scope)
-  (let ((parent-scope (Scope/parent scope)))
-    (when parent-scope
-      (Scope/deactivate parent-scope))))
+  (when-scope (oref scope parent)
+	      parent-scope
+	      (Scope/deactivate parent-scope)))
 
 (defmethod Scope/add-hook ((scope Scope) hook-type hook-func)
   (pcase hook-type
@@ -221,15 +222,15 @@
      (add-hook (scope-hook-name (oref scope name)
 				'after-activate)
 	       hook-func))
-    (t (progn
+    (_ (progn
 	 (ERR! "Unsupported hook type: %s" hook-type)))))
 
 (defun add-scope-hook (scope-name hook-type hook-fn)
-  (let ((scope (get-scope scope-name)))
-    (when scope
-      (Scope/add-hook scope
-		      hook-type
-		      hook-fn))))
+  (when-scope scope-name
+	      scope
+	      (Scope/add-hook scope
+			      hook-type
+			      hook-fn)))
 
 (defmethod Object/to-string ((scope Scope))
   (format "Scope name:%s parent: %s features: %s"
@@ -381,9 +382,9 @@
 	     do (load-module-definition module-file))))
 
 (defun install-packages-for-scope (scope-name)
-  (let ((scope (get-scope scope-name)))
-    (when scope
-      (Scope/install-pkgs scope))))
+  (when-scope scope-name
+	      scope
+	      (Scope/install-pkgs scope)))
 
 (defvar remote-autoload-pkgs nil
   "List of packages used in remote autoload")
