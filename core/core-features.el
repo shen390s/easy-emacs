@@ -9,7 +9,7 @@
 
 (defvar feature-key-args '(:activate :deactivate :when)
   "Key args for feature")
-  
+
 (defvar actived-modes nil
   "A list of actived modes")
 
@@ -28,7 +28,7 @@
 	  (filt-key-args collected-args keys (cdr remain))))
        (t (filt-key-args (push x collected-args) keys remain))))))
 
-  ;; -feature to disable feature explicit
+;; -feature to disable feature explicit
 (defun parse-feature-name (n)
   (let ((svalue (symbol-name n)))
     (if (string= (substring svalue 0 1) "-")
@@ -109,8 +109,8 @@
 	#'dummy-fn))))
 
 (defun activate-feature (feature)
-  (DEBUG! "activate feature %s"
-	  feature)
+  (DEBUG! "activate feature %s scope %s"
+	  feature current-scope)
   (mk-activate (plist-get feature :active-condition)
 	       (plist-get feature :pre-activate-action)
 	       (get-feature-activate-fn (plist-get feature :name))
@@ -145,7 +145,7 @@
 (defun make-use-xfeature (scope feature)
   (DEBUG! "make-use-xfeature %s scope %s"
   	  feature scope)
- 
+  
   (let ((zfeature (parse-feature feature)))
     (DEBUG! "make-use-xfeature zfeature %s"
 	    zfeature)
@@ -175,24 +175,24 @@
        (DEBUG! "enable features for scope %s"
 	       ',scope)
        ,@(cl-loop for feature in (oref (get-scope scope) features)
-                 collect (unless (plist-get feature :disabled)
-                           ;; call activate feature
-                           (activate-feature feature))))
+                  collect (unless (plist-get feature :disabled)
+                            ;; call activate feature
+                            (activate-feature feature))))
 
      (defun ,(intern (format "%s-scope-disable-features" scope)) ()
        (DEBUG! "disable features for scope %s"
 	       ',scope)
        ,@(cl-loop for feature in (oref (get-scope scope) features)
-                 collect (when (plist-get feature :disabled)
-                           ;; call disable feature
-                           (disable-feature feature))))
+                  collect (when (plist-get feature :disabled)
+                            ;; call disable feature
+                            (disable-feature feature))))
 
      (defun ,(intern (format "%s-scope-deactivate-features" scope)) ()
        (DEBUG! "deactivate features of scope %s"
-	       scope)
+	       ',scope)
        ,@(cl-loop for feature in (oref (get-scope scope) features)
-                 collect (unless (plist-get feature :disabled)
-                           (deactivate-feature feature))))))
+                  collect (unless (plist-get feature :disabled)
+                            (deactivate-feature feature))))))
 
 ;; return features of scope
 (defun features-in-scope (scope)
@@ -237,28 +237,26 @@
      (collect-lists mode-features
 		    (mapcar #'(lambda (scope)
 				(mapcar #'(lambda (f)
-                                             (plist-get f :name))
+                                            (plist-get f :name))
 					(oref scope features)))
 			    (hash-table-values all-scopes))))))
 
 (defun enter-scope-prepare (scope-name)
   (DEBUG! "Prepare to enter scope %s mode %s"
 	  scope-name major-mode)
-  (when scope-name
-    (setq current-scope scope-name)
-    (install-packages-for-scope scope-name)
-    (let ((scope (get-scope scope-name)))
-      (when scope
-	(Scope/pre-activate scope)))))
+  (with-scope! scope-name
+	       scope
+	       (setq current-scope scope-name)
+	       (install-packages-for-scope scope-name)
+	       (Scope/pre-activate scope)))
 
 (defun enter-scope-final (scope-name)
   (DEBUG! "Activate scope %s mode %s"
 	  scope-name major-mode)
-  (when scope-name
-    (let ((scope (get-scope scope-name)))
-      (when scope
-	(Scope/activate scope)
-	(Scope/post-activate scope)))))
+  (with-scope! scope-name
+	       scope
+	       (Scope/activate scope)
+	       (Scope/post-activate scope)))
 
 (defun enter-scope (scope entry args)
   (DEBUG! "Entering scope %s args %s"
@@ -269,7 +267,7 @@
 	       t)))
     (enter-scope-final scope)
     res))
-  
+
 
 (defun config-mode (m)
   (let ((zmode (get-mode m)))
@@ -283,12 +281,15 @@
      ,@(cl-loop for mode in modes
 		collect `(when (config-mode ',mode)
 			   (setf mode-scope-alist
-			       (plist-put mode-scope-alist
-					  ',(local-or-rmode-name mode)
-					  ',scope))))))
+				 (plist-put mode-scope-alist
+					    ',(local-or-rmode-name mode)
+					    ',scope))))))
 
 (defun mode-scope (mode)
-  (plist-get mode-scope-alist mode))
+  (let ((scope-name (plist-get mode-scope-alist mode)))
+    (if scope-name
+	scope-name
+      'root-scope)))
 
 ;; create global scope
 ;;
@@ -303,11 +304,9 @@
 
 (defun turn-off-scope ()
   (let ((scope-name (mode-scope major-mode)))
-    (DEBUG! "Leaving scope %s mode %s"
-	    scope-name major-mode)
-    (let ((scope (get-scope scope-name)))
-        (when scope
-            (Scope/deactivate scope)))))
+    (with-scope! scope-name
+		 scope
+		 (Scope/deactivate scope))))
 
 (defun global-scope ()
   (add-hook 'change-major-mode-after-body-hook
@@ -318,6 +317,7 @@
 	    #'turn-off-scope)
   t)
 
+;; global scope
 (scope! global)
 
 (defun enter-global ()

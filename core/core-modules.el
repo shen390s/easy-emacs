@@ -120,7 +120,7 @@
 		  scope-name
 		  hook-type)))
 
-(defmacro with-scope (scope-name scope-var &rest body)
+(defmacro with-scope! (scope-name scope-var &rest body)
   `(when ,scope-name
      (let ((,scope-var (get-scope ,scope-name)))
        (when ,scope-var
@@ -140,7 +140,7 @@
 (defmethod Scope/install-pkgs ((scope Scope))
   (let ((pkg-installed (oref scope pkg-installed)))
     (unless pkg-installed
-      (with-scope (oref scope parent)
+      (with-scope! (oref scope parent)
 		  parent-scope
 		  (Scope/install-pkgs parent-scope))
       (cl-loop for pkg in
@@ -154,7 +154,7 @@
   (DEBUG! "preactive scope %s"
 	  (oref scope name))
   (progn
-    (with-scope (oref scope parent)
+    (with-scope! (oref scope parent)
 		parent-scope
 		(Scope/pre-activate parent-scope))
     (run-hooks (scope-hook-name (oref scope name)
@@ -166,7 +166,7 @@
   (progn
     (run-hooks (scope-hook-name (oref scope name)
 				'after-activate))
-    (with-scope (oref scope parent)
+    (with-scope! (oref scope parent)
 		parent-scope
 		(Scope/post-activate parent-scope))))
 
@@ -191,14 +191,14 @@
 			  'deactivate-features))
 
 (defmethod Scope/activate-1 ((scope Scope))
-  (with-scope (oref scope parent)
+  (with-scope! (oref scope parent)
 	      parent-scope
 	      (Scope/activate-1 parent-scope))
   (Scope/enable-features scope))
 
 (defmethod Scope/activate-2 ((scope Scope))
   (Scope/disable-features scope)
-  (with-scope (oref scope parent)
+  (with-scope! (oref scope parent)
 	      parent-scope
 	      (Scope/activate-2 parent-scope)))
 
@@ -208,7 +208,7 @@
 
 (defmethod Scope/deactivate ((scope Scope))
   (Scope/deactivate-features scope)
-  (with-scope (oref scope parent)
+  (with-scope! (oref scope parent)
 	      parent-scope
 	      (Scope/deactivate parent-scope)))
 
@@ -226,7 +226,7 @@
 	 (ERR! "Unsupported hook type: %s" hook-type)))))
 
 (defun add-scope-hook (scope-name hook-type hook-fn)
-  (with-scope scope-name
+  (with-scope! scope-name
 	      scope
 	      (Scope/add-hook scope
 			      hook-type
@@ -306,15 +306,29 @@
        (let ((mode (get-mode ',name)))
 	 (apply (Mode/active-fn mode) args)))))
 
+(defun make-scope (scope-name parent-name)
+  (let ((parent-scope-name
+	 (if parent-name
+	     parent-name
+           'root-scope)))
+    ;; reset parent scope name to nil to
+    ;; avoid dead loop
+    (when (equal scope-name parent-scope-name)
+       (setq parent-scope-name nil))
+    (let ((scope (make-instance 'Scope
+				:name scope-name
+				:parent parent-scope-name
+				:features nil)))
+      (puthash scope-name scope all-scopes))))
+
 (defmacro scope! (name &optional parent)
   `(progn
-     (let ((scope (make-instance 'Scope
-				 :name ',name
-				 :parent ',parent
-				 :features nil)))
-       (puthash ',name scope all-scopes)
-       (defvar ,(scope-hook-name name 'before-activate) nil)
-       (defvar ,(scope-hook-name name 'after-activate) nil))))
+     (make-scope ',name ',parent)
+     (defvar ,(scope-hook-name name 'before-activate) nil)
+     (defvar ,(scope-hook-name name 'after-activate) nil)))
+
+;; setup root-scope
+(scope! root-scope)
 
 (defun install-package-by-name (pkg)
   (DEBUG! "installing package %s..." pkg)
@@ -382,7 +396,7 @@
 	     do (load-module-definition module-file))))
 
 (defun install-packages-for-scope (scope-name)
-  (with-scope scope-name
+  (with-scope! scope-name
 	      scope
 	      (Scope/install-pkgs scope)))
 

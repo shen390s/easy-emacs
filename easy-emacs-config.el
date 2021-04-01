@@ -46,8 +46,12 @@
 	  undo-tree
 	  (evil
 	   ;; setup key binding in global scope
-	   (kbd "b") 'counsel-switch-buffer
-	   (kbd "e") 'counsel-find-file)
+	   (require 'evil-leader)
+	   (global-evil-leader-mode)
+	   (evil-leader/set-key
+	     (kbd "b") 'counsel-switch-buffer
+	     (kbd "f") 'counsel-find-file)
+          )
           show-paren-line
 	  ;;boon
           ;;ergoemacs
@@ -59,7 +63,7 @@
 				      "api.github.ibm.com"
 				      "github.ibm.com"
 				      forge-github-repository)))))
-	  golden-ratio
+	  ;;golden-ratio
 	  icicles
 	  emacs-quilt ;; to enable emacs and quilt integration
 	  ;;dash
@@ -68,6 +72,13 @@
 	  (slime :activate
 		 (:pre ((setq inferior-lisp-program "/opt/pkg/bin/sbcl")
 			(setq slime-contribs '(slime-fancy)))))))
+
+(enable! root-scope
+	 (ruler
+	  hlinum
+	  auto-fill
+	  rainbow-delimiters
+	  rainbow-identifiers))
 
 ;; features in program languages scope
 (enable! prog-lang
