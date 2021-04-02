@@ -7,6 +7,7 @@
 (require 'core-package)
 (require 'core-features)
 (require 'core-modules)
+(require 'core-config)
 
 (defconst easy-emacs-version
   "0.1"
@@ -89,6 +90,7 @@
 				   (when easy-emacs-idle-package-installation-timer
 				     (cancel-timer easy-emacs-idle-package-installation-timer)
 				     (setf easy-emacs-idle-package-installation-timer nil))))))))
+
 
 (defun easy-emacs-bootstrap (module-dir config)
   (load-modules module-dir)
