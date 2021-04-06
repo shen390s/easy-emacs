@@ -105,9 +105,8 @@
 	  (oref obj on-fn)))
 
 (defmethod Object/to-string ((scope Scope))
-  (format "Scope name:%s parent: %s features: %s"
+  (format "Scope name:%s  features: %s"
 	  (oref scope name)
-	  (oref scope parent)
 	  (oref scope features)))
 
 (defvar all-packages (make-hash-table)
