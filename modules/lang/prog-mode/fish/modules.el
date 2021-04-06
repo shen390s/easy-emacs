@@ -1,4 +1,3 @@
-(scope! fish prog-lang)
 
 (package! :name fish-mode
 	  :docstring "A major Emacs mode for edit Fish source code"

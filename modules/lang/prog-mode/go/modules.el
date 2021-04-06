@@ -1,4 +1,3 @@
-(scope! go prog-lang)
 
 (package! :name go-mode
 	  :docstring "A major Emacs mode for edit Go source code"

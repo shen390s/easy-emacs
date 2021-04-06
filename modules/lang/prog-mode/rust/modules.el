@@ -1,4 +1,3 @@
-(scope! rust prog-lang)
 
 (package! :name rust-mode
 	  :docstring "A major Emacs mode for edit Rust source code"

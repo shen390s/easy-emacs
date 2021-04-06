@@ -1,4 +1,3 @@
-(scope! mermaid prog-lang)
 
 (package! :name mermaid-mode
 	  :docstring "A major Emacs mode for edit mermaid document"

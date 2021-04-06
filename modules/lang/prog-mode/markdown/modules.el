@@ -1,4 +1,3 @@
-(scope! markdown prog-lang)
 
 (package! :name markdown-mode
 	  :docstring "A major Emacs mode for edit markdown document"

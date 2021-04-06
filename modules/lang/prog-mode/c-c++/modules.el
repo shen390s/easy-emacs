@@ -3,8 +3,6 @@
 (defun c-c++-after-setup ()
   t)
 
-(scope! c-c++ prog-lang)
-
 (add-scope-hook 'c-c++
 		'after
 		'c-c++-after-setup)

@@ -1,4 +1,3 @@
-(scope! plantuml prog-lang)
 
 (package! :name plantuml
 	  :docstring "A major mode for editing PlantUML sources in Emacs"

@@ -1,5 +1,3 @@
-(scope! ascii-doctor prog-lang)
-
 (package! :name adoc-mode
 	  :docstring "A major Emacs mode for edit ascii-doctor document"
 	  :pkginfo (adoc-mode :type git

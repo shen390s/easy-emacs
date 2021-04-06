@@ -1,4 +1,3 @@
-(scope! tex prog-lang)
 
 (package! :name magic-latex-buffer
 	  :docstring "magical syntax highlighting for LaTeX-mode buffers"

@@ -1,4 +1,3 @@
-(scope! clojure prog-lang )
 
 (package! :name clojure-mode
 	  :docstring "A major Emacs mode for edit Clojure source code"

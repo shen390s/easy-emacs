@@ -1,4 +1,3 @@
-(scope! graphviz prog-lang )
 
 (package! :name graphviz
 	  :docstring "Emacs mode for the graphviz"

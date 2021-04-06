@@ -1,4 +1,3 @@
-(scope! yaml prog-lang)
 
 (package! :name yaml-mode
 	  :docstring "A major Emacs mode for edit yaml document"

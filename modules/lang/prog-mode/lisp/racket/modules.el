@@ -1,4 +1,3 @@
-(scope! racket prog-lang)
 
 (package! :name racket-mode
 	  :docstring "GNU Emacs major modes for Racket: Edit and REPL. "

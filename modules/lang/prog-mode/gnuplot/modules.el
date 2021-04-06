@@ -1,4 +1,3 @@
-(scope! gnuplot prog-lang)
 
 (package! :name gnuplot-mode
 	  :docstring "A major Emacs mode for edit gnuplot document"
