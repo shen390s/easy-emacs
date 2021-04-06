@@ -2,28 +2,9 @@
 
 (require 'core-lib)
 (require 'core-log)
-
-(defconst easy-emacs-config-keywords
-  '(:config :modes :ui :completion :tools)
-  "Configuration keywords for easy-emacs")
-
-(defun get-config-fn (key)
-  (intern (format "config/%s" key)))
-
-(defun config/:modes (val)
-  (DEBUG! "config/:modes %s" val))
-
-(defun config/:config (val)
-  t)
-
-(defun config/:ui (val)
-  t)
-
-(defun config/:completion (val)
-  t)
-
-(defun config/:tools (val)
-  t)
+(require 'core-modules)
+(require 'core-features)
+(require 'core-scope)
 
 (defun call-config (key val)
   (let ((fn (get-config-fn key)))
@@ -32,10 +13,21 @@
       (WARN! "No keyword defined for configuration %s value %s"
 	     key val))))
 
+(defun use-feature-in-scope (scope feature)
+  t)
+
 (defun easy-emacs-configure (config)
-  (cl-loop for key in easy-emacs-config-keywords
-	   do (cl-loop for val in (plist-get config key)
-		       do (call-config key val))))
+  ;; put list of features to scope
+  (cl-loop for key in scope-keywords
+	   do (with-scope! (format ("%s-scope" (keyword-name key)))
+			   scope
+			   (cl-loop for feature in (plist-get config
+							      key)
+				    (use-feature-in-scope scope feature))))
+  ;; configure scope
+  ;; deactivate disabled
+  ;; activate scope features
+  t)
 
 ;; (easy! :modes (c c++ markdown)
 ;;        :ui (my-theme)

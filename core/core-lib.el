@@ -123,4 +123,9 @@
      (format "cd %s && git branch --show-current"
 	     dir)) "\n")))
 
+(defun keyword-name (keyword)
+  (if (keywordp keyword)
+      (substring (symbol-name keyword) 1)
+    nil))
+
 (provide 'core-lib)
