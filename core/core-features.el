@@ -106,8 +106,6 @@
 	#'dummy-fn))))
 
 (defun activate-feature (feature)
-  (DEBUG! "activate feature %s scope %s"
-	  feature current-scope)
   (mk-activate (plist-get feature :active-condition)
 	       (plist-get feature :pre-activate-action)
 	       (get-feature-activate-fn (plist-get feature :name))
@@ -127,36 +125,6 @@
 	        (get-feature-activate-fn (plist-get feature :name))
 	        (plist-get feature :post-deactivate-action)
 	        nil))
-
-(eval-and-compile
-  (defun add-feature-to-scope (scope feature)
-    (DEBUG! "add feature %s to scope %s"
-	    feature scope)
-    
-    (let ((zfeature (get-feature (plist-get feature :name))))
-      (let ((current-scope scope))
-	(when (and zfeature
-		   (Feature/configure zfeature))
-	  (Scope/add-feature (get-scope scope) feature))))))
-
-(defun make-use-xfeature (scope feature)
-  (DEBUG! "make-use-xfeature %s scope %s"
-  	  feature scope)
-  
-  (let ((zfeature (parse-feature feature)))
-    (DEBUG! "make-use-xfeature zfeature %s"
-	    zfeature)
-    (add-feature-to-scope scope
-			  zfeature)))
-
-(defun conflict-feature (scope feature)
-  (member scope (feature-enabled-scopes feature)))
-
-(defun conflict-features (scope &rest features)
-  (let ((conflicts 
-	 (cl-loop for feature in features
-		  collect (conflict-feature scope feature))))
-    (cl-reduce #'or conflicts)))
 
 
 (defun config-mode (m)

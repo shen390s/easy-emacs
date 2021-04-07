@@ -65,7 +65,4 @@
     (easy-emacs-bootstrap easy-emacs-modules-dir
                           easy-emacs-config-file)))
 
-;; Enter global scope
-(enter-global)
-
 ;;; init.el ends here

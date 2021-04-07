@@ -128,4 +128,26 @@
       (substring (symbol-name keyword) 1)
     nil))
 
+(defun filter-out-non-keywords (l)
+  (cl-remove-if-not (lambda (k)
+		      (keywordp k))
+		    l))
+
+(defun collect-keyword-values (kv-list)
+  (let ((result nil)
+	(key    :default)
+	(values nil))
+    (cl-loop for item in kv-list
+	     do (if (keywordp item)
+		    (progn
+		      (setq result
+			    (plist-put result key (nreverse values)))
+		      (setq key item)
+		      (setq values nil))
+		  (push item values)))
+    (when values
+      (setq result
+	    (plist-put result key (nreverse values))))
+    result))
+
 (provide 'core-lib)

@@ -6,28 +6,34 @@
 (require 'core-features)
 (require 'core-scope)
 
-(defun call-config (key val)
-  (let ((fn (get-config-fn key)))
-    (if (fboundp fn)
-	(funcall fn val)
-      (WARN! "No keyword defined for configuration %s value %s"
-	     key val))))
-
-(defun use-feature-in-scope (scope feature)
-  t)
-
-(defun easy-emacs-configure (config)
+(defun easy-emacs-configure (args)
   ;; put list of features to scope
-  (cl-loop for key in scope-keywords
-	   do (with-scope! (format ("%s-scope" (keyword-name key)))
-			   scope
-			   (cl-loop for feature in (plist-get config
-							      key)
-				    (use-feature-in-scope scope feature))))
-  ;; configure scope
-  ;; deactivate disabled
-  ;; activate scope features
-  t)
+  (let ((config (collect-keyword-values args)))
+    (DEBUG! "config = %s" config)
+    (let ((scope-keywords (filter-out-non-keywords config)))
+      (DEBUG! "scope keywords = %s" scope-keywords)
+      (cl-loop for key in scope-keywords
+	       do (with-scope! (intern (format "%s" (keyword-name key)))
+			       scope
+			       (Scope/parse-configs scope (plist-get config key))))
+      ;; configure scope
+      (cl-loop for key in scope-keywords
+	       do (with-scope! (intern (format "%s" (keyword-name key)))
+			       scope
+			       (DEBUG! "Configure scope %s" scope)))
+      ;; deactivate disabled
+      (cl-loop for key in scope-keywords
+	       do (with-scope! (intern (format "%s" (keyword-name key)))
+			       scope
+			       (DEBUG! "disable scope %s features"
+				       scope)))
+      ;; activate scope features
+      (cl-loop for key in scope-keywords
+	       do (with-scope! (intern (format "%s" (keyword-name key)))
+			       scope
+			       (DEBUG! "enable scope %s features"
+				       scope)))
+      t)))
 
 ;; (easy! :modes (c c++ markdown)
 ;;        :ui (my-theme)
