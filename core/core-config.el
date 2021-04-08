@@ -26,6 +26,14 @@
 
 (defmacro easy! (&rest args)
   `(progn
-     ,@(collect-lists nil (make-easy-config args))))
+     ,@(collect-lists nil (make-easy-config args))
+     ,@(cl-loop for phase in '(before primary after)
+		collect `(foreach-scope! scope-name
+					 scope
+					 (,(intern (format "Scope/Configure:%s" phase)) scope)))
+     ,@(cl-loop for phase in '(before primary after)
+		collect `(foreach-scope! scope-name scope
+					 (,(intern (format "Scope/Activate:%s" phase)) scope)))))
+
 
 (provide 'core-config)

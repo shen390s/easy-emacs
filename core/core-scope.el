@@ -22,48 +22,41 @@
 	     :initform nil)
    (after-activate :initarg :after-activate
 		   :initform nil)
+   (pkgs :initarg :pkgs
+	 :initform nil)
    (pkg-installed :initarg :pkg-installed
 		  :initform nil))
   "Configuration in scope")
 
-(defmethod Config/Check :before ((config Scope-Config) scope-name)
+(defmethod Config/Check:before ((config Scope-Config) scope-name)
   (with-slots (pre-check) config
     (when pre-check
       (funcall pre-check scope-name))))
 
-(defmethod Config/Check :primary ((config Scope-Config) scope-name)
+(defmethod Config/Check:primary ((config Scope-Config) scope-name)
   (with-slots (check) config
     (when check
       (funcall check scope-name))))
 
-(defmethod Config/Check :after ((config Scope-Config) scope-name)
+(defmethod Config/Check:after ((config Scope-Config) scope-name)
   (with-slots (after-check) config
     (when after-check
       (funcall after-check scope-name))))
 
-(defmethod Config/Activate :before ((config Scope-Config) scope-name)
+(defmethod Config/Activate:before ((config Scope-Config) scope-name)
   (with-slots (pre-activate) config
     (when pre-activate
       (funcall pre-activate scope-name))))
 
-(defmethod Config/Activate :primary ((config Scope-Config) scope-name)
+(defmethod Config/Activate:primary ((config Scope-Config) scope-name)
   (with-slots (activate) config
     (when activate
       (funcall activate scope-name))))
 
-(defmethod Config/Activate :after ((config Scope-Config) scope-name)
+(defmethod Config/Activate:after ((config Scope-Config) scope-name)
   (with-slots (after-activate) config
     (when after-activate
       (funcall after-activate scope-name))))
-
-(defmacro setvars! (vars)
-  `(progn
-     ,@(cl-loop  for var in vars
-		 collect `(setq ,(car var) ,(cdr var)))))
-
-(defmethod Config/Activate ((config Scope-Config) scope-name)
-  (with-slots (vars) config
-    `(setvars! ,vars)))
 
 (defclass Mode-Config (Scope-Config)
   ((enabled-features :initarg :actived-features
@@ -100,8 +93,6 @@
 (defclass Scope ()
   ((name :initarg :name
 	 :initform "null-scope")
-   (parse-config :initarg :parse-config
-		 :initform nil)
    (configs :initarg :configs
 	    :initform nil))
   "Class scope for EasyEmacs")
@@ -129,30 +120,28 @@
 (defmethod Scope/add-config ((scope Scope) config)
   (push config (oref scope configs)))
 
-(defmethod Scope/parse-configs ((scope Scope)  configs)
-  (with-slots (parse-config) scope
-    (when parse-config
-      (funcall parse-config scope configs))))
+(defun make-scope-method (action phase)
+  `(defmethod ,(intern (format "Scope/%s:%s" action phase))
+     ((scope Scope))
+     (with-slots (name configs) scope
+       (cl-loop  for config in configs
+		 do (,(intern (format "Config/%s:%s"
+				      (if (string= action "Configure")
+					  "Check"
+					action)
+				      phase))
+		     config name)))))
 
-(defmethod Scope/Configure ((scope Scope))
-  (DEBUG! "Configure scope %s" scope)
-  (let ((scope-name (oref scope name)))
-    (with-slots (configs) scope
-      (cl-loop for config in configs
-	       do (Config/Check config scope-name))))
-  t)
-
-(defmethod Scope/Activate :before ((scope Scope))
-  (DEBUG! "Activate scope/:before %s" scope)
-  t)
-
-(defmethod Scope/Activate :after ((scope Scope))
-  (DEBUG! "Activate scope/:after %s" scope)
-  t)
-
-(defmethod Scope/Activate :primary ((scope Scope))
-  (DEBUG! "Activate scope/:primary %s" scope)
-  t)
+(defmacro make-scope-methods! ()
+  (let ((actions '(Configure Activate))
+	(phases '(before primary after)))
+    `(progn
+       ,@(collect-lists nil
+			(cl-loop for action in actions
+				 collect (cl-loop for phase in phases
+						  collect (make-scope-method action
+									     phase)))))))
+(make-scope-methods!)
 
 (defmethod Scope/install-pkgs ((scope Scope))
   (let ((pkg-installed (oref scope pkg-installed)))
@@ -167,18 +156,19 @@
 (defvar all-scopes (make-hash-table)
   "All defined scopes")
 
-(defun make-scope (scope-name &optional parse-config)
+(defun make-scope (scope-name &optional configs)
   (DEBUG! "make-scope %s %s"
-	  scope-name parse-config)
+	  scope-name configs)
   (let ((scope (make-instance 'Scope
 			      :name scope-name
-			      :configs nil
-			      :parse-config parse-config)))
-      (puthash scope-name scope all-scopes)))
+			      :configs nil)))
+    (cl-loop for c in configs
+	     do (Scope/add-config scope c))
+    (puthash scope-name scope all-scopes)))
 
-(defmacro scope! (name &optional parse-config) 
+(defmacro scope! (name &optional configs) 
   `(progn
-     (make-scope ',name ,parse-config)))
+     (make-scope ',name ',configs)))
 
 (defun get-scope (name)
   (let ((scope (gethash name all-scopes)))
@@ -191,58 +181,54 @@
 	      scope
 	      (Scope/install-pkgs scope)))
 
-(defun make-scope-by-config (key config)
-  (pcase key
-      (:vars
-       `((DEBUG! "make vars by config %s" ',config)))
-      (:modes
-       `((DEBUG! "make mode scope config %s" ',config)))
-      (:ui
-       `((DEBUG! "make ui scope by config %s" ',config)))
-      (:completion
-       `((DEBUG! "make completion scope by config %s" ',config)))
-      (:app
-       `((DEBUG! "make app scope by configuration %s" ',config)))
-    (- nil)))
+(defmacro foreach-scope! (name scope &rest body)
+  `(maphash '(lambda (,name ,scope)
+	       ,@body)
+	    all-scopes))
 
 ;; define configuration scopes
 ;; (vars (a . 1) (b . 2) ...)
-(defun do-vars/:parse-config (config)
-  nil)
-
-(defun vars/:parse-config (scope configs)
-  (DEBUG! "config/:parse-config scope %s configs %s"
-	  scope configs)
-  (cl-loop for config in configs
-	   do (let ((c (do-vars/:parse-config config)))
-		(when c
-		  (DEBUG! "c = %s" c)
-		  (Scope/add-config scope c))))
-  t)
-
+(defun config/:make-vars (config)
+  `((DEBUG! "config/:make-vars %s" ',config)
+    (scope! vars)
+    (let ((c (make-instance 'Scope-Config
+			    :pre-activate
+			    '(lambda (scope-name)
+			       ,@(cl-loop for var in config
+					  collect `(setq ,(car var)
+							 ,(cdr var)))))))
+      (with-scope! 'vars scope
+		   (Scope/add-config scope c)))))
+      
 ;; (mode +mode_feature -mode-feature)
-(defun modes/:parse-config (scope configs)
-  (DEBUG! "modes/:parse-config scope %s configs %s"
-	  scope configs)
-  t)
+(defun config/:make-modes (config)
+  `((DEBUG! "config/:make-modes %s" ',config)))
 
 ;; (theme ...)
-(defun ui/:parse-config (scope configs)
-  (DEBUG! "ui/:parse-config scope %s configs %s"
-	  scope configs)
-  t)
-
+(defun config/:make-ui (config)
+  `((DEBUG! "config/:make-ui %s" ',config)))
 ;; (+ivy -autocompletion )
-(defun completion/:parse-config (scope configs)
-  (DEBUG! "completion/:parse-config scope %s configs %s"
-	  scope configs)
-  t)
 
+(defun config/:make-completion (config)
+  `((DEBUG! "config/:make-completion %s" ',config)))
 ;; (app1 app2 ...)
-(defun app/:parse-config (scope configs)
-  (DEBUG! "app/:parse-config scope %s configs %s"
-	  scope configs)
-  t)
+(defun config/:make-app (config)
+  `((DEBUG! "config/:make-app %s" ',config)))
+
+
+(defun make-scope-by-config (key config)
+  (pcase key
+      (:vars
+       `(,@(config/:make-vars config)))
+      (:modes
+       `(,@(config/:make-modes config)))
+      (:ui
+       `(,@(config/:make-ui config)))
+      (:completion
+       `(,@(config/:make-completion config)))
+      (:app
+       `(,@(config/:make-app config)))
+    (- nil)))
 
 ;; Just for loading
 (defmacro add-scope-hook (&rest args)
