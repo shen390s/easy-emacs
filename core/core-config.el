@@ -6,41 +6,26 @@
 (require 'core-features)
 (require 'core-scope)
 
-(defun easy-emacs-configure (args)
-  ;; put list of features to scope
-  (let ((config (collect-keyword-values args)))
-    (DEBUG! "config = %s" config)
-    (let ((scope-keywords (filter-out-non-keywords config)))
-      (DEBUG! "scope keywords = %s" scope-keywords)
-      (cl-loop for key in scope-keywords
-	       do (with-scope! (intern (format "%s" (keyword-name key)))
-			       scope
-			       (Scope/parse-configs scope (plist-get config key))))
-      ;; configure scope
-      (cl-loop for key in scope-keywords
-	       do (with-scope! (intern (format "%s" (keyword-name key)))
-			       scope
-			       (DEBUG! "Configure scope %s" scope)))
-      ;; deactivate disabled
-      (cl-loop for key in scope-keywords
-	       do (with-scope! (intern (format "%s" (keyword-name key)))
-			       scope
-			       (DEBUG! "disable scope %s features"
-				       scope)))
-      ;; activate scope features
-      (cl-loop for key in scope-keywords
-	       do (with-scope! (intern (format "%s" (keyword-name key)))
-			       scope
-			       (DEBUG! "enable scope %s features"
-				       scope)))
-      t)))
+;; (easy! :vars (a . 10) (b . 20)
+;;        :modes plantuml mermaid
+;;        :ui my-theme
+;;        :completion ivy -helm -autoc-complete
+;;        :app emacs-server)
 
-;; (easy! :modes (c c++ markdown)
-;;        :ui (my-theme)
-;;        :config ((a. 10) (b . 20))
-;;        :completion (ivy))
+(defun make-easy-config (configs)
+  (let ((config (collect-keyword-values configs)))
+    (DEBUG! "config = %s" config)
+    (let ((keys (filter-out-non-keywords config)))
+      (DEBUG! "scope keywords = %s" keys)
+      (let ((c (cl-loop for key in keys
+	       collect `,@(make-scope-by-config key
+						(plist-get config
+							   key)))))
+	(DEBUG! "c = %s" c)
+	c))))
 
 (defmacro easy! (&rest args)
-  `(easy-emacs-configure ',args))
+  `(progn
+     ,@(collect-lists nil (make-easy-config args))))
 
 (provide 'core-config)

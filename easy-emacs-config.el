@@ -2,7 +2,7 @@
 ;; Configuration for easy-emacs
 ;; this file will be loaded
 
-(easy! :config (a . 10)
+(easy! :vars (a . 10) (b . 20)
        :modes plantuml mermaid
        :ui my-theme
        :completion ivy -helm -autoc-complete
