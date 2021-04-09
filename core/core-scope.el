@@ -7,7 +7,7 @@
 (require 'core-log)
 (require 'core-modules)
 
-(defclass Scope-Config ()
+(defclass Base-Config ()
   ((name :initarg :name
 	 :initform "default")
    (pre-check :initarg :pre-check
@@ -28,37 +28,44 @@
 		  :initform nil))
   "Configuration in scope")
 
-(defmethod Config/Check:before ((config Scope-Config) scope-name)
+(defmethod Config/Check:before ((config Base-Config) scope-name)
   (with-slots (pre-check) config
     (when pre-check
       (funcall pre-check scope-name))))
 
-(defmethod Config/Check:primary ((config Scope-Config) scope-name)
+(defmethod Config/Check:primary ((config Base-Config) scope-name)
   (with-slots (check) config
     (when check
       (funcall check scope-name))))
 
-(defmethod Config/Check:after ((config Scope-Config) scope-name)
+(defmethod Config/Check:after ((config Base-Config) scope-name)
   (with-slots (after-check) config
     (when after-check
       (funcall after-check scope-name))))
 
-(defmethod Config/Activate:before ((config Scope-Config) scope-name)
+(defmethod Config/Activate:before ((config Base-Config) scope-name)
   (with-slots (pre-activate) config
     (when pre-activate
       (funcall pre-activate scope-name))))
 
-(defmethod Config/Activate:primary ((config Scope-Config) scope-name)
+(defmethod Config/Activate:primary ((config Base-Config) scope-name)
   (with-slots (activate) config
     (when activate
       (funcall activate scope-name))))
 
-(defmethod Config/Activate:after ((config Scope-Config) scope-name)
+(defmethod Config/Activate:after ((config Base-Config) scope-name)
   (with-slots (after-activate) config
     (when after-activate
       (funcall after-activate scope-name))))
 
-(defclass Mode-Config (Scope-Config)
+(defmethod Config/GetPkgs ((config Base-Config))
+  (oref config pkgs))
+
+(defclass Vars-Config (Base-Config)
+  ()
+  "for configuration variables")
+
+(defclass Mode-Config (Base-Config)
   ((enabled-features :initarg :actived-features
 		     :initform nil)
    (disabled-features :initarg :disabled-features
@@ -75,17 +82,17 @@
 		       :initform nil))
   "Configuration for modes")
 
-(defclass UI-Config (Scope-Config)
+(defclass UI-Config (Base-Config)
   ((theme :initarg :theme
 	  :initform nil))
   "UI Related configurations")
 
-(defclass Completion-Config (Scope-Config)
+(defclass Completion-Config (Base-Config)
   ((completion :initarg :completion
 	       :initform nil))
   "Configuration of completion")
 
-(defclass App-Config (Scope-Config)
+(defclass App-Config (Base-Config)
   ((apps :initarg :apps
 	 :initform nil))
   "Application Configuration")
@@ -186,13 +193,23 @@
 	       ,@body)
 	    all-scopes))
 
+(defun make-config (config name fns)
+  `(make-instance ',config
+		  :name ',name
+		  :pre-check ,(plist-get fns :pre-check)
+		  :check ,(plist-get fns :check)
+		  :after-check ,(plist-get fns :after-check)
+		  :pre-activate ,(plist-get fns :pre-activate)
+		  :activate ,(plist-get fns :activate)
+		  :after-activate ,(plist-get fns :after-activate)))
+
 ;; define configuration scopes
 ;; (vars (a . 1) (b . 2) ...)
 (defun config/:make-vars (config)
   `((DEBUG! "config/:make-vars %s" ',config)
     (scope! vars)
-    (let ((c (make-instance 'Scope-Config
-			    :pre-activate
+    (let ((c (make-instance 'Vars-Config
+			    :pre-check
 			    '(lambda (scope-name)
 			       ,@(cl-loop for var in config
 					  collect `(setq ,(car var)
@@ -201,20 +218,41 @@
 		   (Scope/add-config scope c)))))
       
 ;; (mode +mode_feature -mode-feature)
-(defun config/:make-modes (config)
-  `((DEBUG! "config/:make-modes %s" ',config)))
+(defun make-mode-help-fns (config)
+  (let ((mode-name (car config))
+	(mode-config (collect-keyword-values (cdr config))))
+    (let ((features (plist-get mode-config :features))
+	  (suffixes (plist-get mode-config :suffix)))
+      (list :pre-check
+	    `'(lambda (scope-name)
+		,@(cl-loop for s in suffixes
+			   collect (gen-add-suffix-to-mode s mode-name)))))))
+
+(defun make-mode-config (config)
+  (let ((fns (make-mode-help-fns config))
+	(name (car config)))
+    (DEBUG! "make-mode-config %s" fns)
+    (make-config Mode-Config name fns)))
+
+(defun config/:make-modes (configs)
+  `((DEBUG! "config/:make-modes %s" ',configs)
+    (scope! modes)
+    ,@(cl-loop for config in configs
+	       collect (let ((z1 (make-mode-config config)))
+			 `(with-scope! 'modes scope
+				       (Scope/add-config scope ,z1))))))
 
 ;; (theme ...)
 (defun config/:make-ui (config)
   `((DEBUG! "config/:make-ui %s" ',config)))
-;; (+ivy -autocompletion )
 
+;; (+ivy -autocompletion )
 (defun config/:make-completion (config)
   `((DEBUG! "config/:make-completion %s" ',config)))
+
 ;; (app1 app2 ...)
 (defun config/:make-app (config)
   `((DEBUG! "config/:make-app %s" ',config)))
-
 
 (defun make-scope-by-config (key config)
   (pcase key
@@ -235,6 +273,14 @@
   t)
 
 (defun actived-features ()
-  nil)
+  t)
+
+(defun pkgs-needed ()
+  (let ((pkgs nil))
+    (foreach-scope! scope-name scope
+		    (setq pkgs
+			  (append pkgs
+				  (Scope/GetPkgs scope))))
+    (delete-dups pkgs)))
 
 (provide 'core-scope)

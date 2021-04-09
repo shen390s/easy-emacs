@@ -150,4 +150,10 @@
 	    (plist-put result key (nreverse values))))
     result))
 
+(defun gen-add-suffix-to-mode (suffix mode)
+  (let ((s (format "\\%s\\'" suffix))
+	(m (intern (format "%s-mode" mode))))
+    `(add-to-list 'auto-mode-alist
+		  '(,s . ,m))))
+
 (provide 'core-lib)

@@ -100,12 +100,11 @@
   (load-file config)
   (add-hook 'easy-emacs-boot-done-hook
 	    (lambda ()
-	      (defer-package-install (actived-features)))))
+	      (defer-package-install (pkgs-needed)))))
 
-(defun defer-package-install (features)
-  (DEBUG! "defer packages for feature %s" features)
+(defun defer-package-install (pkgs)
   (setf easy-emacs-deferred-packages
-	(delete-dups (append (packages features)
+	(delete-dups (append pkgs
 			     remote-autoload-pkgs)))
   (DEBUG! "Defer to install packages: %s"
 	  easy-emacs-deferred-packages)
