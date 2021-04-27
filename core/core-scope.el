@@ -194,6 +194,8 @@
 	    all-scopes))
 
 (defun make-config (config name fns)
+  (DEBUG! "make-config %s %s %s"
+	  config name fns)
   `(make-instance ',config
 		  :name ',name
 		  :pre-check ,(plist-get fns :pre-check)
@@ -205,17 +207,24 @@
 
 ;; define configuration scopes
 ;; (vars (a . 1) (b . 2) ...)
+(defun make-vars-help-fns (config)
+  (list :pre-check
+	`'(lambda (scope-name)
+	    ,@(cl-loop for var in config
+		       collect `(setq ,(car var)
+				      ,(cdr var))))))
+
+(defun make-vars-config (config)
+  (let ((fns (make-vars-help-fns config)))
+    (make-config 'Vars-Config 'vars fns)))
+
 (defun config/:make-vars (config)
   `((DEBUG! "config/:make-vars %s" ',config)
     (scope! vars)
-    (let ((c (make-instance 'Vars-Config
-			    :pre-check
-			    '(lambda (scope-name)
-			       ,@(cl-loop for var in config
-					  collect `(setq ,(car var)
-							 ,(cdr var)))))))
-      (with-scope! 'vars scope
-		   (Scope/add-config scope c)))))
+    ,@(cl-loop  for conf in (list config)
+		collect (let ((z1 (make-vars-config conf)))
+			  `(with-scope! 'vars scope
+					(Scope/add-config scope ,z1))))))
       
 ;; (mode +mode_feature -mode-feature)
 (defun make-mode-help-fns (config)
@@ -276,7 +285,7 @@
   `((DEBUG! "config/:make-app %s" ',configs)
     (scope! app)
     ,@(cl-loop for config in configs
-	       collect (let ((z1 (make-mode-config
+	       collect (let ((z1 (make-app-config
 				  (if (listp config)
 				      config
 				    (cons config nil)))))
