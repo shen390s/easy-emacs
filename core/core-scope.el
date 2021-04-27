@@ -232,7 +232,7 @@
   (let ((fns (make-mode-help-fns config))
 	(name (car config)))
     (DEBUG! "make-mode-config %s" fns)
-    (make-config Mode-Config name fns)))
+    (make-config 'Mode-Config name fns)))
 
 (defun config/:make-modes (configs)
   `((DEBUG! "config/:make-modes %s" ',configs)
@@ -244,15 +244,44 @@
 
 ;; (theme ...)
 (defun config/:make-ui (config)
-  `((DEBUG! "config/:make-ui %s" ',config)))
+  `((DEBUG! "config/:make-ui %s" ',config)
+    (scope! ui)))
 
 ;; (+ivy -autocompletion )
+(defun make-completion-help-fns (config)
+  nil)
+
+(defun make-completion-config (config)
+  (let ((fns (make-completion-help-fns config))
+	(name 'completion))
+    (make-config 'Completion-Config name fns)))
+
 (defun config/:make-completion (config)
-  `((DEBUG! "config/:make-completion %s" ',config)))
+  `((DEBUG! "config/:make-completion %s" ',config)
+    (scope! completion)
+    (let ((c (make-completion-config ',config)))
+      `(with-scope! 'completion scope
+		    (Scope/add-config scope ',c)))))
 
 ;; (app1 app2 ...)
-(defun config/:make-app (config)
-  `((DEBUG! "config/:make-app %s" ',config)))
+(defun make-app-help-fns (config)
+  nil)
+
+(defun make-app-config (config)
+  (let ((fns (make-app-help-fns config))
+	(name (car config)))
+    (make-config 'App-Config name fns)))
+
+(defun config/:make-app (configs)
+  `((DEBUG! "config/:make-app %s" ',configs)
+    (scope! app)
+    ,@(cl-loop for config in configs
+	       collect (let ((z1 (make-mode-config
+				  (if (listp config)
+				      config
+				    (cons config nil)))))
+			 `(with-scope! 'app scope
+				       (Scope/add-config scope ,z1))))))
 
 (defun make-scope-by-config (key config)
   (pcase key
@@ -266,7 +295,7 @@
        `(,@(config/:make-completion config)))
       (:app
        `(,@(config/:make-app config)))
-    (- nil)))
+    (_ nil)))
 
 ;; Just for loading
 (defmacro add-scope-hook (&rest args)

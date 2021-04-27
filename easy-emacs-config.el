@@ -10,6 +10,8 @@
 	  :features +lsp -flymake)
        (lisp :suffix .cl .el .lisp
 	     :features +hlinum)
-       :ui my-theme
+       :ui
+       (theme my-theme)
+       (font font1)
        :completion ivy -helm -autoc-complete
        :app emacs-server)
