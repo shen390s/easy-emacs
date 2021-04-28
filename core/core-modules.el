@@ -53,7 +53,7 @@
 	   :initform nil))
   "Class to describe the feature of Emacs")
 
-(defmethod Feature/configure ((feature Feature) scope-name config-name)
+(defmethod Feature/configure ((feature Feature) &optional scope-name config-name)
   (let ((result t))
     (with-slots (config-fn) feature
       (when config-fn
@@ -67,7 +67,7 @@
 	     scope-name config-name)
     result))
 
-(defmethod Feature/pkglist ((feature Feature) scope-name config-name)
+(defmethod Feature/pkglist ((feature Feature) &optional scope-name config-name)
   (with-slots (pkgs) feature
     (let ((zpkgs (if (functionp pkgs)
 		     (funcall pkgs scope-name config-name)
@@ -201,7 +201,7 @@
 	(Mode/active-fn mode)
       (intern (symbol-name m)))))
 
-(defun packages(features)
+(defun packages(features &optional scope-name config-name)
   (DEBUG! "Get packages for features: %s"
   	  features)
   ;;(unless features (edebug))
@@ -211,7 +211,10 @@
 			   collect (let ((pkgs nil))
 				     (let ((feature (get-feature f)))
 				       (when feature
-					 (setf pkgs (Feature/pkglist feature))))
+					 (setf pkgs
+					       (Feature/pkglist feature
+								scope-name
+								config-name))))
 				     pkgs)))))
 
 (defun load-module-definition (module-file)
