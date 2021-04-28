@@ -29,34 +29,34 @@
   "Configuration in scope")
 
 (defmethod Config/Check:before ((config Base-Config) scope-name)
-  (with-slots (pre-check) config
+  (with-slots (pre-check name) config
     (when pre-check
-      (funcall pre-check scope-name))))
+      (funcall pre-check scope-name name))))
 
 (defmethod Config/Check:primary ((config Base-Config) scope-name)
-  (with-slots (check) config
+  (with-slots (check name) config
     (when check
-      (funcall check scope-name))))
+      (funcall check scope-name name))))
 
 (defmethod Config/Check:after ((config Base-Config) scope-name)
-  (with-slots (after-check) config
+  (with-slots (after-check name) config
     (when after-check
-      (funcall after-check scope-name))))
+      (funcall after-check scope-name name))))
 
 (defmethod Config/Activate:before ((config Base-Config) scope-name)
-  (with-slots (pre-activate) config
+  (with-slots (pre-activate name) config
     (when pre-activate
-      (funcall pre-activate scope-name))))
+      (funcall pre-activate scope-name name))))
 
 (defmethod Config/Activate:primary ((config Base-Config) scope-name)
-  (with-slots (activate) config
+  (with-slots (activate name) config
     (when activate
-      (funcall activate scope-name))))
+      (funcall activate scope-name name))))
 
 (defmethod Config/Activate:after ((config Base-Config) scope-name)
-  (with-slots (after-activate) config
+  (with-slots (after-activate name) config
     (when after-activate
-      (funcall after-activate scope-name))))
+      (funcall after-activate scope-name name))))
 
 (defmethod Config/GetPkgs ((config Base-Config))
   (oref config pkgs))
@@ -253,7 +253,7 @@
 ;; (vars (a . 1) (b . 2) ...)
 (defun make-vars-help-fns (config)
   (list :pre-check
-	`'(lambda (scope-name)
+	`'(lambda (scope-name config-name)
 	    ,@(cl-loop for var in config
 		       collect `(setq ,(car var)
 				      ,(cdr var))))))
@@ -268,7 +268,7 @@
     (let ((features (plist-get mode-config :features))
 	  (suffixes (plist-get mode-config :suffix)))
       (list :pre-check
-	    `'(lambda (scope-name)
+	    `'(lambda (scope-name config-name)
 		,@(cl-loop for s in suffixes
 			   collect (gen-add-suffix-to-mode s mode-name)))))))
 
@@ -290,8 +290,10 @@
 (defun config/:make-completion (config)
   (config/:make-scope 'completion (list config)))
 
-;; (app1 app2 ...)
+;; app
+;; (app +options -options)
 (defun make-app-help-fns (config)
+  (DEBUG! "make-app-help-fns %s" config)
   nil)
 
 (defun config/:make-app (configs)
