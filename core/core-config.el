@@ -17,16 +17,17 @@
     (DEBUG! "config = %s" config)
     (let ((keys (filter-out-non-keywords config)))
       (DEBUG! "scope keywords = %s" keys)
-      (let ((c (cl-loop for key in keys
-	       collect `,@(make-scope-by-config key
-						(plist-get config
-							   key)))))
+      (let ((c (collect-lists nil
+			      (cl-loop for key in keys
+				       collect `,@(make-scope-by-config key
+									(plist-get config
+										   key))))))
 	(DEBUG! "c = %s" c)
 	c))))
 
 (defmacro easy! (&rest args)
   `(progn
-     ,@(collect-lists nil (make-easy-config args))
+     ,@(make-easy-config args)
      ,@(cl-loop for phase in '(before primary after)
 		collect `(foreach-scope! scope-name
 					 scope

@@ -10,6 +10,8 @@
 (defclass Base-Config ()
   ((name :initarg :name
 	 :initform "default")
+   (config :initarg :config
+	   :initform nil)
    (pre-check :initarg :pre-check
 	      :initform nil)
    (check :initarg :check
@@ -196,14 +198,14 @@
 (defun make-config (config name fns)
   (DEBUG! "make-config %s %s %s"
 	  config name fns)
-  `(make-instance ',config
-		  :name ',name
-		  :pre-check ,(plist-get fns :pre-check)
-		  :check ,(plist-get fns :check)
-		  :after-check ,(plist-get fns :after-check)
-		  :pre-activate ,(plist-get fns :pre-activate)
-		  :activate ,(plist-get fns :activate)
-		  :after-activate ,(plist-get fns :after-activate)))
+  (make-instance config
+		 :name name
+		 :pre-check (plist-get fns :pre-check)
+		 :check (plist-get fns :check)
+		 :after-check (plist-get fns :after-check)
+		 :pre-activate (plist-get fns :pre-activate)
+		 :activate (plist-get fns :activate)
+		 :after-activate (plist-get fns :after-activate)))
 
 (defun config/:name (scope config)
   (pcase scope
@@ -244,19 +246,21 @@
 	    ',scope ',configs)
     (scope! ,(intern (symbol-name scope)))
     ,@(cl-loop for config in configs
-	       collect (let ((c (config/:make-config scope config)))
-			 (when c
-			   `(with-scope! ',(intern (symbol-name scope))
+	       collect `(let ((c (config/:make-config ',scope
+						      ',config)))
+			  (when c
+			    (setf (oref c config) ',config)
+			    (with-scope! ',(intern (symbol-name scope))
 					 scope
-					 (Scope/add-config scope ,c)))))))
+					 (Scope/add-config scope c)))))))
 ;; define configuration scopes
 ;; (vars (a . 1) (b . 2) ...)
 (defun make-vars-help-fns (config)
   (list :pre-check
-	`'(lambda (scope-name config-name)
-	    ,@(cl-loop for var in config
-		       collect `(setq ,(car var)
-				      ,(cdr var))))))
+	`(lambda (scope-name config-name)
+	   ,@(cl-loop for var in config
+		      collect `(setq ,(car var)
+				     ,(cdr var))))))
 
 (defun config/:make-vars (config)
   (config/:make-scope 'vars (list config)))
@@ -268,9 +272,9 @@
     (let ((features (plist-get mode-config :features))
 	  (suffixes (plist-get mode-config :suffix)))
       (list :pre-check
-	    `'(lambda (scope-name config-name)
-		,@(cl-loop for s in suffixes
-			   collect (gen-add-suffix-to-mode s mode-name)))))))
+	    `(lambda (scope-name config-name)
+	       ,@(cl-loop for s in suffixes
+			  collect (gen-add-suffix-to-mode s mode-name)))))))
 
 
 (defun config/:make-modes (configs)
