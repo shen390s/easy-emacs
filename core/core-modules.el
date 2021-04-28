@@ -53,35 +53,33 @@
 	   :initform nil))
   "Class to describe the feature of Emacs")
 
-(defmethod Feature/configure ((feature Feature))
+(defmethod Feature/configure ((feature Feature) scope-name config-name)
   (let ((result t))
-    (let ((config-fn (oref feature config-fn)))
+    (with-slots (config-fn) feature
       (when config-fn
 	(condition-case err
-	    (setf result (funcall config-fn))
+	    (setf result (funcall config-fn scope-name config-name))
 	  (error (WARN! "configure feature %s error %s"
 			(Object/to-string feature) (error-message-string err))
 		 nil))))
-    (DEBUG2! "configure feature %s return %s"
-	     (Object/to-string feature) result)
+    (DEBUG2! "configure feature %s return %s in scope %s config %s"
+	     (Object/to-string feature) result
+	     scope-name config-name)
     result))
 
-(defmethod Feature/pkglist ((feature Feature))
-  (let ((pkgs (oref feature pkgs)))
+(defmethod Feature/pkglist ((feature Feature) scope-name config-name)
+  (with-slots (pkgs) feature
     (let ((zpkgs (if (functionp pkgs)
-		     (funcall pkgs)
+		     (funcall pkgs scope-name config-name)
 		   pkgs)))
       (if (listp zpkgs)
 	  zpkgs
 	(list zpkgs)))))
 
 (defmethod Object/to-string ((obj Feature))
-  (format "Feature name: %s pkgs: %s config-fn: %s on-fn:%s off-fn:%s"
-	  (oref obj name)
-	  (oref obj pkgs)
-	  (oref obj config-fn)
-	  (oref obj on-fn)
-	  (oref obj off-fn)))
+  (with-slots (name pkgs config-fn on-fn off-fn) obj
+    (format "Feature name: %s pkgs: %s config-fn: %s on-fn:%s off-fn:%s"
+	    name pkgs config-fn on-fn off-fn)))
 
 (defclass Mode (Feature)
   ((scope :initarg :scope
@@ -99,10 +97,9 @@
       (apply (oref mode on-fn) args))))
 
 (defmethod Object/to-string ((obj Mode))
-  (format "Mode name: %s pkgs: %s on-fn: %s"
-	  (oref obj name)
-	  (oref obj pkgs)
-	  (oref obj on-fn)))
+  (with-slots (name pkgs on-fn) obj
+    (format "Mode name: %s pkgs: %s on-fn: %s"
+	    name pkgs on-fn)))
 
 (defvar all-packages (make-hash-table)
   "All defined packages")
