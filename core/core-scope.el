@@ -205,6 +205,50 @@
 		  :activate ,(plist-get fns :activate)
 		  :after-activate ,(plist-get fns :after-activate)))
 
+(defun config/:name (scope config)
+  (pcase scope
+    ('vars 'vars)
+    (_ (if (listp config)
+	   (if config
+	       (car config)
+	     'Null)
+	 `,config))))
+
+(defun config/:make-config (scope config)
+  (pcase scope
+    ('vars
+     (make-config 'Vars-Config
+		  (config/:name scope config)
+		  (make-vars-help-fns config)))
+    ('modes
+     (make-config 'Mode-Config
+		  (config/:name scope config)
+		  (make-mode-help-fns config)))
+    ('ui
+     (make-config 'UI-Config
+		  (config/:name scope config)
+		  (make-ui-help-fns config)))
+    ('completion
+     (make-config 'Completion-Config
+		  (config/:name scope config)
+		  (make-completion-help-fns config)))
+    ('app
+     (make-config 'App-Config
+		  (config/:name scope config)
+		  (make-app-help-fns config)))
+    (_
+     nil)))
+
+(defun config/:make-scope (scope configs)
+  `((DEBUG! "config/:make-%s %s"
+	    ',scope ',configs)
+    (scope! ,(intern (symbol-name scope)))
+    ,@(cl-loop for config in configs
+	       collect (let ((c (config/:make-config scope config)))
+			 (when c
+			   `(with-scope! ',(intern (symbol-name scope))
+					 scope
+					 (Scope/add-config scope ,c)))))))
 ;; define configuration scopes
 ;; (vars (a . 1) (b . 2) ...)
 (defun make-vars-help-fns (config)
@@ -214,17 +258,8 @@
 		       collect `(setq ,(car var)
 				      ,(cdr var))))))
 
-(defun make-vars-config (config)
-  (let ((fns (make-vars-help-fns config)))
-    (make-config 'Vars-Config 'vars fns)))
-
 (defun config/:make-vars (config)
-  `((DEBUG! "config/:make-vars %s" ',config)
-    (scope! vars)
-    ,@(cl-loop  for conf in (list config)
-		collect (let ((z1 (make-vars-config conf)))
-			  `(with-scope! 'vars scope
-					(Scope/add-config scope ,z1))))))
+  (config/:make-scope 'vars (list config)))
       
 ;; (mode +mode_feature -mode-feature)
 (defun make-mode-help-fns (config)
@@ -237,60 +272,30 @@
 		,@(cl-loop for s in suffixes
 			   collect (gen-add-suffix-to-mode s mode-name)))))))
 
-(defun make-mode-config (config)
-  (let ((fns (make-mode-help-fns config))
-	(name (car config)))
-    (DEBUG! "make-mode-config %s" fns)
-    (make-config 'Mode-Config name fns)))
 
 (defun config/:make-modes (configs)
-  `((DEBUG! "config/:make-modes %s" ',configs)
-    (scope! modes)
-    ,@(cl-loop for config in configs
-	       collect (let ((z1 (make-mode-config config)))
-			 `(with-scope! 'modes scope
-				       (Scope/add-config scope ,z1))))))
+  (config/:make-scope 'modes configs))
 
 ;; (theme ...)
-(defun config/:make-ui (config)
-  `((DEBUG! "config/:make-ui %s" ',config)
-    (scope! ui)))
+(defun make-ui-help-fns (config)
+  t)
+
+(defun config/:make-ui (configs)
+  (config/:make-scope 'ui configs))
 
 ;; (+ivy -autocompletion )
 (defun make-completion-help-fns (config)
   nil)
 
-(defun make-completion-config (config)
-  (let ((fns (make-completion-help-fns config))
-	(name 'completion))
-    (make-config 'Completion-Config name fns)))
-
 (defun config/:make-completion (config)
-  `((DEBUG! "config/:make-completion %s" ',config)
-    (scope! completion)
-    (let ((c (make-completion-config ',config)))
-      `(with-scope! 'completion scope
-		    (Scope/add-config scope ',c)))))
+  (config/:make-scope 'completion (list config)))
 
 ;; (app1 app2 ...)
 (defun make-app-help-fns (config)
   nil)
 
-(defun make-app-config (config)
-  (let ((fns (make-app-help-fns config))
-	(name (car config)))
-    (make-config 'App-Config name fns)))
-
 (defun config/:make-app (configs)
-  `((DEBUG! "config/:make-app %s" ',configs)
-    (scope! app)
-    ,@(cl-loop for config in configs
-	       collect (let ((z1 (make-app-config
-				  (if (listp config)
-				      config
-				    (cons config nil)))))
-			 `(with-scope! 'app scope
-				       (Scope/add-config scope ,z1))))))
+  (config/:make-scope 'app configs))
 
 (defun make-scope-by-config (key config)
   (pcase key
