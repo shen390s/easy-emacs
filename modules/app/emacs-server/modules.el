@@ -1,5 +1,5 @@
 
-(defun emacs-server-config ()
+(defun emacs-server-config (scope-name phase options)
   (progn
     (setq server-port (getenv "EMACS_SERVER_PORT")
 	  server-auth-key (getenv "EMACS_SERVER_AUTH"))
@@ -9,6 +9,11 @@
 	    server-host "127.0.0.1"))
     t))
 
+(defun emacs-server-pkgs (scope-name options)
+  (DEBUG! "update pkg list of emacs-server with option %s"
+	  options)
+  nil)
+
 (defun activate-emacs-server ()
   (server-start))
 
@@ -17,7 +22,7 @@
 
 (feature! emacs-server
 	  "Emacs Editor Server"
-	  nil
+	  emacs-server-pkgs
 	  emacs-server-config
 	  activate-emacs-server
 	  deactivate-emacs-server)

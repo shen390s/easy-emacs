@@ -53,24 +53,26 @@
 	   :initform nil))
   "Class to describe the feature of Emacs")
 
-(defmethod Feature/configure ((feature Feature) &optional scope-name config-name)
+(defmethod Feature/configure ((feature Feature) 
+			      &optional scope-name
+			      phase config-options)
   (let ((result t))
     (with-slots (config-fn) feature
       (when config-fn
 	(condition-case err
-	    (setf result (funcall config-fn scope-name config-name))
+	    (setf result (funcall config-fn scope-name phase config-options))
 	  (error (WARN! "configure feature %s error %s"
 			(Object/to-string feature) (error-message-string err))
 		 nil))))
-    (DEBUG2! "configure feature %s return %s in scope %s config %s"
+    (DEBUG2! "configure feature %s return %s in scope %s phase %s config options %s"
 	     (Object/to-string feature) result
-	     scope-name config-name)
+	     scope-name phase config-options)
     result))
 
-(defmethod Feature/pkglist ((feature Feature) &optional scope-name config-name)
+(defmethod Feature/pkglist ((feature Feature) &optional scope-name config-options)
   (with-slots (pkgs) feature
     (let ((zpkgs (if (functionp pkgs)
-		     (funcall pkgs scope-name config-name)
+		     (funcall pkgs scope-name config-options)
 		   pkgs)))
       (if (listp zpkgs)
 	  zpkgs
@@ -201,7 +203,7 @@
 	(Mode/active-fn mode)
       (intern (symbol-name m)))))
 
-(defun packages(features &optional scope-name config-name)
+(defun packages(features &optional scope-name config-options)
   (DEBUG! "Get packages for features: %s"
   	  features)
   ;;(unless features (edebug))
@@ -214,7 +216,7 @@
 					 (setf pkgs
 					       (Feature/pkglist feature
 								scope-name
-								config-name))))
+								config-options))))
 				     pkgs)))))
 
 (defun load-module-definition (module-file)

@@ -60,12 +60,17 @@
     (when after-activate
       (funcall after-activate scope-name name))))
 
-(defmethod Config/GetPkgs ((config Base-Config))
+(defgeneric Config/Pkgs:update ((config Base-Config) scope-name))
+
+(defmethod Config/Pkgs:get ((config Base-Config))
   (oref config pkgs))
 
 (defclass Vars-Config (Base-Config)
   ()
   "for configuration variables")
+
+(defmethod Config/Pkgs:update ((config Vars-Config) scope-name)
+  nil)
 
 (defclass Mode-Config (Base-Config)
   ((enabled-features :initarg :actived-features
@@ -84,20 +89,46 @@
 		       :initform nil))
   "Configuration for modes")
 
+(defmethod Config/Pkgs:update ((config Mode-Config) scope-name)
+  nil)
+
 (defclass UI-Config (Base-Config)
   ((theme :initarg :theme
 	  :initform nil))
   "UI Related configurations")
+
+(defmethod Config/Pkgs:update ((config UI-Config) scope-name)
+  nil)
 
 (defclass Completion-Config (Base-Config)
   ((completion :initarg :completion
 	       :initform nil))
   "Configuration of completion")
 
+(defmethod Config/Pkgs:update ((config Completion-Config) scope-name)
+  nil)
+
 (defclass App-Config (Base-Config)
   ((apps :initarg :apps
 	 :initform nil))
   "Application Configuration")
+
+(defmethod Config/Pkgs:update ((config App-Config) scope-name)
+  (DEBUG! "update package requires for %s scope %s"
+	  config scope-name)
+  (with-slots (config) config
+    (let ((app (if (listp config)
+		   (car config)
+		 config))
+	  (options (if (listp config)
+		       (cdr config)
+		     nil)))
+      (DEBUG! "app = %s options = %s" app options)
+      (let ((f (get-feature app)))
+	(DEBUG! "feature %s" f)
+	(if f
+	    (Feature/pkglist f 'app options)
+	  nil)))))
 
 (defclass Scope ()
   ((name :initarg :name
@@ -128,6 +159,14 @@
 
 (defmethod Scope/add-config ((scope Scope) config)
   (push config (oref scope configs)))
+
+(defmethod Scope/get-pkgs ((scope Scope))
+  (collect-lists nil
+		 (with-slots (configs name) scope
+		   (cl-loop for config in configs
+			    collect (progn
+				      (Config/Pkgs:update config name)
+				      (Config/Pkgs:get config))))))
 
 (defun make-scope-method (action phase)
   `(defmethod ,(intern (format "Scope/%s:%s" action phase))

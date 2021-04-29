@@ -32,6 +32,9 @@
 		collect `(foreach-scope! scope-name
 					 scope
 					 (,(intern (format "Scope/Configure:%s" phase)) scope)))
+     (foreach-scope! scope-name scope
+		     (defer-package-install (Scope/get-pkgs scope)))
+     
      ,@(cl-loop for phase in '(before primary after)
 		collect `(foreach-scope! scope-name scope
 					 (,(intern (format "Scope/Activate:%s" phase)) scope)))))
