@@ -14,4 +14,4 @@
        (theme my-theme)
        (font font1)
        :completion ivy -helm -autoc-complete
-       :app emacs-server)
+       :app (emacs-server :port 1234))

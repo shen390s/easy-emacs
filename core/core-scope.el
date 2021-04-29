@@ -31,34 +31,34 @@
   "Configuration in scope")
 
 (defmethod Config/Check:before ((config Base-Config) scope-name)
-  (with-slots (pre-check name) config
+  (with-slots (pre-check) config
     (when pre-check
-      (funcall pre-check scope-name name))))
+      (funcall pre-check))))
 
 (defmethod Config/Check:primary ((config Base-Config) scope-name)
-  (with-slots (check name) config
+  (with-slots (check) config
     (when check
-      (funcall check scope-name name))))
+      (funcall check))))
 
 (defmethod Config/Check:after ((config Base-Config) scope-name)
-  (with-slots (after-check name) config
+  (with-slots (after-check) config
     (when after-check
-      (funcall after-check scope-name name))))
+      (funcall after-check))))
 
 (defmethod Config/Activate:before ((config Base-Config) scope-name)
-  (with-slots (pre-activate name) config
+  (with-slots (pre-activate) config
     (when pre-activate
-      (funcall pre-activate scope-name name))))
+      (funcall pre-activate))))
 
 (defmethod Config/Activate:primary ((config Base-Config) scope-name)
-  (with-slots (activate name) config
+  (with-slots (activate) config
     (when activate
-      (funcall activate scope-name name))))
+      (funcall activate))))
 
 (defmethod Config/Activate:after ((config Base-Config) scope-name)
-  (with-slots (after-activate name) config
+  (with-slots (after-activate) config
     (when after-activate
-      (funcall after-activate scope-name name))))
+      (funcall after-activate))))
 
 (defgeneric Config/Pkgs:update ((config Base-Config) scope-name))
 
@@ -194,10 +194,7 @@
 (defmethod Scope/install-pkgs ((scope Scope))
   (let ((pkg-installed (oref scope pkg-installed)))
     (unless pkg-installed
-      (cl-loop for pkg in
-	       (packages (mapcar #'(lambda (f)
-				     (plist-get f :name))
-				 (oref scope enabled-features)))
+      (cl-loop for pkg in (Scope/get-pkgs scope)
 	       do (install-package-by-name pkg))
       (setf (oref scope pkg-installed) t))))
 
@@ -296,7 +293,7 @@
 ;; (vars (a . 1) (b . 2) ...)
 (defun make-vars-help-fns (config)
   (list :pre-check
-	`(lambda (scope-name config-name)
+	`(lambda ()
 	   ,@(cl-loop for var in config
 		      collect `(setq ,(car var)
 				     ,(cdr var))))))
@@ -311,7 +308,7 @@
     (let ((features (plist-get mode-config :features))
 	  (suffixes (plist-get mode-config :suffix)))
       (list :pre-check
-	    `(lambda (scope-name config-name)
+	    `(lambda ()
 	       ,@(cl-loop for s in suffixes
 			  collect (gen-add-suffix-to-mode s mode-name)))))))
 
@@ -335,10 +332,48 @@
 
 ;; app
 ;; (app +options -options)
+(defun app-feature-config (app phase options)
+  (DEBUG! "config app %s phase %s options %s"
+	  app phase options)
+  (let ((f (get-feature app)))
+    (DEBUG! "feature %s for app %s"
+	    f app)
+    (if f
+	(Feature/configure f 'app phase options)
+      t)))
+
+(defun app-feature-activate (app phase options)
+  (DEBUG! "activate app %s phase %s options %s"
+	  app phase options)
+  (let ((f (get-feature app)))
+    (DEBUG! "feature %s for app %s"
+	    f app)
+    (if f
+	(Feature/activate f 'app phase options)
+      t)))
+
 (defun make-app-help-fns (config)
   (DEBUG! "make-app-help-fns %s" config)
-  nil)
-
+  (let ((app (if (listp config)
+		 (car config)
+	       config))
+	(config-options (if (listp config)
+			    (cdr config)
+			  nil)))
+    (collect-lists nil
+		   (append (cl-loop for phase in '(:pre-check :check :after-check)
+				    collect `(,phase
+					      (lambda ()
+						(app-feature-config ',app
+								    ',(keyword-name phase)
+								    ',config-options))))
+			   (cl-loop for phase in '(:pre-activate
+						   :activate :after-activate)
+				    collect `(,phase
+					      (lambda ()
+						(app-feature-activate ',app
+								      ',(keyword-name phase)
+								      ',config-options))))))))
 (defun config/:make-app (configs)
   (config/:make-scope 'app configs))
 
