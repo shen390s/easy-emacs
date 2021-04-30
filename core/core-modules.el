@@ -94,6 +94,19 @@
 	  zpkgs
 	(list zpkgs)))))
 
+(defun invoke-feature (name fn scope phase options)
+  (when name
+    (let ((f (get-feature name)))
+      (when f
+	(pcase fn
+	  ('configure
+	   (Feature/configure f scope phase options))
+	  ('activate
+	   (Feature/activate f scope phase options))
+	  ('pkglist
+	   (Feature/pkglist f scope options))
+	  (_ nil))))))
+
 (defmethod Object/to-string ((obj Feature))
   (with-slots (name pkgs config-fn on-fn off-fn) obj
     (format "Feature name: %s pkgs: %s config-fn: %s on-fn:%s off-fn:%s"
@@ -226,14 +239,11 @@
   (delete-dups
    (collect-lists nil
 		  (cl-loop for f in features
-			   collect (let ((pkgs nil))
-				     (let ((feature (get-feature f)))
-				       (when feature
-					 (setf pkgs
-					       (Feature/pkglist feature
-								scope-name
-								config-options))))
-				     pkgs)))))
+			   collect (invoke-feature f
+						   'pkglist
+						   scope-name
+						   'ignore
+						   config-options)))))
 
 (defun load-module-definition (module-file)
   (load-file module-file))

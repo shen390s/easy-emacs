@@ -111,11 +111,7 @@
 		       (cdr config)
 		     nil)))
       (DEBUG! "app = %s options = %s" app options)
-      (let ((f (get-feature app)))
-	(DEBUG! "feature %s" f)
-	(if f
-	    (Feature/pkglist f 'app options)
-	  nil)))))
+      (invoke-feature app 'pkglist 'app 'ignore options))))
 
 (defclass Scope ()
   ((name :initarg :name
@@ -273,6 +269,35 @@
 			    (with-scope! ',(intern (symbol-name scope))
 					 scope
 					 (Scope/add-config scope c)))))))
+
+
+(defun make-scope-help-fns (scope-handler config)
+  (DEBUG! "make-scope-help-fns handler %s config %s"
+	  scope-handler config)
+  (let ((app (if (listp config)
+		 (car config)
+	       config))
+	(config-options (if (listp config)
+			    (cdr config)
+			  nil)))
+    (collect-lists nil
+		   (append (cl-loop for phase in '(:pre-check :check :after-check)
+				    collect `(,phase
+					      (lambda ()
+						(,(plist-get
+						   scope-handler :config)
+						 ',app
+						 ',(keyword-name phase)
+						 ',config-options))))
+			   (cl-loop for phase in '(:pre-activate
+						   :activate :after-activate)
+				    collect `(,phase
+					      (lambda ()
+						(,(plist-get
+						   scope-handler :activate)
+						 ',app
+						 ',(keyword-name phase)
+						 ',config-options))))))))
 ;; define configuration scopes
 ;; (vars (a . 1) (b . 2) ...)
 (defun make-vars-help-fns (config)
@@ -301,6 +326,8 @@
   (config/:make-scope 'modes configs))
 
 ;; (theme ...)
+;; (font ...)
+;; (keybind ...)
 (defun make-ui-help-fns (config)
   t)
 
@@ -308,6 +335,12 @@
   (config/:make-scope 'ui configs))
 
 ;; (+ivy -autocompletion )
+(defun completion-config (app phase options)
+  t)
+
+(defun completion-activate (app phase options)
+  t)
+
 (defun make-completion-help-fns (config)
   nil)
 
@@ -319,45 +352,20 @@
 (defun app-feature-config (app phase options)
   (DEBUG! "config app %s phase %s options %s"
 	  app phase options)
-  (let ((f (get-feature app)))
-    (DEBUG! "feature %s for app %s"
-	    f app)
-    (if f
-	(Feature/configure f 'app phase options)
-      t)))
+  (invoke-feature app 'configure 'app
+		  phase options))
 
 (defun app-feature-activate (app phase options)
   (DEBUG! "activate app %s phase %s options %s"
 	  app phase options)
-  (let ((f (get-feature app)))
-    (DEBUG! "feature %s for app %s"
-	    f app)
-    (if f
-	(Feature/activate f 'app phase options)
-      t)))
+  (invoke-feature app 'activate 'app
+		  phase options))
 
 (defun make-app-help-fns (config)
-  (DEBUG! "make-app-help-fns %s" config)
-  (let ((app (if (listp config)
-		 (car config)
-	       config))
-	(config-options (if (listp config)
-			    (cdr config)
-			  nil)))
-    (collect-lists nil
-		   (append (cl-loop for phase in '(:pre-check :check :after-check)
-				    collect `(,phase
-					      (lambda ()
-						(app-feature-config ',app
-								    ',(keyword-name phase)
-								    ',config-options))))
-			   (cl-loop for phase in '(:pre-activate
-						   :activate :after-activate)
-				    collect `(,phase
-					      (lambda ()
-						(app-feature-activate ',app
-								      ',(keyword-name phase)
-								      ',config-options))))))))
+  (make-scope-help-fns (list :config #'app-feature-config
+			     :activate #'app-feature-activate)
+		       config))
+
 (defun config/:make-app (configs)
   (config/:make-scope 'app configs))
 
@@ -380,12 +388,7 @@
 (defun actived-features ()
   t)
 
-(defun pkgs-needed ()
-  (let ((pkgs nil))
-    (foreach-scope! scope-name scope
-		    (setq pkgs
-			  (append pkgs
-				  (Scope/GetPkgs scope))))
-    (delete-dups pkgs)))
+(defun add-scope-hook (scope phase fn)
+  t)
 
 (provide 'core-scope)

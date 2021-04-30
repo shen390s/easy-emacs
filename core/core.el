@@ -99,8 +99,9 @@
   ;; easy-emacs
   (load-file config)
   (add-hook 'easy-emacs-boot-done-hook
+	    ;; works to do after bootstrap
 	    (lambda ()
-	      (defer-package-install (pkgs-needed)))))
+	      t)))
 
 (defun defer-package-install (pkgs)
   (setf easy-emacs-deferred-packages
