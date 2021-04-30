@@ -73,20 +73,7 @@
   nil)
 
 (defclass Mode-Config (Base-Config)
-  ((enabled-features :initarg :actived-features
-		     :initform nil)
-   (disabled-features :initarg :disabled-features
-		      :initform nil)
-   (activate-feature :initarg :activate-feature
-		     :initform nil)
-   (config-feature :initarg :config-feature
-		   :initform nil)
-   (enable-feature :initarg :enable-feature
-		   :initform nil)
-   (disable-feature :initarg :disable-feature
-		    :initform nil)
-   (deactivate-feature :initarg :deactivate-feature
-		       :initform nil))
+  ()
   "Configuration for modes")
 
 (defmethod Config/Pkgs:update ((config Mode-Config) scope-name)
@@ -143,10 +130,7 @@
 		  hook-type)))
 
 (defmethod Object/to-string ((scope Scope))
-  (format "Scope name:%s  enabled features: %s disabled features %s"
-	  (oref scope name)
-	  (oref scope enabled-features)
-	  (oref scope disabled-features)))
+  (format "scope %s" scope))
 
 (defmacro with-scope! (scope-name scope-var &rest body)
   `(when ,scope-name
@@ -392,8 +376,6 @@
     (_ nil)))
 
 ;; Just for loading
-(defmacro add-scope-hook (&rest args)
-  t)
 
 (defun actived-features ()
   t)
