@@ -103,6 +103,16 @@
 	    (lambda ()
 	      t)))
 
+(defmacro after-boot! (fn &rest args)
+  `(add-hook 'easy-emacs-boot-done-hook
+	     (lambda ()
+	       ,fn ,@args)))
+
+(defmacro mode-hook! (mode fn &rest args)
+  `(add-hook ',(intern (format "%s-mode-hook" mode))
+	     (lambda ()
+	       ,fn ,@args)))
+
 (defun defer-package-install (pkgs)
   (setf easy-emacs-deferred-packages
 	(delete-dups (append pkgs

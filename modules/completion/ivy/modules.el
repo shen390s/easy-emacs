@@ -18,15 +18,20 @@
 
 ;;(setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)))
 
-(defun enable-ivy ()
+(defun ivy-activate/:after (scope &optional options)
   (require 'ivy-posframe)
-  (progn    
-    (ivy-mode 1)
-    (ivy-posframe-mode 1)))
+  (ivy-mode 1)
+  (ivy-posframe-mode 1))
+
+(defun ivy-activate (scope &optional phase options)
+  (pcase phase
+    ("after-activate"
+     (after-boot! scope options))
+    (_ t)))
 
 (feature! ivy
 	  "Ivy is for quick and easy selection from a list. When Emacs prompts for a string from a list of several possible choices, Ivy springs into action to assist in narrowing and picking the right string from a vast number of choices. "
 	  (ivy counsel swiper ivy-posframe)
 	  nil
-	  enable-ivy
+	  ivy-activate
 	  nil)

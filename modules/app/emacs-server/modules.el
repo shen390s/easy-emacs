@@ -26,14 +26,14 @@
 	  options)
   nil)
 
-(defun emacs-server-activate/:after (scope &optional options)
+(defun emacs-server/:start (scope &optional options)
   (DEBUG! "starting emacs server options %s"
 	  options)
   (server-start))
 
 (defun activate-emacs-server (scope &optional phase options)
   (pcase phase
-    ("after-activate" (emacs-server-activate/:after scope options))
+    ("after-activate" (after-boot! scope options))
     (_ t)))
 
 (defun deactivate-emacs-server ()
@@ -41,7 +41,7 @@
 
 (feature! emacs-server
 	  "Emacs Editor Server"
-	  emacs-server-pkgs
+	  nil
 	  emacs-server-config
 	  activate-emacs-server
 	  deactivate-emacs-server)

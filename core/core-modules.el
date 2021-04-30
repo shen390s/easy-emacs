@@ -27,16 +27,16 @@
   "Class to describe the package of Emacs")
 
 (defmethod Package/install ((pkg Package))
-  (unless (oref pkg installed)
-    (when (fboundp 'install-pkg)
-      (install-pkg (oref pkg pkg-info)))
-    (setf (oref pkg installed) t)))
+  (with-slots (installed pkg-info) pkg
+    (unless installed
+      (when (fboundp 'install-pkg)
+	(install-pkg pkg-info)
+	(setf installed t)))))
 
 (defmethod Object/to-string ((obj Package))
-  (format "Package name: %s pkginfo: %s installed: %s"
-	  (oref obj name)
-	  (oref obj pkg-info)
-	  (oref obj installed)))
+  (with-slots (name pkg-info installed)
+      (format "Package name: %s pkginfo: %s installed: %s"
+	      name pkg-info installed)))
 
 (defclass Feature ()
   ((name :initarg :name

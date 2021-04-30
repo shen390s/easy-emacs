@@ -336,13 +336,21 @@
 
 ;; (+ivy -autocompletion )
 (defun completion-config (app phase options)
-  t)
+  (DEBUG! "completion configure app %s phase %s options %s"
+	  app phase options)
+  (invoke-feature app 'configure
+		  'completion phase options))
 
 (defun completion-activate (app phase options)
-  t)
+  (DEBUG! "completion activate app %s phase %s options %s"
+	  app phase options)
+  (invoke-feature app 'activate
+		  'completion phase options))
 
 (defun make-completion-help-fns (config)
-  nil)
+  (make-scope-help-fns (list :config #'completion-config
+			     :activate #'completion-activate)
+		       config))
 
 (defun config/:make-completion (config)
   (config/:make-scope 'completion (list config)))
