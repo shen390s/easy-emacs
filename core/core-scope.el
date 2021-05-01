@@ -5,6 +5,7 @@
 (require 'eieio)
 (require 'core-lib)
 (require 'core-log)
+(require 'core-hooks)
 (require 'core-modules)
 
 (defclass Base-Config ()
@@ -18,12 +19,14 @@
 	  :initform nil)
    (after-check :initarg :after-check
 		:initform nil)
-   (pre-activate :initarg :pre-activate
+   (pre-prepare :initarg :pre-prepare
 		 :initform nil)
+   (prepare :initarg :prepare
+	     :initform nil)
+   (after-prepare :initarg :after-prepare
+		   :initform nil)
    (activate :initarg :activate
 	     :initform nil)
-   (after-activate :initarg :after-activate
-		   :initform nil)
    (pkgs :initarg :pkgs
 	 :initform nil)
    (pkg-installed :initarg :pkg-installed
@@ -45,20 +48,25 @@
     (when after-check
       (funcall after-check))))
 
-(defmethod Config/Activate:before ((config Base-Config) scope-name)
-  (with-slots (pre-activate) config
-    (when pre-activate
-      (funcall pre-activate))))
+(defmethod Config/Prepare:before ((config Base-Config) scope-name)
+  (with-slots (pre-prepare) config
+    (when pre-prepare
+      (funcall pre-prepare))))
 
-(defmethod Config/Activate:primary ((config Base-Config) scope-name)
+(defmethod Config/Prepare:primary ((config Base-Config) scope-name)
+  (with-slots (prepare) config
+    (when prepare
+      (funcall prepare))))
+
+(defmethod Config/Prepare:after ((config Base-Config) scope-name)
+  (with-slots (after-prepare) config
+    (when after-prepare
+      (funcall after-prepare))))
+
+(defmethod Config/Activate ((config Base-Config) scope-name)
   (with-slots (activate) config
     (when activate
       (funcall activate))))
-
-(defmethod Config/Activate:after ((config Base-Config) scope-name)
-  (with-slots (after-activate) config
-    (when after-activate
-      (funcall after-activate))))
 
 (defgeneric Config/Pkgs:update ((config Base-Config) scope-name))
 
@@ -161,7 +169,7 @@
 		     config name)))))
 
 (defmacro make-scope-methods! ()
-  (let ((actions '(Configure Activate))
+  (let ((actions '(Configure Prepare))
 	(phases '(before primary after)))
     `(progn
        ,@(collect-lists nil
@@ -170,6 +178,13 @@
 						  collect (make-scope-method action
 									     phase)))))))
 (make-scope-methods!)
+
+(defmethod Scope/Activate ((scope Scope))
+  (DEBUG! "activate scope %s"
+	  scope)
+  (with-slots (name configs) scope
+    (cl-loop for config in configs
+	     do (Config/Activate config name))))
 
 (defmethod Scope/install-pkgs ((scope Scope))
   (let ((pkg-installed (oref scope pkg-installed)))
@@ -219,9 +234,10 @@
 		 :pre-check (plist-get fns :pre-check)
 		 :check (plist-get fns :check)
 		 :after-check (plist-get fns :after-check)
-		 :pre-activate (plist-get fns :pre-activate)
-		 :activate (plist-get fns :activate)
-		 :after-activate (plist-get fns :after-activate)))
+		 :pre-prepare (plist-get fns :pre-prepare)
+		 :prepare (plist-get fns :prepare)
+		 :after-prepare (plist-get fns :after-prepare)
+		 :activate (plist-get fns :activate)))
 
 (defun config/:name (scope config)
   (pcase scope
@@ -270,6 +286,19 @@
 					 scope
 					 (Scope/add-config scope c)))))))
 
+(defun mk-scope-handler-call (handler action app phase options)
+  (let ((fn (plist-get handler action)))
+    (if fn
+	(pcase action
+	  (:activate
+	   `(:activate
+	     (lambda ()
+	       (,fn ',app ',(keyword-name phase) ',options))))
+	  (_ 
+	   `(,phase (lambda ()
+		      (,fn ',app ',(keyword-name phase) ',options)))))
+      `(,phase (lambda ()
+		 t)))))
 
 (defun make-scope-help-fns (scope-handler config)
   (DEBUG! "make-scope-help-fns handler %s config %s"
@@ -280,24 +309,30 @@
 	(config-options (if (listp config)
 			    (cdr config)
 			  nil)))
-    (collect-lists nil
-		   (append (cl-loop for phase in '(:pre-check :check :after-check)
-				    collect `(,phase
-					      (lambda ()
-						(,(plist-get
-						   scope-handler :config)
-						 ',app
-						 ',(keyword-name phase)
-						 ',config-options))))
-			   (cl-loop for phase in '(:pre-activate
-						   :activate :after-activate)
-				    collect `(,phase
-					      (lambda ()
-						(,(plist-get
-						   scope-handler :activate)
-						 ',app
-						 ',(keyword-name phase)
-						 ',config-options))))))))
+    (collect-lists
+     nil
+     (append (cl-loop for phase in '(:pre-check :check :after-check)
+		      collect (mk-scope-handler-call
+			       scope-handler
+			       :config
+			       app
+			       phase
+			       config-options))
+	     (cl-loop for phase in '(:pre-prepare
+				     :prepare :after-prepare)
+		      collect (mk-scope-handler-call
+			       scope-handler
+			       :prepare
+			       app
+			       phase
+			       config-options))
+	     (list (mk-scope-handler-call
+		    scope-handler
+		    :activate
+		    app
+		    'ignore
+		    config-options))))))
+
 ;; define configuration scopes
 ;; (vars (a . 1) (b . 2) ...)
 (defun make-vars-help-fns (config)
@@ -341,15 +376,15 @@
   (invoke-feature app 'configure
 		  'completion phase options))
 
-(defun completion-activate (app phase options)
-  (DEBUG! "completion activate app %s phase %s options %s"
+(defun completion-prepare (app phase options)
+  (DEBUG! "completion prepare app %s phase %s options %s"
 	  app phase options)
-  (invoke-feature app 'activate
+  (invoke-feature app 'prepare
 		  'completion phase options))
 
 (defun make-completion-help-fns (config)
   (make-scope-help-fns (list :config #'completion-config
-			     :activate #'completion-activate)
+			     :prepare #'completion-prepare)
 		       config))
 
 (defun config/:make-completion (config)
@@ -363,14 +398,33 @@
   (invoke-feature app 'configure 'app
 		  phase options))
 
-(defun app-feature-activate (app phase options)
-  (DEBUG! "activate app %s phase %s options %s"
+(defun app-feature-prepare (app phase options)
+  (DEBUG! "prepare app %s phase %s options %s"
 	  app phase options)
-  (invoke-feature app 'activate 'app
+  (invoke-feature app 'prepare 'app
 		  phase options))
+
+(defvar activate-app-list nil
+  "list of apps to be activate after easy-emacs boot done")
+
+(defun activate-apps ()
+  (cl-loop for app in activate-app-list
+	   do (let ((app-name (car app))
+		    (config-options (cdr app)))
+		(invoke-feature app-name 'activate 'app
+				'ignore config-options))))
+
+(after-boot! activate-apps)
+
+(defun app-feature-activate (app phase options)
+  (DEBUG! "activate app %s options %s"
+	  app options)
+  (add-to-list 'activate-app-list
+	       `(,app . ,options)))
 
 (defun make-app-help-fns (config)
   (make-scope-help-fns (list :config #'app-feature-config
+			     :prepare #'app-feature-prepare
 			     :activate #'app-feature-activate)
 		       config))
 

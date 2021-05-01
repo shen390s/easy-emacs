@@ -34,7 +34,7 @@
 	(setf installed t)))))
 
 (defmethod Object/to-string ((obj Package))
-  (with-slots (name pkg-info installed)
+  (with-slots (name pkg-info installed) obj
       (format "Package name: %s pkginfo: %s installed: %s"
 	      name pkg-info installed)))
 
@@ -45,6 +45,8 @@
 	      :initform "Anonymous")
    (pkgs :initarg :pkgs
 	 :initform nil)
+   (prepare-fn :initarg :prepare-fn
+	       :initform nil)
    (config-fn :initarg :config-fn
 	      :initform nil)
    (on-fn :initarg :on-fn
@@ -52,6 +54,23 @@
    (off-fn :initarg :off-fn
 	   :initform nil))
   "Class to describe the feature of Emacs")
+
+(defmethod Feature/prepare ((feature Feature) 
+			      &optional scope-name
+			      phase config-options)
+  (let ((result t))
+    (with-slots (prepare-fn) feature
+      (when prepare-fn
+	(condition-case err
+	    (setf result (funcall prepare-fn scope-name phase config-options))
+	  (error (WARN! "prepare feature %s error %s"
+			(Object/to-string feature) (error-message-string err))
+		 nil))))
+    (DEBUG2! "prepare feature %s return %s in scope %s phase %s config options %s"
+	     (Object/to-string feature) result
+	     scope-name phase config-options)
+    result))
+
 
 (defmethod Feature/configure ((feature Feature) 
 			      &optional scope-name
@@ -99,10 +118,14 @@
     (let ((f (get-feature name)))
       (when f
 	(pcase fn
+	  ('prepare
+	   (Feature/prepare f scope phase options))
 	  ('configure
 	   (Feature/configure f scope phase options))
 	  ('activate
-	   (Feature/activate f scope phase options))
+	   (progn
+	     (install-packages (Feature/pkglist f scope options))
+	     (Feature/activate f scope phase options)))
 	  ('pkglist
 	   (Feature/pkglist f scope options))
 	  (_ nil))))))
@@ -158,6 +181,21 @@
 				   :installed nil)))
        (progn
 	 (puthash name package all-packages)))))
+
+(defmacro feature-ex! (name docstring pkgs config-fn prepare-fn on-fn off-fn)
+  `(let ((feature (make-instance 'Feature
+				 :name ',name
+				 :docstring ,docstring
+				 :pkgs ',pkgs
+				 :config-fn ',config-fn
+				 :prepare-fn ',prepare-fn
+				 :on-fn ',on-fn
+				 :off-fn ',off-fn)))
+     (progn
+       (puthash ',name feature all-features)
+       (set (intern (concat (symbol-name ',name)
+			    "-actived"))
+	    nil))))
 
 (defmacro feature! (name docstring pkgs config-fn on-fn off-fn)
   `(let ((feature (make-instance 'Feature

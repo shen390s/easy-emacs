@@ -4,12 +4,6 @@
 
 (defvar bootstrap-version)
 
-(defvar all-packages-ready-hook nil
-  "Hook function will run after all packages have been installed")
-
-(defun run-after-all-package-install (func)
-  (add-hook 'all-packages-ready-hook func))
-
 (defun bootstrap-straight ()
   (let ((bootstrap-file
          (expand-file-name

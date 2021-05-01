@@ -37,7 +37,10 @@
      
      ,@(cl-loop for phase in '(before primary after)
 		collect `(foreach-scope! scope-name scope
-					 (,(intern (format "Scope/Activate:%s" phase)) scope)))))
+					 (,(intern (format
+						    "Scope/Prepare:%s" phase)) scope)))
+     (foreach-scope! scope-name scope
+		     (Scope/Activate scope))))
 
 
 (provide 'core-config)

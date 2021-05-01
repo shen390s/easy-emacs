@@ -31,18 +31,18 @@
 	  options)
   (server-start))
 
+
 (defun activate-emacs-server (scope &optional phase options)
-  (pcase phase
-    ("after-activate" (after-boot! scope options))
-    (_ t)))
+  (emacs-server/:start scope options))
 
 (defun deactivate-emacs-server ()
   (server-force-delete))
 
-(feature! emacs-server
-	  "Emacs Editor Server"
-	  nil
-	  emacs-server-config
-	  activate-emacs-server
-	  deactivate-emacs-server)
+(feature-ex! emacs-server
+	     "Emacs Editor Server"
+	     nil
+	     emacs-server-config
+	     nil
+	     activate-emacs-server
+	     deactivate-emacs-server)
 

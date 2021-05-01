@@ -65,4 +65,6 @@
     (easy-emacs-bootstrap easy-emacs-modules-dir
                           easy-emacs-config-file)))
 
+(easy-emacs-boot-done)
+
 ;;; init.el ends here

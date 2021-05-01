@@ -3,6 +3,7 @@
 
 (require 'core-lib)
 (require 'core-log)
+(require 'core-hooks)
 (require 'core-keybind)
 (require 'core-package)
 (require 'core-features)
@@ -18,9 +19,6 @@
 
 (defvar easy-emacs-file-name-handler-alist
   file-name-handler-alist)
-
-(defvar easy-emacs-boot-done-hook nil
-  "Hooks which will be called when easy-emacs boot done")
 
 (defvar easy-emacs-boot-ok nil)
 
@@ -102,16 +100,6 @@
 	    ;; works to do after bootstrap
 	    (lambda ()
 	      t)))
-
-(defmacro after-boot! (fn &rest args)
-  `(add-hook 'easy-emacs-boot-done-hook
-	     (lambda ()
-	       ,fn ,@args)))
-
-(defmacro mode-hook! (mode fn &rest args)
-  `(add-hook ',(intern (format "%s-mode-hook" mode))
-	     (lambda ()
-	       ,fn ,@args)))
 
 (defun defer-package-install (pkgs)
   (setf easy-emacs-deferred-packages
