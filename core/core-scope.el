@@ -370,6 +370,18 @@
   (config/:make-scope 'ui configs))
 
 ;; (+ivy -autocompletion )
+(defvar activate-compl-list nil
+  "list of completion to be activated after easy emacs boot")
+
+(defun activate-compl ()
+  (cl-loop for compl in activate-compl-list
+	   do (let ((compl-name (car compl))
+		    (config-options (cdr compl)))
+		(invoke-feature compl-name 'activate 'completion
+				'ignore config-options))))
+
+(after-boot! activate-compl)
+
 (defun completion-config (app phase options)
   (DEBUG! "completion configure app %s phase %s options %s"
 	  app phase options)
@@ -382,9 +394,14 @@
   (invoke-feature app 'prepare
 		  'completion phase options))
 
+(defun completion-activate (compl phase options)
+  (add-to-list 'activate-compl-list
+	       `(,compl . ,options)))
+
 (defun make-completion-help-fns (config)
   (make-scope-help-fns (list :config #'completion-config
-			     :prepare #'completion-prepare)
+			     :prepare #'completion-prepare
+			     :activate #'completion-activate)
 		       config))
 
 (defun config/:make-completion (config)
