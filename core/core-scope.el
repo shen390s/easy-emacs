@@ -293,10 +293,10 @@
 	  (:activate
 	   `(:activate
 	     (lambda ()
-	       (,fn ',app ',(keyword-name phase) ',options))))
+	       (,fn ',app ',phase ',options))))
 	  (_ 
 	   `(,phase (lambda ()
-		      (,fn ',app ',(keyword-name phase) ',options)))))
+		      (,fn ',app ',phase ',options)))))
       `(,phase (lambda ()
 		 t)))))
 
@@ -346,15 +346,49 @@
   (config/:make-scope 'vars (list config)))
       
 ;; (mode +mode_feature -mode-feature)
+(defun config-mode-features (mode phase features)
+  (DEBUG! "config-mode-features mode %s phase %s features %s"
+	  mode phase features))
+
+(defun mode-feature-config (mode phase options)
+  (DEBUG! "mode feature config mode %s phase %s options %s"
+	  mode phase options)
+  (let ((config-options (collect-keyword-values options)))
+    (let ((features (plist-get config-options :features)))
+      (DEBUG! "mode %s config-options %s features %s"
+	      mode config-options features)
+      (pcase phase
+	(:pre-check
+	 (progn
+	   (let ((suffixes (plist-get config-options :suffix)))
+	     (cl-loop for s in suffixes
+		      do (assoc-suffix-to-mode s mode)))))
+	(_ t))
+      (config-mode-features mode phase features))))
+
+(defun mode-feature-prepare (mode phase options)
+    (DEBUG! "mode feature prepare mode %s phase %s options %s"
+	    mode phase options))
+
+(defun mode-feature-activate (mode phase options)
+    (DEBUG! "mode feature activate mode %s phase %s options %s"
+	    mode phase options))
+
+;; (defun make-mode-help-fns (config)
+;;   (let ((mode-name (car config))
+;; 	(mode-config (collect-keyword-values (cdr config))))
+;;     (let ((features (plist-get mode-config :features))
+;; 	  (suffixes (plist-get mode-config :suffix)))
+;;       (list :pre-check
+;; 	    `(lambda ()
+;; 	       ,@(cl-loop for s in suffixes
+;; 			  collect (gen-add-suffix-to-mode s mode-name)))))))
+
 (defun make-mode-help-fns (config)
-  (let ((mode-name (car config))
-	(mode-config (collect-keyword-values (cdr config))))
-    (let ((features (plist-get mode-config :features))
-	  (suffixes (plist-get mode-config :suffix)))
-      (list :pre-check
-	    `(lambda ()
-	       ,@(cl-loop for s in suffixes
-			  collect (gen-add-suffix-to-mode s mode-name)))))))
+  (make-scope-help-fns (list :config #'mode-feature-config
+			     :prepare #'mode-feature-prepare
+			     :activate #'mode-feature-prepare)
+		       config))
 
 
 (defun config/:make-modes (configs)

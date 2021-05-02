@@ -150,6 +150,14 @@
 	    (plist-put result key (nreverse values))))
     result))
 
+(defun assoc-suffix-to-mode (suffix mode)
+  (let ((s (format "\\%s\\'" suffix))
+	(m (intern (format "%s-mode" mode))))
+    (DEBUG! "assoc suffix %s to mode %s"
+	    suffix mode)
+    (add-to-list 'auto-mode-alist
+		 `(,s . ,m))))
+
 (defun gen-add-suffix-to-mode (suffix mode)
   (let ((s (format "\\%s\\'" suffix))
 	(m (intern (format "%s-mode" mode))))
