@@ -156,4 +156,18 @@
     `(add-to-list 'auto-mode-alist
 		  '(,s . ,m))))
 
+(defun mk-keyword (name)
+  (intern (format ":%s" name)))
+
+(defun normalize-options (options)
+  (collect-lists nil
+		 (cl-loop for option in options
+			  collect (let ((v (symbol-name option)))
+				    (pcase (substring v 0 1)
+				      ("-" `(,(mk-keyword
+					       (substring v 1)) -1))
+				      ("+" `(,(mk-keyword
+					       (substring v 1)) 1))
+				      (_ `(,(mk-keyword v) 0)))))))
+
 (provide 'core-lib)
