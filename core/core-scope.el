@@ -346,10 +346,10 @@
   (config/:make-scope 'vars (list config)))
       
 ;; (mode +mode_feature -mode-feature)
-(defun config-mode-features (mode phase features)
-  (DEBUG! "config-mode-features mode %s phase %s features %s"
-	  mode phase features)
-  (let ((z (normalize-options features)))
+(defun call-mode-features (mode action phase features)
+  (DEBUG! "call-mode-features mode %s action %s phase %s features %s"
+	  mode action phase features)
+    (let ((z (normalize-options features)))
     (DEBUG! "z = %s " z)
     (let ((z-features (filter-out-non-keywords (collect-keyword-values z))))
       (DEBUG! "z-features = %s" z-features)
@@ -362,11 +362,14 @@
 			(:default t)
 			(_ (invoke-feature `,(intern (keyword-name
 						      feature))
-					   'configure 'modes phase
+					   action 'modes phase
 					   (plist-put options
-						      feature
+						      :status
 						      (plist-get z
 								 feature)))))))))))
+
+(defun config-mode-features (mode phase features)
+  (call-mode-features mode 'configure phase features))
 
 (defun mode-feature-config (mode phase options)
   (DEBUG! "mode feature config mode %s phase %s options %s"
@@ -386,11 +389,20 @@
 
 (defun mode-feature-prepare (mode phase options)
     (DEBUG! "mode feature prepare mode %s phase %s options %s"
-	    mode phase options))
+	    mode phase options)
+    (let ((config-options (collect-keyword-values options)))
+      (let ((features (plist-get config-options :features)))
+	(call-mode-features mode 'prepare phase features))))
 
 (defun mode-feature-activate (mode phase options)
     (DEBUG! "mode feature activate mode %s phase %s options %s"
-	    mode phase options))
+	    mode phase options)
+    (let ((config-options (collect-keyword-values options)))
+      (let ((features (plist-get config-options :features)))
+	(add-hook `,(intern (format "%s-mode-hook" mode))
+		  `(lambda ()
+		     (call-mode-features ',mode 'activate
+					 ',phase ',features))))))
 
 ;; (defun make-mode-help-fns (config)
 ;;   (let ((mode-name (car config))
@@ -405,7 +417,7 @@
 (defun make-mode-help-fns (config)
   (make-scope-help-fns (list :config #'mode-feature-config
 			     :prepare #'mode-feature-prepare
-			     :activate #'mode-feature-prepare)
+			     :activate #'mode-feature-activate)
 		       config))
 
 

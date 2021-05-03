@@ -126,7 +126,8 @@
 	   (Feature/configure f scope phase options))
 	  ('activate
 	   (progn
-	     (install-packages (Feature/pkglist f scope options))
+	     (cl-loop for pkg in (Feature/pkglist f scope options)
+		      do (Package/install (get-package pkg)))
 	     (Feature/activate f scope phase options)))
 	  ('pkglist
 	   (Feature/pkglist f scope options))

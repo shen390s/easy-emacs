@@ -7,7 +7,7 @@
        (b . 20)
        :modes
        (c :suffix .c .cc .cpp .c++ .h .hpp
-	  :features +lsp -flymake)
+	  :features +lsp -flymake +hlinum)
        (lisp :suffix .cl .el .lisp
 	     :features +hlinum)
        :ui
