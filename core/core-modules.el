@@ -114,6 +114,8 @@
 	(list zpkgs)))))
 
 (defun invoke-feature (name fn scope phase options)
+  (DEBUG! "invoke-feature %s fn = %s scope = %s phase = %s options %s"
+	  name fn scope phase options)
   (when name
     (let ((f (get-feature name)))
       (when f

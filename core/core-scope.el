@@ -348,7 +348,25 @@
 ;; (mode +mode_feature -mode-feature)
 (defun config-mode-features (mode phase features)
   (DEBUG! "config-mode-features mode %s phase %s features %s"
-	  mode phase features))
+	  mode phase features)
+  (let ((z (normalize-options features)))
+    (DEBUG! "z = %s " z)
+    (let ((z-features (filter-out-non-keywords (collect-keyword-values z))))
+      (DEBUG! "z-features = %s" z-features)
+      (let ((options (plist-put nil :mode mode)))
+	(cl-loop for feature in z-features
+		 do (progn
+		      (DEBUG! "feature %s options %s"
+			      feature options)
+		      (pcase feature
+			(:default t)
+			(_ (invoke-feature `,(intern (keyword-name
+						      feature))
+					   'configure 'modes phase
+					   (plist-put options
+						      feature
+						      (plist-get z
+								 feature)))))))))))
 
 (defun mode-feature-config (mode phase options)
   (DEBUG! "mode feature config mode %s phase %s options %s"
