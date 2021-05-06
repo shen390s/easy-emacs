@@ -33,16 +33,14 @@
 
 
 (defun activate-emacs-server (scope &optional phase options)
+  (DEBUG! "activate-emacs-server scope %s phase %s options"
+	  scope phase options)
   (emacs-server/:start scope options))
-
-(defun deactivate-emacs-server ()
-  (server-force-delete))
 
 (feature-ex! emacs-server
 	     "Emacs Editor Server"
 	     nil
 	     emacs-server-config
 	     nil
-	     activate-emacs-server
-	     deactivate-emacs-server)
+	     activate-emacs-server)
 

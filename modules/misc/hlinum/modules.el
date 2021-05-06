@@ -22,5 +22,4 @@
 	     (hlinum)
 	     nil
 	     nil
-	     activate-hlinum
-	     nil)
+	     activate-hlinum)

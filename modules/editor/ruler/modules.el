@@ -1,9 +1,14 @@
-(defun activate-ruler ()
-  (ruler-mode 1))
+(defun activate-ruler (scope &optional phase options)
+  (DEBUG! "activate-ruler scope %s phase %s options %s"
+	  scope phase  options)
+  (let ((status (plist-get options :status)))
+    (if (> status 0)
+	(ruler-mode 1)
+      (ruler-mode -1))))
 
-(feature! ruler
+(feature-ex! ruler
 	  "Display ruler when editing"
 	  nil
 	  nil
-	  activate-ruler
-	  nil)
+	  nil
+	  activate-ruler)

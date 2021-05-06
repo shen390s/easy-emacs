@@ -185,15 +185,14 @@
        (progn
 	 (puthash name package all-packages)))))
 
-(defmacro feature-ex! (name docstring pkgs config-fn prepare-fn on-fn off-fn)
+(defmacro feature-ex! (name docstring pkgs config-fn prepare-fn on-fn)
   `(let ((feature (make-instance 'Feature
 				 :name ',name
 				 :docstring ,docstring
 				 :pkgs ',pkgs
 				 :config-fn ',config-fn
 				 :prepare-fn ',prepare-fn
-				 :on-fn ',on-fn
-				 :off-fn ',off-fn)))
+				 :on-fn ',on-fn)))
      (progn
        (puthash ',name feature all-features)
        (set (intern (concat (symbol-name ',name)
@@ -206,8 +205,7 @@
 				 :docstring ,docstring
 				 :pkgs ',pkgs
 				 :config-fn ',config-fn
-				 :on-fn ',on-fn
-				 :off-fn ',off-fn)))
+				 :on-fn ',on-fn)))
      (progn
        (puthash ',name feature all-features)
        (set (intern (concat (symbol-name ',name)

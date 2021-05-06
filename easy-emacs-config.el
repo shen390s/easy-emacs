@@ -6,12 +6,17 @@
        (a . 10)
        (b . 20)
        :modes
-       (prog :features +hlinum)
+       (prog :features +hlinum +ruler +rainbow-delimiters
+	     +rainbow-identifiers)
        (c :suffix .c .cc .cpp .c++ .h .hpp
-	  :features +lsp -flymake -hlinum)
+	  :features +lsp +eldoc -flymake)
        (lisp :suffix .cl .el .lisp)
        :ui
-       (theme my-theme)
-       (font font1)
+       (evil :after-activate (evil-leader/set-key
+			       (DEBUG! "set evil leader key")
+			       (kbd "b" 'counsel-switch-buffer)
+			       (kbd "f" 'counsel-find-file)))
+       (smart-mode-line)
+       (load-custom :theme rshen)
        :completion ivy 
        :app (emacs-server :port 1234))

@@ -16,18 +16,28 @@
 				:repo "cofi/evil-leader"))
 
 ;;(setq evil-want-keybinding nil)
-(defun config-evil ()
+(defun config-evil (scope &optional phase options)
   (setq evil-want-keybinding nil)
   t)
 
-(defmacro make-evil (&rest body)
+(defmacro turn-on-evil (scope &optional phase options)
   `(progn
+     (DEBUG! "turn-on-evil scope %s phase %s options %s"
+	     scope phase options)
+     (require 'evil)
+     (require 'evil-leader)
      (evil-mode 1)
-     ,@body))
+     (global-evil-leader-mode)
+     ,@(plist-get options :after-activate)))
 
-(feature! evil
-	  "Evil is an extensible vi layer for Emacs. It emulates the main features of Vim, and provides facilities for writing custom extensions. "
-	  (evil undo-tree evil-collection evil-leader)
-	  config-evil
-	  make-evil
-	  nil)
+(defun activate-evil (scope &optional phase options)
+  (DEBUG! "activate-evil scope %s phase %s options %s"
+	  scope phase options)
+  (turn-on-evil `,scope `,phase `,options))
+
+(feature-ex! evil
+	     "Evil is an extensible vi layer for Emacs. It emulates the main features of Vim, and provides facilities for writing custom extensions. "
+	     (evil undo-tree evil-collection evil-leader)
+	     config-evil
+	     nil
+	     activate-evil)

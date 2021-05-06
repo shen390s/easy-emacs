@@ -1,30 +1,15 @@
-;; trace how flymake has been called
-(defun trace-flymake-mode (origin-fun &rest args)
-  (debug)
-  (apply origin-fun args))
-  
-(defun config-flymake ()
-  (progn
-    ;; (advice-add 'flymake-mode
-    ;; 		:around
-    ;; 		#'trace-flymake-mode)
-    t))
-              
-(defun enable-flymake ()
-  (flymake-mode 1))
 
-(defun disable-flymake ()
-  ;;(message "disable-flymake for buffer %s" (buffer-name))
-  (DEBUG! "disable flymake for buffer %s"
-	  (buffer-name))
-  (flymake-mode -1))
+(defun activate-flymake (scope &optional phase options)
+  (DEBUG! "activate-flymake scope %s phase %s options %s"
+	  scope phase options)
+  (let ((status (plist-get options :status)))
+    (if (> status 0)
+	(flymake-mode 1)
+      (flymake-mode -1))))
 
-;; disable flymake as default
-(setq flymake-proc-allowed-file-name-masks nil)
-
-(feature! flymake
-	  "flymake"
-	  nil
-	  config-flymake
-	  enable-flymake
-	  disable-flymake)
+(feature-ex! flymake
+	     "flymake"
+	     nil
+	     nil
+	     nil
+	     activate-flymake)

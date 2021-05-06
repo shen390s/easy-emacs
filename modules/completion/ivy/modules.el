@@ -28,5 +28,4 @@
 	     (ivy counsel swiper ivy-posframe)
 	     nil
 	     nil
-	     ivy-activate
-	     nil)
+	     ivy-activate)

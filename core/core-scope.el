@@ -404,16 +404,6 @@
 		     (call-mode-features ',mode 'activate
 					 ',phase ',features))))))
 
-;; (defun make-mode-help-fns (config)
-;;   (let ((mode-name (car config))
-;; 	(mode-config (collect-keyword-values (cdr config))))
-;;     (let ((features (plist-get mode-config :features))
-;; 	  (suffixes (plist-get mode-config :suffix)))
-;;       (list :pre-check
-;; 	    `(lambda ()
-;; 	       ,@(cl-loop for s in suffixes
-;; 			  collect (gen-add-suffix-to-mode s mode-name)))))))
-
 (defun make-mode-help-fns (config)
   (make-scope-help-fns (list :config #'mode-feature-config
 			     :prepare #'mode-feature-prepare
@@ -424,11 +414,42 @@
 (defun config/:make-modes (configs)
   (config/:make-scope 'modes configs))
 
-;; (theme ...)
-;; (font ...)
-;; (keybind ...)
+;; (ui_feature options ...)
+(defvar activate-ui-list nil
+  "list of ui features to be activated after easy emacs boot")
+
+(defun activate-ui ()
+  (cl-loop for ui in activate-ui-list
+	   do (let ((ui-feature (car ui))
+		    (ui-options (cdr ui)))
+		(invoke-feature ui-feature 'activate 'ui
+				'ignore ui-options))))
+
+(after-boot! activate-ui)
+
+(defun ui-config (ui phase options)
+  (DEBUG! "ui-config ui %s phase %s options %s"
+	  ui phase options)
+  (invoke-feature ui 'configure
+		  'ui phase options))
+
+(defun ui-prepare (ui phase options)
+  (DEBUG! "ui-prepare ui %s phase %s options %s"
+	  ui phase options)
+  (invoke-feature ui 'prepare
+		  'ui phase options))
+
+(defun ui-activate (ui phase options)
+  (DEBUG! "ui-activate ui %s phase %s options %s"
+	  ui phase options)
+  (add-to-list 'activate-ui-list
+	       `(,ui . ,options)))
+
 (defun make-ui-help-fns (config)
-  t)
+  (make-scope-help-fns (list :config #'ui-config
+			     :prepare #'ui-prepare
+			     :activate #'ui-activate)
+		       config))
 
 (defun config/:make-ui (configs)
   (config/:make-scope 'ui configs))

@@ -1,9 +1,6 @@
 (defvar custom-themes nil
   "A list of themes will be tried")
 
-(defun config-load-custom ()
-  t)
-
 (defun gen-theme-list (theme)
   (let ((name (symbol-name theme)))
     (list (intern (format "%s-x%d"
@@ -18,25 +15,27 @@
 	   nil)))
 
 (defun load-themes (themes flag)
+  (DEBUG! "loading themes %s flag %s"
+	  themes flag)
   (when themes
     (unless (load-theme-ex (car themes) flag)
       (load-themes (cdr themes) flag))))
 
-(defun custom-global-scope-enter-hook ()
-  (load custom-file t t)
-  (when custom-themes
-    (load-themes custom-themes t)))
+(defun activate-load-custom (scope &optional phase options)
+  (DEBUG! "activate-load-custom scope %s phase %s options %s"
+	  scope phase options)
+  (let ((theme (plist-get options :theme)))
+    (when theme
+      (setq custom-themes (gen-theme-list theme)))
+    (DEBUG! "custom-themes %s" custom-themes)
+    (DEBUG! "custom-file %s" custom-file)
+    (load custom-file t t)
+    (when custom-themes
+      (load-themes custom-themes t))))
 
-(defun enable-load-custom (&optional theme)
-  (when theme
-    (setq custom-themes (gen-theme-list theme)))
-  (add-scope-hook 'global
-		  'after
-		  'custom-global-scope-enter-hook))
-
-(feature! load-custom
-	  "load customization file"
-	  nil
-	  config-load-custom
-	  enable-load-custom
-	  nil)
+(feature-ex! load-custom
+	     "load customization file"
+	     nil
+	     nil
+	     nil
+	     activate-load-custom)
