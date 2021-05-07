@@ -1,12 +1,13 @@
-(package! :name lsp-module
-	  :docstring "Emacs lisp client to language server"
-	  :pkginfo lsp-mode)
+(package-ex! lsp-module
+	     "Emacs lisp client to language server"
+	     lsp-mode)
 
-(package! :name lsp-ui
-	  :docstring "This contains all the higher level UI modules of lsp-mode, like flycheck support and code lenses."
-	  :pkginfo (lsp-ui :type git
-			   :host github
-			   :repo "emacs-lsp/lsp-ui"))
+(package-ex! lsp-ui
+	     "This contains all the higher level UI modules of
+	     lsp-mode,like flycheck support and code lenses."
+	     (lsp-ui :type git
+		     :host github
+		     :repo "emacs-lsp/lsp-ui"))
 
 (defvar lsp-remap-xref-keybindings t
   "When non-nil, xref keybindings remapped to lsp-ui-peek-find-*")
@@ -45,7 +46,8 @@
 	  nil)
 
 (feature! lsp-ui
-	  "This contains all the higher level UI modules of lsp-mode, like flycheck support and code lenses."
+	  "This contains all the higher level UI modules of lsp-mode, 
+like flycheck support and code lenses."
 	  (lsp-ui)
 	  nil
 	  nil

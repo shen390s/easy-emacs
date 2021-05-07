@@ -6,11 +6,27 @@
 (require 'core-features)
 (require 'core-scope)
 
-;; (easy! :vars (a . 10) (b . 20)
-;;        :modes plantuml mermaid
-;;        :ui my-theme
-;;        :completion ivy -helm -autoc-complete
-;;        :app emacs-server)
+;; (easy! :vars
+;;        (a . 10)
+;;        (b . 20)
+;;        :modes
+;;        (prog :features +hlinum +ruler +rainbow-delimiters
+;; 	     +rainbow-identifiers)
+;;        (c :suffix .c .cc .cpp .c++ .h .hpp
+;; 	  :features +lsp +eldoc -flymake)
+;;        (lisp :suffix .cl .el .lisp)
+;;        :ui
+;;        (evil :after-activate
+;; 	     (progn
+;; 	       (DEBUG! "evil set leader key")
+;; 	       (evil-leader/set-leader "<SPC>")
+;; 	       (evil-leader/set-key
+;; 		 (kbd "b") 'counsel-switch-buffer
+;; 		 (kbd "f") 'counsel-find-file)))
+;;        (smart-mode-line)
+;;        (load-custom :theme rshen)
+;;        :completion ivy 
+;;        :app (emacs-server :port 1234))
 
 (defun make-easy-config (configs)
   (let ((config (collect-keyword-values configs)))

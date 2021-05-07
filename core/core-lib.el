@@ -133,6 +133,18 @@
 		      (keywordp k))
 		    l))
 
+(defun filt-key-args (collected-args keys args)
+  (if (null args)
+      (reverse collected-args)
+    (let ((x (car args))
+	  (remain (cdr args)))
+      (cond
+       ((member x keys)
+	(if (null remain)
+	    (reverse collected-args)
+	  (filt-key-args collected-args keys (cdr remain))))
+       (t (filt-key-args (push x collected-args) keys remain))))))
+
 (defun collect-keyword-values (kv-list)
   (let ((result nil)
 	(key    :default)
