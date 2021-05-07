@@ -1,16 +1,15 @@
-(package! :name ess
-	  :docstring "Emacs Speaks Statistics"
-          :pkginfo ess)
+(package-ex! ess
+	     "Emacs Speaks Statistics"
+             ess)
 
-(defun config-ess ()
-  (executable-find "R"))
-
-(defun activate-ess ()
-  (load "ess-autoloads"))
+(defun activate-ess (scope &optional phase options)
+  (when (and (executable-find "R")
+	     (> (plist-get options :status) 0))
+    (load "ess-autoloads")))
   
-(feature! ess
-	  "Emacs Speaks Statistics"
-          (ess)
-          config-ess
-          activate-ess
-          nil)          
+(feature-ex! ess
+	     "Emacs Speaks Statistics"
+             (ess)
+             nil
+	     nil
+             activate-ess)

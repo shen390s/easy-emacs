@@ -1,16 +1,16 @@
-(package! :name call-graph
-	  :docstring "Generate call graph for c/c++ functions"
-	  :pkginfo (call-graph :type git
-			       :host github
-			       :repo "emacsmirror/call-graph"))
+(package-ex! call-graph
+	     "Generate call graph for c/c++ functions"
+	     (call-graph :type git
+			 :host github
+			 :repo "emacsmirror/call-graph"))
 
-(package! :name hierarchy
-          :docstring "hierarchy"
-          :pkginfo (hierarchy :type git
-                              :host github
-                              :repo "DamienCassou/hierarchy"
-                              :post-build ((fix-hierarchy-build)
-                                           (message "workarround require error for hierarch"))))
+(package! hierarchy
+          "hierarchy"
+          (hierarchy :type git
+                     :host github
+                     :repo "DamienCassou/hierarchy"
+                     :post-build ((fix-hierarchy-build)
+                                  (message "workarround require error for hierarch"))))
 
 (defun fix-hierarchy-build ()
   (let ((dir (straight--build-dir "hierarchy")))
@@ -19,19 +19,17 @@
                       dir))))
       (message "fix-hierarchy-build: %s" s))))
 
-(defun config-call-graph ()
-  t)
-
-(defun enable-call-graph ()
+(defun activate-call-graph (scope &optional phase options)
   (require 'call-graph)
-  (call-graph))
+  (when (> (plist-get options :status) 0)
+      (call-graph)))
   
-(feature! call-graph
-	  "Generate call graph for c/c++ functions"
-	  (hierarchy ggtags ivy call-graph)
-	  config-call-graph
-	  enable-call-graph
-	  nil)
+(feature-ex! call-graph
+	     "Generate call graph for c/c++ functions"
+	     (hierarchy ggtags ivy call-graph)
+	     nil
+	     nil
+	     enable-call-graph)
     
     
     

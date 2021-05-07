@@ -1,23 +1,21 @@
-(package! :name dash-at-point
-	  :docstring "Search the word at point with Dash"
-	  :pkginfo (dash-at-point :type git
-				  :host github
-				  :repo "stanaka/dash-at-point"))
+(package-ex! dash-at-point
+	     "Search the word at point with Dash"
+	     (dash-at-point :type git
+			    :host github
+			    :repo "stanaka/dash-at-point"))
 
-(defun config-dash ()
-  t)
-
-(defun enable-dash ()
+(defun enable-dash (scope &optional phase options)
   (require 'dash-at-point)
+  (when (> (plist-get options :status) 0)
     (progn
-      (global-set-key "\C-cds" #'dash-at-point)))
+      (global-set-key "\C-cds" #'dash-at-point))))
 
-(feature! dash
-	  "Search the word at point with Dash"
-	  (dash-at-point)
-	  config-dash
-	  enable-dash
-	  nil)
+(feature-ex! dash
+	     "Search the word at point with Dash"
+	     (dash-at-point)
+	     nil
+	     nil
+	     activate-dash)
     
     
     

@@ -19,7 +19,4 @@
 	(Feature/configure zmode)
       t)))
 
-;; create global scope
-;;
-
 (provide 'core-features)

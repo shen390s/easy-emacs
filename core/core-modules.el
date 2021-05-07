@@ -46,9 +46,7 @@
    (config-fn :initarg :config-fn
 	      :initform nil)
    (on-fn :initarg :on-fn
-	  :initform nil)
-   (off-fn :initarg :off-fn
-	   :initform nil))
+	  :initform nil))
   "Class to describe the feature of Emacs")
 
 (defmethod Feature/prepare ((feature Feature) 
@@ -130,9 +128,9 @@
 	  (_ nil))))))
 
 (defmethod Object/to-string ((obj Feature))
-  (with-slots (name pkgs config-fn on-fn off-fn) obj
-    (format "Feature name: %s pkgs: %s config-fn: %s on-fn:%s off-fn:%s"
-	    name pkgs config-fn on-fn off-fn)))
+  (with-slots (name pkgs config-fn on-fn ) obj
+    (format "Feature name: %s pkgs: %s config-fn: %s on-fn:%s "
+	    name pkgs config-fn on-fn )))
 
 (defclass Mode (Feature)
   ((scope :initarg :scope
@@ -214,7 +212,7 @@
 			      "-actived"))
 	      nil)))))
 
-(defmacro feature! (name docstring pkgs config-fn on-fn off-fn)
+(defmacro feature! (name docstring pkgs config-fn on-fn unused)
   `(let ((feature (make-instance 'Feature
 				 :name ',name
 				 :docstring ,docstring
@@ -236,8 +234,7 @@
 				 :pkgs ',pkgs
 				 :config-fn ',config-fn
 				 :scope nil
-				 :on-fn ',active-fn
-				 :off-fn nil)))
+				 :on-fn ',active-fn)))
        (puthash ',name zmode all-modes)
        ;; mode is also a instance of features
        (puthash ',name zmode all-features))

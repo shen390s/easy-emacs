@@ -1,18 +1,20 @@
-(package! :name smartparen-module
-	  :docstring "smartparen in buffer"
-	  :pkginfo (smartparens :type git
-				:host github
-				:repo "Fuco1/smartparens"))
+(package-ex! smartparen-module
+	     "smartparen in buffer"
+	     (smartparens :type git
+			  :host github
+			  :repo "Fuco1/smartparens"))
 
-(defun enable-smartparens ()
+(defun activate-smartparens (scope &optional phase options)
   ;;(backtrace)
   (require 'smartparens)
   (require 'smartparens-config)
-  (smartparens-mode 1))
+  (if (> (plist-get options :status) 0)
+      (smartparens-mode 1)
+    (smartparens-mode -1)))
 
-(feature! smartparens
- 	  "Enable smart parents"
- 	  (smartparen-module)
- 	  nil
- 	  enable-smartparens
- 	  nil)
+(feature-ex! smartparens
+ 	     "Enable smart parents"
+ 	     (smartparen-module)
+ 	     nil
+	     nil
+	     activate-smartparens)
