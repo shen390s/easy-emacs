@@ -22,4 +22,6 @@
        (smart-mode-line)
        (load-custom :theme rshen)
        :completion ivy 
+       :editor
+       (undo-tree)
        :app (emacs-server :port 1234))

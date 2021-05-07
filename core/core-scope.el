@@ -101,17 +101,19 @@
       (DEBUG! "app = %s options = %s" app options)
       (invoke-feature app 'pkglist 'app 'ignore options))))
 
+(defclass Editor-Config (Base-Config)
+  ()
+  "Editor Configuration")
+
+(defmethod Config/Pkgs:update ((config Editor-Config) scope)
+  t)
+
 (defclass Scope ()
   ((name :initarg :name
 	 :initform "null-scope")
    (configs :initarg :configs
 	    :initform nil))
   "Class scope for EasyEmacs")
-
-(defun scope-hook-name (scope-name hook-type)
-  (intern (format "scope-%s-%s-hooks"
-		  scope-name
-		  hook-type)))
 
 (defmethod Object/to-string ((scope Scope))
   (format "scope %s" scope))
@@ -254,6 +256,10 @@
      (make-config 'App-Config
 		  (config/:name scope config)
 		  (make-app-help-fns config)))
+    ('editor
+     (make-config 'Editor-Config
+		  (config/:name scope config)
+		  (make-editor-help-fns config)))
     (_
      nil)))
 
@@ -543,6 +549,24 @@
 (defun config/:make-app (configs)
   (config/:make-scope 'app configs))
 
+(defun editor-feature-config (editor phase options)
+  t)
+
+(defun editor-feature-prepare (editor phase options)
+  t)
+
+(defun editor-feature-activate (editor phase options)
+  t)
+
+(defun make-editor-help-fns (config)
+  (make-scope-help-fns (list :config #'editor-feature-config
+			     :prepare #'editor-feature-prepare
+			     :activate #'editor-feature-activate)
+		       config))
+
+(defun config/:make-editor (configs)
+  (config/:make-scope 'editor configs))
+
 (defun make-scope-by-config (key config)
   (pcase key
       (:vars
@@ -555,6 +579,8 @@
        `(,@(config/:make-completion config)))
       (:app
        `(,@(config/:make-app config)))
+      (:editor
+       `(,@(config/:make-editor config)))
     (_ nil)))
 
 ;; Just for loading
