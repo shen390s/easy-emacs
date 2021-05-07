@@ -12,10 +12,13 @@
 	  :features +lsp +eldoc -flymake)
        (lisp :suffix .cl .el .lisp)
        :ui
-       (evil :after-activate (evil-leader/set-key
-			       (DEBUG! "set evil leader key")
-			       (kbd "b" 'counsel-switch-buffer)
-			       (kbd "f" 'counsel-find-file)))
+       (evil :after-activate
+	     (progn
+	       (DEBUG! "evil set leader key")
+	       (evil-leader/set-leader "<SPC>")
+	       (evil-leader/set-key
+		 (kbd "b") 'counsel-switch-buffer
+		 (kbd "f") 'counsel-find-file)))
        (smart-mode-line)
        (load-custom :theme rshen)
        :completion ivy 

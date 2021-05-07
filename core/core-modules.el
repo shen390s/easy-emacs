@@ -186,18 +186,37 @@
 	 (puthash name package all-packages)))))
 
 (defmacro feature-ex! (name docstring pkgs config-fn prepare-fn on-fn)
-  `(let ((feature (make-instance 'Feature
-				 :name ',name
-				 :docstring ,docstring
-				 :pkgs ',pkgs
-				 :config-fn ',config-fn
-				 :prepare-fn ',prepare-fn
-				 :on-fn ',on-fn)))
-     (progn
-       (puthash ',name feature all-features)
-       (set (intern (concat (symbol-name ',name)
-			    "-actived"))
-	    nil))))
+  (declare (doc-string 2))
+  `(progn
+     (defvar ,(intern (format "%s-before-activate-hook"
+			      (symbol-name name)))
+       nil)
+     (defvar ,(intern (format "%s-after-activate-hook"
+			      (symbol-name name)))
+       nil)
+
+     (defun ,(intern (format "call-%s/:activate"
+			     (symbol-name name)))
+	 (scope &optional phase options)
+       (run-hooks ',(intern (format "%s-before-activate-hook"
+				    (symbol-name name))))
+       (,on-fn scope phase options)
+       (run-hooks ',(intern (format "%s-after-activate-hook"
+				    (symbol-name name)))))
+     (let ((feature (make-instance 'Feature
+				   :name ',name
+				   :docstring ,docstring
+				   :pkgs ',pkgs
+				   :config-fn ',config-fn
+				   :prepare-fn ',prepare-fn
+				   :on-fn ',(intern (format
+						     "call-%s/:activate"
+						     (symbol-name name))))))
+       (progn
+	 (puthash ',name feature all-features)
+	 (set (intern (concat (symbol-name ',name)
+			      "-actived"))
+	      nil)))))
 
 (defmacro feature! (name docstring pkgs config-fn on-fn off-fn)
   `(let ((feature (make-instance 'Feature
@@ -213,6 +232,7 @@
 	    nil))))
 
 (defmacro mode! (name docstring pkgs config-fn active-fn)
+  (declare (doc-string 2))
   `(progn
      (let ((zmode (make-instance 'Mode
 				 :name ',name

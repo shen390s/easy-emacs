@@ -13,60 +13,40 @@
 	 :initform "default")
    (config :initarg :config
 	   :initform nil)
-   (pre-check :initarg :pre-check
-	      :initform nil)
-   (check :initarg :check
-	  :initform nil)
-   (after-check :initarg :after-check
-		:initform nil)
-   (pre-prepare :initarg :pre-prepare
-		 :initform nil)
-   (prepare :initarg :prepare
-	     :initform nil)
-   (after-prepare :initarg :after-prepare
-		   :initform nil)
-   (activate :initarg :activate
-	     :initform nil)
+   (fns :initarg :fns
+	:initform nil)
    (pkgs :initarg :pkgs
 	 :initform nil)
    (pkg-installed :initarg :pkg-installed
 		  :initform nil))
   "Configuration in scope")
 
-(defmethod Config/Check:before ((config Base-Config) scope-name)
-  (with-slots (pre-check) config
-    (when pre-check
-      (funcall pre-check))))
+(defmethod Config/Call ((config Base-Config) fn scope)
+  (with-slots (fns) config
+    (let ((f (plist-get fns fn)))
+      (when f
+	(funcall f)))))
 
-(defmethod Config/Check:primary ((config Base-Config) scope-name)
-  (with-slots (check) config
-    (when check
-      (funcall check))))
+(defun make-config-method (key name)
+  (DEBUG! "make-config-method key %s name %s" key name)
+  `(defmethod ,(intern (format "Config/%s" name))
+     ((config Base-Config) scope)
+     (Config/Call config ,key scope)))
 
-(defmethod Config/Check:after ((config Base-Config) scope-name)
-  (with-slots (after-check) config
-    (when after-check
-      (funcall after-check))))
+(defmacro make-config-methods! (methods)
+  `(progn
+     ,@(cl-loop for key in (filter-out-non-keywords methods)
+		collect (make-config-method key (plist-get methods key)))))
 
-(defmethod Config/Prepare:before ((config Base-Config) scope-name)
-  (with-slots (pre-prepare) config
-    (when pre-prepare
-      (funcall pre-prepare))))
-
-(defmethod Config/Prepare:primary ((config Base-Config) scope-name)
-  (with-slots (prepare) config
-    (when prepare
-      (funcall prepare))))
-
-(defmethod Config/Prepare:after ((config Base-Config) scope-name)
-  (with-slots (after-prepare) config
-    (when after-prepare
-      (funcall after-prepare))))
-
-(defmethod Config/Activate ((config Base-Config) scope-name)
-  (with-slots (activate) config
-    (when activate
-      (funcall activate))))
+(make-config-methods! (:pre-check Check:before
+		       :check Check:primary
+		       :after-check Check:after
+		       :pre-prepare Prepare:before
+		       :prepare Prepare:primary
+		       :after-prepare Prepare:after
+		       :before-activate Activate:before
+		       :activate Activate
+		       :after-activate Activate:after))
 
 (defgeneric Config/Pkgs:update ((config Base-Config) scope-name))
 
@@ -229,15 +209,19 @@
 (defun make-config (config name fns)
   (DEBUG! "make-config %s %s %s"
 	  config name fns)
-  (make-instance config
-		 :name name
-		 :pre-check (plist-get fns :pre-check)
-		 :check (plist-get fns :check)
-		 :after-check (plist-get fns :after-check)
-		 :pre-prepare (plist-get fns :pre-prepare)
-		 :prepare (plist-get fns :prepare)
-		 :after-prepare (plist-get fns :after-prepare)
-		 :activate (plist-get fns :activate)))
+  (let ((c (make-instance config
+			  :name name
+			  :fns fns)))
+    (cl-loop for hook in '(:before-activate :after-activate)
+	     do (let ((fn (plist-get fns hook)))
+		  (DEBUG! "make-config hook %s fn %s"
+			  hook fn)
+		  (when fn
+		    (add-hook (intern (format "%s-%s-hook"
+					      name
+					      (keyword-name hook)))
+			      `,@fn))))
+    c))
 
 (defun config/:name (scope config)
   (pcase scope
@@ -300,38 +284,64 @@
       `(,phase (lambda ()
 		 t)))))
 
+(defun make-config-hook (config hook)
+  (DEBUG! "make-config-hook config %s hook %s"
+	  config hook)
+  (let ((hook-code (plist-get (collect-keyword-values config) hook)))
+    (DEBUG! "make-config-hook code %s"
+	    hook-code)
+    (if hook-code
+	`(,hook (lambda ()
+		  (progn
+		    ,@hook-code)))
+      nil)))
+
+(defun make-config-hooks (config)
+  (let ((hooks
+	 (collect-lists nil
+			(cl-loop for hook in (list :before-activate :after-activate)
+				 collect (make-config-hook config
+							   hook)))))
+    (DEBUG! "make-config-hooks hooks %s config %s"
+	    hooks config)
+    hooks))
+
 (defun make-scope-help-fns (scope-handler config)
   (DEBUG! "make-scope-help-fns handler %s config %s"
 	  scope-handler config)
-  (let ((app (if (listp config)
-		 (car config)
-	       config))
-	(config-options (if (listp config)
-			    (cdr config)
-			  nil)))
-    (collect-lists
-     nil
-     (append (cl-loop for phase in '(:pre-check :check :after-check)
-		      collect (mk-scope-handler-call
+  (let ((fns (let ((app (if (listp config)
+			    (car config)
+			  config))
+		   (config-options (if (listp config)
+				       (cdr config)
+				     nil)))
+	       (collect-lists
+		nil
+		(append (cl-loop for phase in '(:pre-check :check :after-check)
+				 collect (mk-scope-handler-call
+					  scope-handler
+					  :config
+					  app
+					  phase
+					  config-options))
+			(cl-loop for phase in '(:pre-prepare
+						:prepare :after-prepare)
+				 collect (mk-scope-handler-call
+					  scope-handler
+					  :prepare
+					  app
+					  phase
+					  config-options))
+			(list (make-config-hooks config))
+			(list (mk-scope-handler-call
 			       scope-handler
-			       :config
+			       :activate
 			       app
-			       phase
-			       config-options))
-	     (cl-loop for phase in '(:pre-prepare
-				     :prepare :after-prepare)
-		      collect (mk-scope-handler-call
-			       scope-handler
-			       :prepare
-			       app
-			       phase
-			       config-options))
-	     (list (mk-scope-handler-call
-		    scope-handler
-		    :activate
-		    app
-		    'ignore
-		    config-options))))))
+			       'ignore
+			       config-options)))))))
+    (DEBUG! "make-scope-help-fns fns %s"
+	    fns)
+    fns))
 
 ;; define configuration scopes
 ;; (vars (a . 1) (b . 2) ...)

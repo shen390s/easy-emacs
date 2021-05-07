@@ -20,23 +20,18 @@
   (setq evil-want-keybinding nil)
   t)
 
-(defmacro turn-on-evil (scope &optional phase options)
-  `(progn
-     (DEBUG! "turn-on-evil scope %s phase %s options %s"
-	     scope phase options)
-     (require 'evil)
-     (require 'evil-leader)
-     (evil-mode 1)
-     (global-evil-leader-mode)
-     ,@(plist-get options :after-activate)))
-
 (defun activate-evil (scope &optional phase options)
   (DEBUG! "activate-evil scope %s phase %s options %s"
 	  scope phase options)
-  (turn-on-evil `,scope `,phase `,options))
+  (require 'evil)
+  (require 'evil-leader)
+  (evil-mode 1)
+  (global-evil-leader-mode))
 
 (feature-ex! evil
-	     "Evil is an extensible vi layer for Emacs. It emulates the main features of Vim, and provides facilities for writing custom extensions. "
+	     "Evil is an extensible vi layer for Emacs. 
+It emulates the main features of Vim, 
+and provides facilities for writing custom extensions. "
 	     (evil undo-tree evil-collection evil-leader)
 	     config-evil
 	     nil
