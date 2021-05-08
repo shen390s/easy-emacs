@@ -162,6 +162,11 @@
 	    (plist-put result key (nreverse values))))
     result))
 
+(defun plist-append-key-values (plist key value)
+  (plist-put plist key
+	     (append (plist-get plist key)
+		     (list value))))
+
 (defun assoc-suffix-to-mode (suffix mode)
   (let ((s (format "\\%s\\'" suffix))
 	(m (intern (format "%s-mode" mode))))
@@ -179,7 +184,7 @@
 (defun mk-keyword (name)
   (intern (format ":%s" name)))
 
-(defun normalize-options (options)
+(defun normalize-non-keyword-options (options)
   (collect-lists nil
 		 (cl-loop for option in options
 			  collect (let ((v (symbol-name option)))
@@ -189,5 +194,22 @@
 				      ("+" `(,(mk-keyword
 					       (substring v 1)) 1))
 				      (_ `(,(mk-keyword v) 0)))))))
+
+(defun normalize-options (options)
+  (let ((c-key :default)
+	(z-options nil))
+    (cl-loop for item in options
+	     do (if (keywordp item)
+		    (setq c-key item)
+		  (setq z-options
+			(plist-append-key-values z-options
+						 c-key
+						 item))))
+    (setq z-options
+	  (plist-put z-options
+		     :default
+		     (normalize-non-keyword-options (plist-get z-options
+							       :default))))
+    z-options))
 
 (provide 'core-lib)

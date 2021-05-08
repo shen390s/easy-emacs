@@ -2,8 +2,8 @@
 (defun emacs-server-config/:pre-check (scope &optional options)
   (DEBUG! "configuring emacs server options %s"
 	  options)
-  (let ((port (plist-get options :port))
-	(auth-key (plist-get options :auth-key)))
+  (let ((port (car (plist-get options :port)))
+	(auth-key (car (plist-get options :auth-key))))
     (if port
 	(setq server-port port)
       (setq server-port (getenv "EMACS_SERVER_PORT")))

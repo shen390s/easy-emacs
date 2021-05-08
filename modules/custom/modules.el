@@ -24,9 +24,12 @@
 (defun activate-load-custom (scope &optional phase options)
   (DEBUG! "activate-load-custom scope %s phase %s options %s"
 	  scope phase options)
-  (let ((theme (plist-get options :theme)))
-    (when theme
-      (setq custom-themes (gen-theme-list theme)))
+  (let ((themes (plist-get options :theme)))
+    (when themes
+      (setq custom-themes
+	    (collect-lists nil
+			   (cl-loop for theme in themes
+				    collect (gen-theme-list theme)))))
     (DEBUG! "custom-themes %s" custom-themes)
     (DEBUG! "custom-file %s" custom-file)
     (load custom-file t t)

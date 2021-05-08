@@ -349,6 +349,23 @@
 	    fns)
     fns))
 
+;; Deferred run after easy-emacs boot
+(defvar activate-feature-after-boot-list nil
+  "List of features to be activated after easy emacs boot")
+
+(defun activate-features-after-boot ()
+  (cl-loop for feature in activate-feature-after-boot-list
+	   do (let ((handler (car feature))
+		    (feature-name (car (cdr feature)))
+		    (options (cdr (cdr feature))))
+		(funcall handler feature-name options))))
+
+(defun after-boot-run (handler args1 args2)
+  (add-to-list 'activate-feature-after-boot-list
+	       `(,handler . (,args1 . ,args2))))
+
+(after-boot! activate-features-after-boot)
+
 ;; define configuration scopes
 ;; (vars (a . 1) (b . 2) ...)
 (defun make-vars-help-fns (config)
@@ -365,7 +382,7 @@
 (defun call-mode-features (mode action phase features)
   (DEBUG! "call-mode-features mode %s action %s phase %s features %s"
 	  mode action phase features)
-    (let ((z (normalize-options features)))
+    (let ((z (normalize-non-keyword-options features)))
     (DEBUG! "z = %s " z)
     (let ((z-features (filter-out-non-keywords (collect-keyword-values z))))
       (DEBUG! "z-features = %s" z-features)
@@ -431,35 +448,31 @@
   (config/:make-scope 'modes configs))
 
 ;; (ui_feature options ...)
-(defvar activate-ui-list nil
-  "list of ui features to be activated after easy emacs boot")
-
-(defun activate-ui ()
-  (cl-loop for ui in activate-ui-list
-	   do (let ((ui-feature (car ui))
-		    (ui-options (cdr ui)))
-		(invoke-feature ui-feature 'activate 'ui
-				'ignore ui-options))))
-
-(after-boot! activate-ui)
-
 (defun ui-config (ui phase options)
-  (DEBUG! "ui-config ui %s phase %s options %s"
-	  ui phase options)
-  (invoke-feature ui 'configure
-		  'ui phase options))
+  (let ((options (plist-put (normalize-options options)
+			    :status 1)))
+    (DEBUG! "ui-config ui %s phase %s options %s"
+	    ui phase options)
+    (invoke-feature ui 'configure
+		    'ui phase options)))
 
 (defun ui-prepare (ui phase options)
-  (DEBUG! "ui-prepare ui %s phase %s options %s"
-	  ui phase options)
-  (invoke-feature ui 'prepare
-		  'ui phase options))
+  (let ((options (plist-put (normalize-options options)
+			    :status 1)))
+    (DEBUG! "ui-prepare ui %s phase %s options %s"
+	    ui phase options)
+    (invoke-feature ui 'prepare
+		    'ui phase options)))
 
 (defun ui-activate (ui phase options)
-  (DEBUG! "ui-activate ui %s phase %s options %s"
-	  ui phase options)
-  (add-to-list 'activate-ui-list
-	       `(,ui . ,options)))
+  (let ((options (plist-put (normalize-options options)
+			    :status 1)))
+    (DEBUG! "ui-activate ui %s phase %s options %s"
+	    ui phase options)
+    (after-boot-run #'(lambda (ui options)
+			(invoke-feature ui 'activate 'ui
+					'ignore options))
+		    ui options)))
 
 (defun make-ui-help-fns (config)
   (make-scope-help-fns (list :config #'ui-config
@@ -471,33 +484,30 @@
   (config/:make-scope 'ui configs))
 
 ;; (+ivy -autocompletion )
-(defvar activate-compl-list nil
-  "list of completion to be activated after easy emacs boot")
-
-(defun activate-compl ()
-  (cl-loop for compl in activate-compl-list
-	   do (let ((compl-name (car compl))
-		    (config-options (cdr compl)))
-		(invoke-feature compl-name 'activate 'completion
-				'ignore config-options))))
-
-(after-boot! activate-compl)
 
 (defun completion-config (app phase options)
-  (DEBUG! "completion configure app %s phase %s options %s"
-	  app phase options)
-  (invoke-feature app 'configure
-		  'completion phase options))
+  (let ((options (plist-put (normalize-options options)
+			    :status 1)))
+    (DEBUG! "completion configure app %s phase %s options %s"
+	    app phase options)
+    (invoke-feature app 'configure
+		    'completion phase options)))
 
 (defun completion-prepare (app phase options)
-  (DEBUG! "completion prepare app %s phase %s options %s"
-	  app phase options)
-  (invoke-feature app 'prepare
-		  'completion phase options))
+  (let ((options (plist-put (normalize-options options)
+			    :status 1)))
+    (DEBUG! "completion prepare app %s phase %s options %s"
+	    app phase options)
+    (invoke-feature app 'prepare
+		    'completion phase options)))
 
 (defun completion-activate (compl phase options)
-  (add-to-list 'activate-compl-list
-	       `(,compl . ,options)))
+  (let ((options (plist-put (normalize-options options)
+			    :status 1)))
+    (after-boot-run #'(lambda (compl options)
+			(invoke-feature compl 'activate 'completion
+					'ignore options))
+		    compl options)))
 
 (defun make-completion-help-fns (config)
   (make-scope-help-fns (list :config #'completion-config
@@ -511,34 +521,31 @@
 ;; app
 ;; (app +options -options)
 (defun app-feature-config (app phase options)
-  (DEBUG! "config app %s phase %s options %s"
-	  app phase options)
-  (invoke-feature app 'configure 'app
-		  phase options))
+  (let ((options (plist-put (normalize-options options)
+			    :status 1)))
+    (DEBUG! "config app %s phase %s options %s"
+	    app phase options)
+    (invoke-feature app 'configure 'app
+		    phase options)))
 
 (defun app-feature-prepare (app phase options)
-  (DEBUG! "prepare app %s phase %s options %s"
-	  app phase options)
-  (invoke-feature app 'prepare 'app
-		  phase options))
-
-(defvar activate-app-list nil
-  "list of apps to be activate after easy-emacs boot done")
-
-(defun activate-apps ()
-  (cl-loop for app in activate-app-list
-	   do (let ((app-name (car app))
-		    (config-options (cdr app)))
-		(invoke-feature app-name 'activate 'app
-				'ignore config-options))))
-
-(after-boot! activate-apps)
+  (let ((options (plist-put (normalize-options options)
+			    :status 1)))
+    (DEBUG! "prepare app %s phase %s options %s"
+	    app phase options)
+    (invoke-feature app 'prepare 'app
+		    phase options)))
 
 (defun app-feature-activate (app phase options)
-  (DEBUG! "activate app %s options %s"
-	  app options)
-  (add-to-list 'activate-app-list
-	       `(,app . ,options)))
+  (let ((options (plist-put (normalize-options options)
+			    :status 1)))
+    (DEBUG! "activate app %s options %s"
+	    app options)
+
+    (after-boot-run #'(lambda (app options)
+			(invoke-feature app 'activate 'app
+					'ignore options))
+		    app options)))
 
 (defun make-app-help-fns (config)
   (make-scope-help-fns (list :config #'app-feature-config
@@ -550,13 +557,27 @@
   (config/:make-scope 'app configs))
 
 (defun editor-feature-config (editor phase options)
-  t)
+  (let ((options (normalize-options options)))
+    (DEBUG! "editor-feature-config editor %s phase %s options %s"
+	    editor phase options)
+    (invoke-feature editor 'configure 'editor
+		    phase (plist-put options :status 1))))
 
 (defun editor-feature-prepare (editor phase options)
-  t)
+  (let ((options (plist-put (normalize-options options)
+			    :status 1)))
+    (DEBUG! "editor-feature-prepare editor %s phase %s options %s"
+	    editor phase options)
+    (invoke-feature editor 'prepare 'editor
+		    phase options)))
 
 (defun editor-feature-activate (editor phase options)
-  t)
+  (let ((options (plist-put (normalize-options options)
+			    :status 1)))
+    (after-boot-run #'(lambda (editor options)
+			(invoke-feature editor 'activate 'editor
+					'ignore options))
+		    editor options)))
 
 (defun make-editor-help-fns (config)
   (make-scope-help-fns (list :config #'editor-feature-config
