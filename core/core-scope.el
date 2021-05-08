@@ -428,14 +428,14 @@
 	(call-mode-features mode 'prepare phase features))))
 
 (defun mode-feature-activate (mode phase options)
-    (DEBUG! "mode feature activate mode %s phase %s options %s"
+  (DEBUG! "mode feature activate mode %s phase %s options %s"
 	    mode phase options)
-    (let ((config-options (collect-keyword-values options)))
-      (let ((features (plist-get config-options :features)))
-	(add-hook `,(intern (format "%s-mode-hook" mode))
-		  `(lambda ()
-		     (call-mode-features ',mode 'activate
-					 ',phase ',features))))))
+  (let ((config-options (collect-keyword-values options)))
+    (let ((features (plist-get config-options :features)))
+      (add-hook `,(intern (format "%s-mode-hook" mode))
+		`(lambda ()
+		   (call-mode-features ',mode 'activate
+				       ',phase ',features))))))
 
 (defun make-mode-help-fns (config)
   (make-scope-help-fns (list :config #'mode-feature-config

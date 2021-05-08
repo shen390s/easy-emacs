@@ -111,7 +111,35 @@
   (DEBUG! "invoke-feature %s fn = %s scope = %s phase = %s options %s"
 	  name fn scope phase options)
   (when name
-    (let ((f (get-feature name)))
+    (let ((f (pcase (substring (symbol-name name) 0 1)
+	       ("-" (progn
+		      (setq options
+			    (plist-put options
+				       :status
+				       -1))
+		      (get-feature (intern
+				    (substring
+				     (symbol-name
+				      name)
+				     1)))))
+	       ("+" (progn
+		      (setq options
+			    (plist-put options
+				       :status
+				       1))
+		      (get-feature (intern
+				    (substring
+				     (symbol-name
+				      name)
+				     1)))))
+	       (_ (progn
+		    (setq options
+			  (plist-put options
+				     :status
+				     1))
+		    (get-feature name))))))
+      (DEBUG! "invoke-feature %s f = %s options = %s"
+	      name f options)
       (when f
 	(pcase fn
 	  ('prepare

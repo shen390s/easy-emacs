@@ -10,7 +10,8 @@
 	     +rainbow-identifiers +smartparens)
        (c :suffix .c .cc .cpp .c++ .h .hpp
 	  :features +lsp +eldoc -flymake)
-       (lisp :suffix .cl .el .lisp)
+       (emacs-lisp :suffix .el)
+       (lisp :suffix .cl .lisp)
        :ui
        (evil :after-activate
 	     (progn
@@ -24,4 +25,5 @@
        :completion ivy 
        :editor
        (undo-tree)
+       (-eldoc)
        :app (emacs-server :port 1234))
