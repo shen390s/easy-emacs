@@ -13,13 +13,19 @@
        (emacs-lisp :suffix .el)
        (lisp :suffix .cl .lisp)
        :ui
-       (evil :after-activate
-	     (progn
-	       (DEBUG! "evil set leader key")
-	       (evil-leader/set-leader "<SPC>")
-	       (evil-leader/set-key
-		 (kbd "b") 'counsel-switch-buffer
-		 (kbd "f") 'counsel-find-file)))
+       (evil
+	:after-activate (progn
+			  (DEBUG! "evil set leader key")
+			  (evil-leader/set-leader "<SPC>")
+			  (evil-leader/set-key
+			    (kbd "b") 'counsel-switch-buffer
+			    (kbd "f") 'counsel-find-file
+			    (kbd "tc") 'transpose-chars
+			    (kbd "tw") 'transpose-words
+			    (kbd "tc") 'transpose-regions
+			    (kbd "tp") 'transpose-paragraphs
+			    (kbd "tse") 'transpose-sexps
+			    (kbd "tst") 'transpose-sentences)))
        (smart-mode-line)
        (load-custom :theme rshen)
        :completion ivy 

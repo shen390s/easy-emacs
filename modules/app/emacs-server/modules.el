@@ -21,11 +21,6 @@
     ("pre-check" (emacs-server-config/:pre-check scope options))
     (_ t)))
 
-(defun emacs-server-pkgs (scope options)
-  (DEBUG! "update pkg list of emacs-server with option %s"
-	  options)
-  nil)
-
 (defun emacs-server/:start (scope &optional options)
   (DEBUG! "starting emacs server options %s"
 	  options)

@@ -27,11 +27,21 @@
 ;;        (load-custom :theme rshen)
 ;;        :completion ivy 
 ;;        :app (emacs-server :port 1234))
+(defvar  easy-emacs-config-data nil
+  "Configuration data of easy-emacs")
+
+(defun save-easy-config (config)
+  (setf easy-emacs-config-data
+	config))
+
+(defun easy-config-get (scope)
+  (plist-get easy-emacs-config-data scope))
 
 (defun make-easy-config (configs)
   (let ((config (collect-keyword-values configs)))
     (DEBUG! "config = %s" config)
-    (let ((keys (filter-out-non-keywords config)))
+    (save-easy-config config)
+    (let ((keys (filt-out-non-keywords config)))
       (DEBUG! "scope keywords = %s" keys)
       (let ((c (collect-lists nil
 			      (cl-loop for key in keys

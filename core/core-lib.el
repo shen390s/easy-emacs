@@ -128,7 +128,7 @@
       (substring (symbol-name keyword) 1)
     nil))
 
-(defun filter-out-non-keywords (l)
+(defun filt-out-non-keywords (l)
   (cl-remove-if-not (lambda (k)
 		      (keywordp k))
 		    l))

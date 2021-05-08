@@ -35,7 +35,7 @@
 
 (defmacro make-config-methods! (methods)
   `(progn
-     ,@(cl-loop for key in (filter-out-non-keywords methods)
+     ,@(cl-loop for key in (filt-out-non-keywords methods)
 		collect (make-config-method key (plist-get methods key)))))
 
 (make-config-methods! (:pre-check Check:before
@@ -384,7 +384,7 @@
 	  mode action phase features)
     (let ((z (normalize-non-keyword-options features)))
     (DEBUG! "z = %s " z)
-    (let ((z-features (filter-out-non-keywords (collect-keyword-values z))))
+    (let ((z-features (filt-out-non-keywords (collect-keyword-values z))))
       (DEBUG! "z-features = %s" z-features)
       (let ((options (plist-put nil :mode mode)))
 	(cl-loop for feature in z-features
