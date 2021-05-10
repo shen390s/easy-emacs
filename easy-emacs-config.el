@@ -20,12 +20,21 @@
 			  (evil-leader/set-key
 			    (kbd "b") 'counsel-switch-buffer
 			    (kbd "f") 'counsel-find-file
+			    (kbd "wm") 'delete-other-windows
 			    (kbd "tc") 'transpose-chars
 			    (kbd "tw") 'transpose-words
 			    (kbd "tc") 'transpose-regions
 			    (kbd "tp") 'transpose-paragraphs
 			    (kbd "tse") 'transpose-sexps
-			    (kbd "tst") 'transpose-sentences)))
+			    (kbd "tst") 'transpose-sentences)
+			  ;; for the problem of evil-leader-mode
+			  ;; has not been enabled for some special
+			  ;; buffer
+			  (cl-loop for b in (buffer-list)
+				   do (with-current-buffer b
+					(DEBUG! "enable evil-leader-mode"
+						b)
+					(evil-leader-mode 1)))))
        (smart-mode-line)
        (load-custom :theme rshen)
        :completion ivy 

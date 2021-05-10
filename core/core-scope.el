@@ -39,14 +39,14 @@
 		collect (make-config-method key (plist-get methods key)))))
 
 (make-config-methods! (:pre-check Check:before
-		       :check Check:primary
-		       :after-check Check:after
-		       :pre-prepare Prepare:before
-		       :prepare Prepare:primary
-		       :after-prepare Prepare:after
-		       :before-activate Activate:before
-		       :activate Activate
-		       :after-activate Activate:after))
+				  :check Check:primary
+				  :after-check Check:after
+				  :pre-prepare Prepare:before
+				  :prepare Prepare:primary
+				  :after-prepare Prepare:after
+				  :before-activate Activate:before
+				  :activate Activate
+				  :after-activate Activate:after))
 
 (defgeneric Config/Pkgs:update ((config Base-Config) scope-name))
 
@@ -200,8 +200,8 @@
 
 (defun install-packages-for-scope (scope-name)
   (with-scope! scope-name
-	      scope
-	      (Scope/install-pkgs scope)))
+	       scope
+	       (Scope/install-pkgs scope)))
 
 (defmacro foreach-scope! (name scope &rest body)
   `(maphash '(lambda (,name ,scope)
@@ -377,29 +377,30 @@
 
 (defun config/:make-vars (config)
   (config/:make-scope 'vars (list config)))
-      
+
 ;; (mode +mode_feature -mode-feature)
 (defun call-mode-features (mode action phase features)
   (DEBUG! "call-mode-features mode %s action %s phase %s features %s"
 	  mode action phase features)
+  (when features
     (let ((z (normalize-non-keyword-options features)))
-    (DEBUG! "z = %s " z)
-    (let ((z-features (filt-out-non-keywords (collect-keyword-values z))))
-      (DEBUG! "z-features = %s" z-features)
-      (let ((options (plist-put nil :mode mode)))
-	(cl-loop for feature in z-features
-		 do (progn
-		      (DEBUG! "feature %s options %s"
-			      feature options)
-		      (pcase feature
-			(:default t)
-			(_ (invoke-feature `,(intern (keyword-name
-						      feature))
-					   action 'modes phase
-					   (plist-put options
-						      :status
-						      (plist-get z
-								 feature)))))))))))
+      (DEBUG! "z = %s " z)
+      (let ((z-features (filt-out-non-keywords (collect-keyword-values z))))
+	(DEBUG! "z-features = %s" z-features)
+	(let ((options (plist-put nil :mode mode)))
+	  (cl-loop for feature in z-features
+		   do (progn
+			(DEBUG! "feature %s options %s"
+				feature options)
+			(pcase feature
+			  (:default t)
+			  (_ (invoke-feature `,(intern (keyword-name
+							feature))
+					     action 'modes phase
+					     (plist-put options
+							:status
+							(plist-get z
+								   feature))))))))))))
 
 (defun config-mode-features (mode phase features)
   (call-mode-features mode 'configure phase features))
@@ -421,15 +422,15 @@
       (config-mode-features mode phase features))))
 
 (defun mode-feature-prepare (mode phase options)
-    (DEBUG! "mode feature prepare mode %s phase %s options %s"
-	    mode phase options)
-    (let ((config-options (collect-keyword-values options)))
-      (let ((features (plist-get config-options :features)))
-	(call-mode-features mode 'prepare phase features))))
+  (DEBUG! "mode feature prepare mode %s phase %s options %s"
+	  mode phase options)
+  (let ((config-options (collect-keyword-values options)))
+    (let ((features (plist-get config-options :features)))
+      (call-mode-features mode 'prepare phase features))))
 
 (defun mode-feature-activate (mode phase options)
   (DEBUG! "mode feature activate mode %s phase %s options %s"
-	    mode phase options)
+	  mode phase options)
   (let ((config-options (collect-keyword-values options)))
     (let ((features (plist-get config-options :features)))
       (add-hook `,(intern (format "%s-mode-hook" mode))
@@ -590,18 +591,18 @@
 
 (defun make-scope-by-config (key config)
   (pcase key
-      (:vars
-       `(,@(config/:make-vars config)))
-      (:modes
-       `(,@(config/:make-modes config)))
-      (:ui
-       `(,@(config/:make-ui config)))
-      (:completion
-       `(,@(config/:make-completion config)))
-      (:app
-       `(,@(config/:make-app config)))
-      (:editor
-       `(,@(config/:make-editor config)))
+    (:vars
+     `(,@(config/:make-vars config)))
+    (:modes
+     `(,@(config/:make-modes config)))
+    (:ui
+     `(,@(config/:make-ui config)))
+    (:completion
+     `(,@(config/:make-completion config)))
+    (:app
+     `(,@(config/:make-app config)))
+    (:editor
+     `(,@(config/:make-editor config)))
     (_ nil)))
 
 ;; Just for loading
