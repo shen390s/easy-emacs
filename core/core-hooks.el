@@ -26,6 +26,24 @@
 	     (lambda ()
 	       (,fn ,@args))))
 
+;; Deferred run after easy-emacs boot
+(defvar run-after-boot-list nil
+  "List of features to be activated after easy emacs boot")
+
+(defun run-after-boot ()
+  (cl-loop for feature in run-after-boot-list
+	   do (let ((handler (car feature))
+		    (feature-name (car (cdr feature)))
+		    (options (cdr (cdr feature))))
+		(funcall handler feature-name options))))
+
+(defun after-boot-run (handler args1 args2)
+  (add-to-list 'run-after-boot-list
+	       `(,handler . (,args1 . ,args2))))
+
+
+(after-boot! run-after-boot)
+
 (provide 'core-hooks)
 ;;; core-hooks.el ends here
 

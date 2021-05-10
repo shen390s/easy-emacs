@@ -349,23 +349,6 @@
 	    fns)
     fns))
 
-;; Deferred run after easy-emacs boot
-(defvar activate-feature-after-boot-list nil
-  "List of features to be activated after easy emacs boot")
-
-(defun activate-features-after-boot ()
-  (cl-loop for feature in activate-feature-after-boot-list
-	   do (let ((handler (car feature))
-		    (feature-name (car (cdr feature)))
-		    (options (cdr (cdr feature))))
-		(funcall handler feature-name options))))
-
-(defun after-boot-run (handler args1 args2)
-  (add-to-list 'activate-feature-after-boot-list
-	       `(,handler . (,args1 . ,args2))))
-
-(after-boot! activate-features-after-boot)
-
 ;; define configuration scopes
 ;; (vars (a . 1) (b . 2) ...)
 (defun make-vars-help-fns (config)
