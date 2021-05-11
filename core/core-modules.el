@@ -133,10 +133,6 @@
 				      name)
 				     1)))))
 	       (_ (progn
-		    (setq options
-			  (plist-put options
-				     :status
-				     1))
 		    (get-feature name))))))
       (DEBUG! "invoke-feature %s f = %s options = %s"
 	      name f options)
@@ -154,6 +150,16 @@
 	  ('pkglist
 	   (Feature/pkglist f scope options))
 	  (_ nil))))))
+
+(defun feature-off (feature options)
+  (let ((status (plist-get options (mk-keyword (symbol-name feature)))))
+    (and status
+	(< status 0))))
+
+(defun feature-on (feature options)
+  (let ((status (plist-get options (mk-keyword (symbol-name feature)))))
+    (and status
+	 (> status 0))))
 
 (defmethod Object/to-string ((obj Feature))
   (with-slots (name pkgs config-fn on-fn ) obj

@@ -363,8 +363,8 @@
 
 ;; (mode +mode_feature -mode-feature)
 (defun call-mode-features (mode action phase features)
-  (DEBUG! "call-mode-features mode %s action %s phase %s features %s"
-	  mode action phase features)
+  (DEBUG! "call-mode-features mode %s action %s phase %s features %s major mode %s"
+	  mode action phase features major-mode)
   (when features
     (let ((z (normalize-non-keyword-options features)))
       (DEBUG! "z = %s " z)

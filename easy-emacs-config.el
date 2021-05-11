@@ -5,11 +5,12 @@
 (easy! :vars
        (a . 10)
        (b . 20)
+       (c-eldoc-includes . "-I/usr/include -I/usr/local/include -I. -I..")
        :modes
        (prog :features +hlinum +ruler +rainbow-delimiters
-	     +rainbow-identifiers +smartparens)
+	     +rainbow-identifiers +smartparens -flymake)
        (c :suffix .c .cc .cpp .c++ .h .hpp
-	  :features +lsp +eldoc -flymake)
+	  :features +eldoc)
        (emacs-lisp :suffix .el)
        (lisp :suffix .cl .lisp)
        :ui
@@ -18,9 +19,10 @@
 			  (DEBUG! "evil set leader key")
 			  (evil-leader/set-leader "<SPC>")
 			  (evil-leader/set-key
-			    (kbd "b") 'counsel-switch-buffer
+			    (kbd "bs") 'counsel-switch-buffer
 			    (kbd "f") 'counsel-find-file
 			    (kbd "wm") 'delete-other-windows
+			    (kbd "bd") 'kill-buffer
 			    (kbd "tc") 'transpose-chars
 			    (kbd "tw") 'transpose-words
 			    (kbd "tc") 'transpose-regions
@@ -32,13 +34,13 @@
 			  ;; buffer
 			  (cl-loop for b in (buffer-list)
 				   do (with-current-buffer b
-					(DEBUG! "enable evil-leader-mode"
-						b)
 					(evil-leader-mode 1)))))
        (smart-mode-line)
        (load-custom :theme rshen)
        :completion ivy 
        :editor
        (undo-tree)
-       (-eldoc)
-       :app (emacs-server :port 1234))
+       ;;(-eldoc)
+       :app
+       (emacs-server)
+       (lang-server +cquery -ccls -clangd +eglot))

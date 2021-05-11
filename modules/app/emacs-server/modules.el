@@ -18,7 +18,7 @@
 (defun emacs-server-config (scope &optional phase options)
   (DEBUG! "emacs server configure phase %s" phase)
   (pcase phase
-    ("pre-check" (emacs-server-config/:pre-check scope options))
+    (:pre-check (emacs-server-config/:pre-check scope options))
     (_ t)))
 
 (defun emacs-server/:start (scope &optional options)

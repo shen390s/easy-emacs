@@ -9,8 +9,12 @@
   (require 'smartparens)
   (require 'smartparens-config)
   (if (> (plist-get options :status) 0)
-      (smartparens-mode 1)
-    (smartparens-mode -1)))
+      (progn
+	(smartparens-mode 1)
+	(turn-on-show-smartparens-mode))
+    (progn
+      (smartparens-mode -1)
+      (turn-off-show-smartparens-mode))))
 
 (feature-ex! smartparens
  	     "Enable smart parents"

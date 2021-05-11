@@ -45,11 +45,8 @@
    (t (cquery/lsp-on)))
   t)
 
-(defun cquery-pkgs ()
-  (let ((pkgs (cond
-	       ((eq (lang-server-client) 'eglot) '(eglot emacs-cquery))
-	       (t '(lsp-module emacs-cquery)))))
-    pkgs))
+(defun cquery-pkgs (scope &optional options)
+  '(emacs-cquery))
 
 (feature! cquery
 	  "Use cquery as c/c++ language server"

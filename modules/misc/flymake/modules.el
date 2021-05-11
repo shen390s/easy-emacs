@@ -3,9 +3,9 @@
   (DEBUG! "activate-flymake scope %s phase %s options %s"
 	  scope phase options)
   (let ((status (plist-get options :status)))
-    (if (> status 0)
-	(flymake-mode 1)
-      (flymake-mode -1))))
+    (if (>= status 0)
+	(flymake-mode-on)
+      (flymake-mode-off))))
 
 (feature-ex! flymake
 	     "flymake"
