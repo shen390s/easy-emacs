@@ -37,10 +37,12 @@
 					(evil-leader-mode 1)))))
        (smart-mode-line)
        (load-custom :theme rshen)
+       (smex)
        :completion ivy 
        :editor
        (undo-tree)
        ;;(-eldoc)
        :app
        (emacs-server)
+       (which-key)
        (lang-server +cquery -ccls -clangd +eglot))
