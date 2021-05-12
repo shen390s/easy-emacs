@@ -213,8 +213,15 @@
 	     :docstring ,docstring
 	     :pkginfo ,pkginfo))
 
+(defun dummy-activate-fun (scope &optional phase options)
+  (DEBUG! "dummy-activate-fun scope %s phase %s options %s"
+	  scope phase options)
+  t)
+
 (defmacro feature-ex! (name docstring pkgs config-fn prepare-fn on-fn)
   (declare (doc-string 2))
+  (unless on-fn
+    (setq on-fn 'dummy-activate-fun))
   `(progn
      (defvar ,(intern (format "%s-before-activate-hook"
 			      (symbol-name name)))
@@ -245,6 +252,18 @@
 	 (set (intern (concat (symbol-name ',name)
 			      "-actived"))
 	      nil)))))
+
+(defmacro before-feature-activate (feature &rest body)
+  `(add-hook ,(intern (format "%s-before-activate-hook"
+			      (symbol-name feature)))
+	     (lambda ()
+	       ,@body)))
+
+(defmacro after-feature-activate (feature &rest body)
+  `(add-hook ,(intern (format "%s-after-activate-hook"
+			      (symbol-name feature)))
+	     (lambda ()
+	       ,@body)))
 
 (defmacro feature! (name docstring pkgs config-fn on-fn unused)
   `(let ((feature (make-instance 'Feature

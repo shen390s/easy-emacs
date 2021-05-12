@@ -1,10 +1,13 @@
-(package! :name magit
-	  :docstring "It's Magit! A Git porcelain inside Emacs."
-	  :pkginfo magit)
+(package-ex! magit
+	     "It's Magit! A Git porcelain inside Emacs."
+	     magit)
 
-(feature! magit
-	  "It's Magit! A Git porcelain inside Emacs."
-	  (magit)
-	  nil
-	  nil
-	  nil)
+(defun activate-magit (scope &optional phase options)
+  t)
+
+(feature-ex! magit
+	     "It's Magit! A Git porcelain inside Emacs."
+	     (magit)
+	     nil
+	     nil
+	     nil)

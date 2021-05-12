@@ -1,7 +1,9 @@
 (defvar QUILT (executable-find "quilt")
   "The executable file of quilt")
 
-(defun emacs-quilt-check ()
+(defun emacs-quilt-check (scope &optional phase options)
+  (DEBUG! "emacs-quilt-check scope %s phase %s options %s"
+	  scope phase options)
   QUILT)
 
 (defun emacs-quilt ()
@@ -15,16 +17,23 @@
 				 dir (file-name-nondirectory file))
 			 "QUILT Output"))))))
 
-(defun activate-emacs-quilt ()
+(defun emacs-quilt/:activate ()
   (add-hook 'before-save-hook #'emacs-quilt))
 
-(defun deactivate-emacs-quilt ()
+(defun emacs-quilt/:deactivate ()
   (remove-hook 'before-save-hook #'emacs-quilt))
 
-(feature! emacs-quilt
-	  "Emacs Editor Quilt"
-	  nil
-	  emacs-quilt-check
-	  activate-emacs-quilt
-	  deactivate-emacs-quilt)
+(defun activate-emacs-quilt (scope &optional phase options)
+  (let ((status (plist-get options :status)))
+    (when status
+      (if (>= status 0)
+	  (emacs-quilt/:activate)
+	(emacs-quilt/:deactivate)))))
+
+(feature-ex! emacs-quilt
+	     "Emacs Editor Quilt"
+	     nil
+	     emacs-quilt-check
+	     nil
+	     activate-emacs-quilt)
 

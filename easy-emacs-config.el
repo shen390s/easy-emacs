@@ -16,7 +16,6 @@
        :ui
        (evil
 	:after-activate (progn
-			  (DEBUG! "evil set leader key")
 			  (evil-leader/set-leader "<SPC>")
 			  (evil-leader/set-key
 			    (kbd "bs") 'counsel-switch-buffer
@@ -38,6 +37,7 @@
        (smart-mode-line)
        (load-custom :theme rshen)
        (smex)
+       (icicles)
        :completion ivy 
        :editor
        (undo-tree)
@@ -45,4 +45,11 @@
        :app
        (emacs-server)
        (which-key)
-       (lang-server +cquery -ccls -clangd +eglot))
+       (lang-server +cquery -ccls -clangd +eglot)
+       (magit)
+       (emacs-quilt)
+       (slime +slime-fancy
+	:before-activate (progn
+			   (DEBUG! "configure slime...")
+			   (setq inferior-lisp-program "/Users/rshen/.nix-profile/bin/sbcl")
+			   (setq slime-contribs '(slime-fancy)))))
