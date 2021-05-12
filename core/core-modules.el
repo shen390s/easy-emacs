@@ -253,14 +253,14 @@
 			      "-actived"))
 	      nil)))))
 
-(defmacro before-feature-activate (feature &rest body)
-  `(add-hook ,(intern (format "%s-before-activate-hook"
+(defmacro before-activate! (feature &rest body)
+  `(add-hook ',(intern (format "%s-before-activate-hook"
 			      (symbol-name feature)))
 	     (lambda ()
 	       ,@body)))
 
-(defmacro after-feature-activate (feature &rest body)
-  `(add-hook ,(intern (format "%s-after-activate-hook"
+(defmacro after-activate! (feature &rest body)
+  `(add-hook ',(intern (format "%s-after-activate-hook"
 			      (symbol-name feature)))
 	     (lambda ()
 	       ,@body)))
