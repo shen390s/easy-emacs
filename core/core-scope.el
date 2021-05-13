@@ -365,6 +365,11 @@
 (defun call-mode-features (mode action phase features)
   (DEBUG! "call-mode-features mode %s action %s phase %s features %s major mode %s"
 	  mode action phase features major-mode)
+  (cl-loop for f in (auto-features (format "%s-mode" mode))
+	   do (let ((options (plist-put nil :mode mode)))
+		(invoke-feature f action 'modes phase
+				(plist-put options
+					   :status 1))))
   (when features
     (let ((z (normalize-non-keyword-options features)))
       (DEBUG! "z = %s " z)

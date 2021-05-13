@@ -145,7 +145,7 @@
 	  ('activate
 	   (progn
 	     (cl-loop for pkg in (Feature/pkglist f scope options)
-		      do (Package/install (get-package pkg)))
+		      do (install-package-by-name pkg))
 	     (Feature/activate f scope phase options)))
 	  ('pkglist
 	   (Feature/pkglist f scope options))
@@ -170,9 +170,6 @@
   ((scope :initarg :scope
 	  :initform nil))
   "Major mode")
-
-(defmethod Mode/bind-scope ((mode Mode) scope)
-  (setf (oref mode scope) scope))
 
 (defmethod Mode/active-fn ((mode Mode))
   (lambda (&rest args)
@@ -295,9 +292,7 @@
      (defun ,name (&rest args)
        (interactive)
        (DEBUG! "activate mode %s"
-	       ',name)
-       (let ((mode (get-mode ',name)))
-	 (apply (Mode/active-fn mode) args)))))
+	       ',name))))
 
 (defun install-package-by-name (pkg)
   (DEBUG! "installing package %s..." pkg)
@@ -324,18 +319,6 @@
       (DEBUG! "get-feature %s not found"
 	      f ))
     feature))
-
-(defun get-mode (m)
-  (let ((mode (gethash m all-modes)))
-    (DEBUG2! "get-mode %s"
-	     (Object/to-string mode))
-    mode))
-
-(defun get-mode-active-fn (m)
-  (let ((mode (get-mode m)))
-    (if mode
-	(Mode/active-fn mode)
-      (intern (symbol-name m)))))
 
 (defun packages(features &optional scope-name config-options)
   (DEBUG! "Get packages for features: %s"
@@ -409,5 +392,21 @@
 		  nil
 		  ,activate-fn
 		  ,deactivate-fn))))
+
+(defvar mode-auto-feature-list nil
+  "automatic feature for mode")
+
+(defun auto-features (mode)
+  (let ((key (mk-keyword mode)))
+    (plist-get mode-auto-feature-list
+	       key)))
+
+(defun add-auto-features (mode &rest features)
+  (let ((old-features (auto-features mode)))
+    (setf mode-auto-feature-list
+	  (plist-put mode-auto-feature-list
+		     (mk-keyword mode)
+		     (append old-features
+			     features)))))
 
 (provide 'core-modules)

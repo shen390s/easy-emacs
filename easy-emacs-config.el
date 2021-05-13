@@ -13,6 +13,7 @@
 	  :features +eldoc +ggtags)
        (emacs-lisp :suffix .el)
        (lisp :suffix .cl .lisp)
+       (mermaid :suffix .mmd)
        :ui
        (evil
 	:after-activate (progn

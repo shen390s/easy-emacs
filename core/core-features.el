@@ -13,10 +13,4 @@
 (defvar actived-modes nil
   "A list of actived modes")
 
-(defun config-mode (m)
-  (let ((zmode (get-mode m)))
-    (if zmode
-	(Feature/configure zmode)
-      t)))
-
 (provide 'core-features)
