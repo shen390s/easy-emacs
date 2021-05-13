@@ -24,10 +24,6 @@
 (defun ascii-doctor-setup ()
   (adoc-tune-faces))
 
-(add-scope-hook 'ascii-doctor
-		'after
-		'ascii-doctor-setup)
-
 (defun config-adoc ()
   (add-to-list 'auto-mode-alist
 	       '("\\.adoc\\'" . lang/adoc-mode))

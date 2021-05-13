@@ -1,32 +1,22 @@
 ;;; modules.el --- description
 
-(defun c-c++-after-setup ()
-  t)
+(package-ex! google-c-style
+	     "Google C/C++ style"
+	     (google-c-style :type git
+			     :host github
+			     :repo "emacsmirror/google-c-style"))
 
-(add-scope-hook 'c-c++
-		'after
-		'c-c++-after-setup)
+(defun activate-google-c-style (scope &optional phase options)
+  (let ((status (plist-get options :status)))
+    (when status
+      (when (>= status 0)
+	(google-set-c-style)))))
 
-(package! :name google-c-style
-	  :docstring "Google C/C++ style"
-	  :pkginfo (google-c-style :type git
-				   :host github
-				   :repo "emacsmirror/google-c-style"))
+(feature-ex! google-c-style
+	     "Google C/C++ style"
+	     (google-c-style)
+	     nil
+	     nil
+	     activate-google-c-style)
 
-(defun enable-google-c-style ()
-  (google-set-c-style))
-
-(feature! google-c-style
-	  "Google C/C++ style"
-	  (google-c-style)
-	  nil
-	  enable-google-c-style
-	  nil)
-
-(feature! set-c-style
-	  "set c/c++ style"
-	  nil
-	  nil
-	  nil
-	  nil)
 

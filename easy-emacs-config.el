@@ -10,7 +10,7 @@
        (prog :features +hlinum +ruler +rainbow-delimiters
 	     +rainbow-identifiers +smartparens -flymake)
        (c :suffix .c .cc .cpp .c++ .h .hpp
-	  :features +eldoc +ggtags)
+	  :features +eldoc +ggtags +google-c-style)
        (emacs-lisp :suffix .el)
        (lisp :suffix .cl .lisp)
        (mermaid :suffix .mmd)

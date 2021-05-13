@@ -598,7 +598,4 @@
 (defun actived-features ()
   t)
 
-(defun add-scope-hook (scope phase fn)
-  t)
-
 (provide 'core-scope)
