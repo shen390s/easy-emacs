@@ -376,23 +376,6 @@
 	m
       mode)))
 
-(defmacro mode2feature! (mode feature pkgs docstring)
-  `(let ((activate-fn (intern (concat "activate-" (symbol-name
-						   ',feature))))
-	 (deactivate-fn (intern (concat "deactivate-" (symbol-name
-						       ',feature)))))
-     `(progn
-	(defun ,activate-fn ()
-	  (,',mode))
-	(defun ,deactivate-fn ()
-	  (,',mode -1))
-	(feature! ,',feature
-		  ,',docstring
-		  ,',pkgs
-		  nil
-		  ,activate-fn
-		  ,deactivate-fn))))
-
 (defvar mode-auto-feature-list nil
   "automatic feature for mode")
 

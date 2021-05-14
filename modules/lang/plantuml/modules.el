@@ -1,22 +1,22 @@
 
-(package! :name plantuml
-	  :docstring "A major mode for editing PlantUML sources in Emacs"
-	  :pkginfo plantuml-mode)
-
-(defun config-plantuml ()
-  (progn
-    (add-to-list 'auto-mode-alist
-		 '("\\.plantuml\\'" . lang/plantuml-mode))
-    t))
+(package-ex! plantuml
+	     "A major mode for editing PlantUML sources in Emacs"
+	     plantuml-mode)
 
 (autoload-r! plantuml-mode
 	     (plantuml)
 	     "plantuml-mode"
 	     t)
 
-(rmode! lang/plantuml-mode
-	"Emacs mode for plantuml"
-	(plantuml)
-	config-plantuml
-	plantuml-mode)
+(add-auto-features "plantuml-mode" 'plantuml)
+
+(defun config-plantuml (scope &optional phase options)
+  t)
+
+(feature-ex! plantuml
+	     "Feature for plantuml mode"
+	     (plantuml)
+	     config-plantuml
+	     nil
+	     nil)
 

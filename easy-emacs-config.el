@@ -14,6 +14,13 @@
        (emacs-lisp :suffix .el)
        (lisp :suffix .cl .lisp)
        (mermaid :suffix .mmd)
+       (plantuml :suffix .plantuml)
+       (poly-markdown :suffix .md .markdown
+		      :feature +vmd)
+       (poly-noweb+r :suffix .Rmd)
+       (poly-org :suffix .org)
+       (poly-asciidoc :suffix .adoc)
+       (fish :suffix .fish)
        :ui
        (evil
 	:after-activate (progn

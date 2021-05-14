@@ -1,23 +1,13 @@
 
-(package! :name fish-mode
-	  :docstring "A major Emacs mode for edit Fish source code"
-	  :pkginfo (fish-mode :type git
-			      :host github
-			      :repo "wwwjfy/emacs-fish"))
-
-(defun config-fish ()
-  (add-to-list 'auto-mode-alist
-	       '("\\.fish\\'" . lang/fish-mode))
-  t)
+(package-ex! fish-mode
+	     "A major Emacs mode for edit Fish source code"
+	     (fish-mode :type git
+			:host github
+			:repo "wwwjfy/emacs-fish"))
 
 (autoload-r! fish-mode
 	     (fish-mode)
 	     "fish-mode"
 	     t)
 
-(rmode! lang/fish-mode
-	"Emacs mode for fish program language"
-	(fish-mode)
-	config-fish
-	fish-mode)
 

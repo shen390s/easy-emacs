@@ -9,45 +9,15 @@
 			     :host github
 			     :repo "blak3mill3r/vmd-mode"))
 
-(defun hack-markdown ()
-  (unassoc-ext "\\.md\\'")
-  (unassoc-ext "\\.markdown\\'")
-  (unassoc-ext "README\\.md\\'")
-  (add-to-list 'auto-mode-alist
-	       '("\\.md\\'" . lang/markdown-mode))
-  (add-to-list 'auto-mode-alist
-	       '("\\.markdown\\'" . lang/markdown-mode))
-  (add-to-list 'auto-mode-alist
-	       '("README\\.md\\'" . lang/gfm-mode)))
-
-(defun config-markdown ()
-  (DEBUG! "configure markdown")
-  (and (not use-polymode)
-       (progn
-	 (hack-markdown)
-	 t)))
-
 (autoload-r! markdown-mode
 	     (markdown-mode)
 	     "markdown-mode"
 	     t)
 
-(rmode! lang/markdown-mode
-	"Emacs mode for markdown"
-	(markdown-mode)
-	config-markdown
-	markdown-mode)
-
 (autoload-r! gfm-mode
 	     (markdown-mode)
 	     "markdown-mode"
 	     t)
-
-(rmode! lang/gfm-mode
-	"README.md"
-	(markdown-mode)
-	config-markdown
-	gfm-mode)
 
 (defun enable-vmd ()
   (let ((file (buffer-file-name)))
@@ -59,9 +29,18 @@
   (unless vmd-process
     (delete-process vmd-process)))
 
-(feature! vmd
-	  "Snappy Markdown preview minor mode for emacs"
-	  (vmd-mode)
-	  nil
-	  enable-vmd
-	  deactivate-vmd)
+(defun activate-vmd (scope &optional phase options)
+  (DEBUG! "activate-vmd scope %s phase %s options %s"
+	  scope phase options)
+  (let ((status (plist-get options :status)))
+    (when status
+      (if (>= status 0)
+	  (enable-vmd)
+	(deactivate-vmd)))))
+
+(feature-ex! vmd
+	     "Snappy Markdown preview minor mode for emacs"
+	     (vmd-mode)
+	     nil
+	     nil
+	     activate-vmd)

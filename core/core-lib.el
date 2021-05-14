@@ -89,10 +89,13 @@
 	(remove-all-assoc key (delq e alist))
       alist)))
 
-(defun unassoc-ext (ext)
+(defun reassoc-ext (mode1 mode2)
   (setq auto-mode-alist
-	(remove-all-assoc ext auto-mode-alist)))
-
+	(cl-loop for it in auto-mode-alist
+		 collect (let ((mode (cdr it)))
+			   (if (eq mode mode1)
+			       (cons (car it) mode2)
+			     it)))))
 (eval-and-compile
   (defun dummy-fn ()
     t))

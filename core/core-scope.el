@@ -593,9 +593,5 @@
      `(,@(config/:make-editor config)))
     (_ nil)))
 
-;; Just for loading
-
-(defun actived-features ()
-  t)
 
 (provide 'core-scope)

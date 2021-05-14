@@ -51,8 +51,12 @@
 	(DEBUG! "c = %s" c)
 	c))))
 
+(defun easy-init ()
+  (setq auto-mode-alist nil))
+
 (defmacro easy! (&rest args)
   `(progn
+     (easy-init)
      ,@(make-easy-config args)
      ,@(cl-loop for phase in '(before primary after)
 		collect `(foreach-scope! scope-name
