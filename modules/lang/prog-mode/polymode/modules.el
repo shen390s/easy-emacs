@@ -72,11 +72,12 @@
 (defun config-fix-poly-markdown (scope &optional phase options)
   (pcase phase
     (:pre-check
-     (with-eval-after-load "markdown-mode"
-       (DEBUG! "fix file assoc after markdown-mode.el loaded")
-       (reassoc-ext 'markdown-mode 'poly-markdown-mode)
-       (DEBUG! "fix file assoc auto-mode-alist %s"
-	       auto-mode-alist)))
+     (progn
+       (with-eval-after-load "markdown-mode"
+	 (DEBUG! "fix file assoc after markdown-mode.el loaded")
+	 (reassoc-ext 'markdown-mode 'poly-markdown-mode)
+	 (DEBUG! "fix file assoc auto-mode-alist %s"
+		 auto-mode-alist))))
     (_ t)))
 
 (feature-ex! fix-poly-markdown
@@ -86,4 +87,6 @@
 	     nil
 	     nil)
 
-(add-auto-features "poly-markdown-mode" 'fix-poly-markdown)
+(add-auto-features "poly-markdown-mode"
+		   'poly-asciidoc-keybind
+		   'fix-poly-markdown)

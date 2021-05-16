@@ -1,0 +1,12 @@
+diff --git a/markdown-mode.el b/markdown-mode.el
+index a1e37e0..0950a58 100644
+--- a/markdown-mode.el
++++ b/markdown-mode.el
+@@ -9550,7 +9550,6 @@ rows and columns and the column alignment."
+   (add-hook 'after-save-hook #'markdown-live-preview-if-markdown t t)
+   (add-hook 'kill-buffer-hook #'markdown-live-preview-remove-on-kill t t))
+ 
+-;;;###autoload
+ (add-to-list 'auto-mode-alist
+              '("\\.\\(?:md\\|markdown\\|mkd\\|mdown\\|mkdn\\|mdwn\\)\\'" . markdown-mode))
+ 

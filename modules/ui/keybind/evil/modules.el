@@ -25,8 +25,8 @@
 	  scope phase options)
   (require 'evil)
   (require 'evil-leader)
-  (evil-mode 1)
-  (global-evil-leader-mode))
+  (global-evil-leader-mode)
+  (evil-mode 1))
 
 (feature-ex! evil
 	     "Evil is an extensible vi layer for Emacs. 

@@ -18,16 +18,27 @@
 	      :initform "")
    (pkg-info :initarg :pkg-info
 	     :initform nil)
+   (patches :initarg :patches
+	    :initform nil)
    (installed :initarg :installed
 	      :initform nil))
   "Class to describe the package of Emacs")
 
 (defmethod Package/install ((pkg Package))
-  (with-slots (installed pkg-info) pkg
+  (with-slots (name installed pkg-info patches) pkg
     (unless installed
       (when (fboundp 'install-pkg)
 	(install-pkg pkg-info)
 	(setf installed t)))))
+
+(defmethod Package/apply_patches ((pkg Package))
+  (with-slots (name patches) pkg
+    (DEBUG! "Package/apply_patches %s"
+	    pkg)
+    (unless patches
+      (setf patches (package-patches name)))
+    (when patches
+      (apply-package-patches name patches))))
 
 (defmethod Object/to-string ((obj Package))
   (with-slots (name pkg-info installed) obj
@@ -196,13 +207,15 @@
   `(let ((name (plist-get ',args :name))
 	 (docstring (plist-get ',args :docstring))
 	 (pkginfo (plist-get ',args :pkginfo)))
-     (let ((package (make-instance 'Package
-				   :name name
-				   :docstring docstring
-				   :pkg-info pkginfo
-				   :installed nil)))
-       (progn
-	 (puthash name package all-packages)))))
+     (let ((patches (package-patches name)))
+       (let ((package (make-instance 'Package
+				     :name name
+				     :docstring docstring
+				     :pkg-info pkginfo
+				     :patches patches
+				     :installed nil)))
+	 (progn
+	   (puthash name package all-packages))))))
 
 (defmacro package-ex! (name docstring pkginfo)
   (declare (doc-string 2))
@@ -333,6 +346,15 @@
 						   'ignore
 						   config-options)))))
 
+;; enable package patches when enable/install
+;; packages
+(add-hook 'straight-use-package-prepare-functions
+	  #'(lambda (pkg-name)
+	      (DEBUG! "prepare pkg %s" pkg-name)
+	      (let ((pkg (get-package pkg-name)))
+		(when pkg
+		  (Package/apply_patches pkg)))))
+
 (defun load-module-definition (module-file)
   (load-file module-file))
 
@@ -361,20 +383,6 @@
 	     (apply ',fn args)
 	   (fset ',fn my-self))))
      (setf remote-autoload-pkgs (append remote-autoload-pkgs ',pkgs))))
-
-(defvar rmodes-alist nil
-  "remote/local mode alist")
-
-(defmacro rmode! (name docstring pkgs config-fn lmode)
-  `(progn
-     (mode! ,name ,docstring ,pkgs ,config-fn ,lmode)
-     (setf rmodes-alist (plist-put rmodes-alist ',name ',lmode))))
-
-(defun local-or-rmode-name (mode)
-  (let ((m (plist-get rmodes-alist mode)))
-    (if m
-	m
-      mode)))
 
 (defvar mode-auto-feature-list nil
   "automatic feature for mode")
