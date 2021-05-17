@@ -6,10 +6,18 @@
   (DEBUG! "config-ggtags scope %s phase %s options %s"
 	  scope phase options)
   (pcase phase
-    ;; (:check (after-activate!
-    ;; 	     evil
-    ;; 	     (progn
-    ;; 	       (DEBUG! "configure ggtags when evil on"))))
+    (:check (after-activate!
+	     evil
+	     (progn
+	       (DEBUG! "configure ggtags when evil on")
+	       (require 'evil-leader)
+	       (cl-loop for mode in '(c-mode c++-mode java-mode)
+			do (evil-leader/set-key-for-mode mode
+			     (kbd "mgd") 'ggtags-find-definition
+			     (kbd "mgr") 'ggtags-find-reference
+			     (kbd "mgtr") 'ggtags-find-tag-regexp
+			     (kbd "mgos") 'ggtags-find-other-symbol
+			     (kbd "mgf") 'ggtags-find-file)))))
     (_ t)))
 
 (defun activate-ggtags (scope &optional phase options)
