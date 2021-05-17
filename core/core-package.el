@@ -56,9 +56,9 @@
 				   (file-name-nondirectory patch))))
     (if (file-exists-p patch-status-file)
 	0
-      (if (shell-command (format "cd %s &&  %s < %s && touch .%s.patched"
+      (if (shell-command (format "cd %s &&  %s < %s && touch %s"
 				 dir patch-command patch
-				 (file-name-nondirectory patch))
+				 patch-status-file)
 			 "PATCH output"
 			 "PATCH errors")
 	  1

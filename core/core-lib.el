@@ -9,22 +9,14 @@
     (collect-lists (append acc (car lists))
 		   (cdr lists))))
 
-(defun nth-car (n lists)
-  (if (null lists)
-      nil
-    (if (= n 1)
-	(car lists)
-      (nth-car (- n 1)
-	       (cdr lists)))))
-
 (defun first (lists)
-  (nth-car 1 lists))
+  (nth 0 lists))
 
 (defun second (lists)
-  (nth-car 2 lists))
+  (nth 1 lists))
 
 (defun third (lists)
-  (nth-car 3 lists))
+  (nth 2 lists))
 
 (defmacro safe-pop (lst)
   `(if (null ,lst)

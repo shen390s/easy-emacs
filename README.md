@@ -49,9 +49,6 @@
 
 	- scope
 	
-	  Easy-Emacs uses scope to control the on/off of features. A scope
-	  can have parent scope which it can inherit features from parent
-	  scope
 	  
 	- feature
 	
@@ -64,31 +61,18 @@
 	  Package defines how Easy-Emacs install packages, currently Easy-Emacs
 	  support install package from ELPA, MELPA source and github repository
 	  
-	- mode
-	
-	  This is the same as mode in Emacs. A mode in Easy-Emacs will be assigned
-	  with a scope to get a list of features.
-	  
 ### How to?
-
-#### define a new scope
-
-Scope is defined using *scope!*, following is an example to define a new scope:
-
-```{elisp}
-(scope! scope-name parent-scope)
-```
 
 #### define a new package
 
 Package is defined using command *package!*:
 
 ```{elisp}
-(package! my-package
-		  "The description of my package"
-		  (my-package :type git
-					  :host github
-					  :repo "my-github-id/my-package"))
+(package-ex! my-package
+			 "The description of my package"
+			 (my-package :type git
+						 :host github
+						 :repo "my-github-id/my-package"))
 ```
 
 #### define a feature
@@ -112,30 +96,9 @@ The feature is defined using command *feature!*:
 (feature! my-feature
 		  "The description of my feature"
 		  ( a list of packages which the feature depends on)
-		  my-feature-pre-config-function
-		  my-feature-activate-function
-		  my-feature-deactivate-function)
-```
-
-#### enable features in a scope
-
-The feature can be turned on using command *enable!*:
-
-```{elisp}
-(enable! my-scope
-		 (feature1
-		  feature2
-		  ))
-```
-
-Also you can read easy-emacs-config.el to get more information.
-
-#### binding a mode to a scope
-
-We can assign a mode to a scope with command *attach!*:
-
-```{elisp}
-(attach! my-c-c++-scope c-c++-mode)
+		  my-feature-config-function
+		  my-feature-prepare-function
+		  my-feature-activate-function)
 ```
 
 #### Other

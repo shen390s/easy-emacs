@@ -177,23 +177,6 @@
     (format "Feature name: %s pkgs: %s config-fn: %s on-fn:%s "
 	    name pkgs config-fn on-fn )))
 
-(defclass Mode (Feature)
-  ((scope :initarg :scope
-	  :initform nil))
-  "Major mode")
-
-(defmethod Mode/active-fn ((mode Mode))
-  (lambda (&rest args)
-    (progn
-      (cl-loop for pkg in (Feature/pkglist mode)
-	       do (Package/install (get-package pkg)))
-      (apply (oref mode on-fn) args))))
-
-(defmethod Object/to-string ((obj Mode))
-  (with-slots (name pkgs on-fn) obj
-    (format "Mode name: %s pkgs: %s on-fn: %s"
-	    name pkgs on-fn)))
-
 (defvar all-packages (make-hash-table)
   "All defined packages")
 
@@ -287,25 +270,6 @@
        (set (intern (concat (symbol-name ',name)
 			    "-actived"))
 	    nil))))
-
-(defmacro mode! (name docstring pkgs config-fn active-fn)
-  (declare (doc-string 2))
-  `(progn
-     (let ((zmode (make-instance 'Mode
-				 :name ',name
-				 :docstring ,docstring
-				 :pkgs ',pkgs
-				 :config-fn ',config-fn
-				 :scope nil
-				 :on-fn ',active-fn)))
-       (puthash ',name zmode all-modes)
-       ;; mode is also a instance of features
-       (puthash ',name zmode all-features))
-     
-     (defun ,name (&rest args)
-       (interactive)
-       (DEBUG! "activate mode %s"
-	       ',name))))
 
 (defun install-package-by-name (pkg)
   (DEBUG! "installing package %s..." pkg)
