@@ -21,6 +21,11 @@
     (unless (load-theme-ex (car themes) flag)
       (load-themes (cdr themes) flag))))
 
+(defun config-load-custom (scope &optional phase options)
+  (pcase phase
+    (:pre-check (setq sml/no-confirm-load-theme t))
+    (_ t)))
+
 (defun activate-load-custom (scope &optional phase options)
   (DEBUG! "activate-load-custom scope %s phase %s options %s"
 	  scope phase options)
@@ -39,6 +44,6 @@
 (feature-ex! load-custom
 	     "load customization file"
 	     nil
-	     nil
+	     config-load-custom
 	     nil
 	     activate-load-custom)

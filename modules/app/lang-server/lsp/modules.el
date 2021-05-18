@@ -20,7 +20,7 @@
 				scope phase options)
 			(evil-leader/set-key-for-mode (get-mode-from-options options)
 			  (kbd "mld") #'lsp-find-definition
-			  (kbd "mlr") #'lsp-find-reference
+			  (kbd "mlr") #'lsp-find-references
 			  (kbd "mli") #'lsp-find-implemention
 			  (kbd "mlt") #'lsp-find-type-definition))))
     (_ t)))
