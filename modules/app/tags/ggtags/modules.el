@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package-ex! ggtags
 	     "Emacs frontend to GNU Global source code tagging system. "
 	     ggtags)
@@ -9,15 +10,15 @@
     (:check (after-activate!
 	     evil
 	     (progn
-	       (DEBUG! "configure ggtags when evil on")
+	       (DEBUG! "configure ggtags when evil on scope %s options %s"
+		       scope options)
 	       (require 'evil-leader)
-	       (cl-loop for mode in '(c-mode c++-mode java-mode)
-			do (evil-leader/set-key-for-mode mode
-			     (kbd "mgd") 'ggtags-find-definition
-			     (kbd "mgr") 'ggtags-find-reference
-			     (kbd "mgtr") 'ggtags-find-tag-regexp
-			     (kbd "mgos") 'ggtags-find-other-symbol
-			     (kbd "mgf") 'ggtags-find-file)))))
+	       (evil-leader/set-key-for-mode (get-mode-from-options options)
+		 (kbd "mgd") 'ggtags-find-definition
+		 (kbd "mgr") 'ggtags-find-reference
+		 (kbd "mgtr") 'ggtags-find-tag-regexp
+		 (kbd "mgos") 'ggtags-find-other-symbol
+		 (kbd "mgf") 'ggtags-find-file))))
     (_ t)))
 
 (defun activate-ggtags (scope &optional phase options)

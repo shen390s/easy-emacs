@@ -10,7 +10,7 @@
        (prog :features +hlinum +ruler +rainbow-delimiters
 	     +rainbow-identifiers +smartparens -flymake)
        (c :suffix .c .cc .cpp .c++ .h .hpp
-	  :features +eldoc +ggtags +google-c-style)
+	  :features +eldoc +ggtags +google-c-style +lsp)
        (emacs-lisp :suffix .el)
        (lisp :suffix .cl .lisp)
        (mermaid :suffix .mmd)
@@ -53,7 +53,6 @@
        :app
        (emacs-server)
        (which-key)
-       (lang-server +cquery -ccls -clangd +eglot)
        (magit)
        (emacs-quilt)
        (slime +slime-fancy
@@ -61,3 +60,5 @@
 			   (DEBUG! "configure slime...")
 			   (setq inferior-lisp-program "/Users/rshen/.nix-profile/bin/sbcl")
 			   (setq slime-contribs '(slime-fancy)))))
+
+;;(debug-on-entry 'evil-leader/set-key-for-mode)

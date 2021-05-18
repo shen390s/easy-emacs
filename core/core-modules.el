@@ -162,6 +162,25 @@
 	   (Feature/pkglist f scope options))
 	  (_ nil))))))
 
+(defun activate-feature (name scope options)
+  (invoke-feature name 'activate scope
+		  'ignore options))
+
+(defun configure-feature (name scope phase options)
+  (invoke-feature name 'configure scope
+		  phase options))
+
+(defun prepare-feature (name scope phase options)
+  (invoke-feature name 'prepare scope
+		  phase options))
+
+(defun get-mode-from-options (options)
+  (let ((mode  (intern (format "%s-mode"
+			       (plist-get options :mode)))))
+    (DEBUG! "get-mode-from-options options %s mode %s"
+	    options mode)
+    mode))
+
 (defun feature-off (feature options)
   (let ((status (plist-get options (mk-keyword (symbol-name feature)))))
     (and status
@@ -298,8 +317,8 @@
     feature))
 
 (defun packages(features &optional scope-name config-options)
-  (DEBUG! "Get packages for features: %s"
-  	  features)
+  (DEBUG! "Get packages for features: %s scope %s options %s"
+  	  features scope-name config-options)
   ;;(unless features (edebug))
   (delete-dups
    (collect-lists nil
