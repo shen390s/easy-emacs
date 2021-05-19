@@ -51,7 +51,7 @@
 (defvar patch-command nil
   "where to find the executable of patch command")
 
-(defun apply-patch (patch-command dir patch)
+(defun apply-patch (dir patch)
   (let ((patch-status-file (format "%s/.%s.patched" dir
 				   (file-name-nondirectory patch))))
     (if (file-exists-p patch-status-file)
@@ -73,8 +73,7 @@
 
   (when patch-command
     (cl-loop for patch in patches
-	     do (apply-patch patch-command
-			     dir
+	     do (apply-patch dir
 			     patch))))
 
 (defun apply-package-patches (pkg patches)

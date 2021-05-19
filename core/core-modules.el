@@ -181,15 +181,37 @@
 	    options mode)
     mode))
 
-(defun feature-off (feature options)
+(defun feature-off-in-options (feature options)
   (let ((status (plist-get options (mk-keyword (symbol-name feature)))))
     (and status
 	(< status 0))))
 
-(defun feature-on (feature options)
+(defun feature-on-in-options (feature options)
   (let ((status (plist-get options (mk-keyword (symbol-name feature)))))
     (and status
-	 (> status 0))))
+	 (>= status 0))))
+
+;; check whether feature has been on
+;; in buffer
+
+(defvar-local easy-emacs-mode-features nil
+  "features of easy emacs for local buffer")
+
+(defvar-local easy-emacs-mode-features-inherited nil
+  "inherited features of easy emacs local buffer")
+
+(defun feature-on (feature)
+  (let ((status (plist-get easy-emacs-mode-features
+			   feature)))
+    (if status
+	(>= status 0)
+      (let ((status (plist-get easy-emacs-mode-features-inherited
+			       feature)))
+	(and status
+	     (>= status 0))))))
+
+(defun feature-off (feature)
+  (not (feature-on feature)))
 
 (defmethod Object/to-string ((obj Feature))
   (with-slots (name pkgs config-fn on-fn ) obj

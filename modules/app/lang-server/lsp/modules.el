@@ -40,11 +40,17 @@
 	  scope phase options)
   (require 'lsp)
   (require 'lsp-ui)
+  (require 'lsp-diagnostics)
   (pcase scope
     ('modes (progn
+	      (when (feature-off :flymake)
+		(if (eq lsp-diagnostics-provider :flymake)
+		    (setq lsp-diagnostics-provider :none)
+		  (when (or (eq lsp-diagnostics-provider :auto)
+			    (eq lsp-diagnostics-provider t))
+		    (setq lsp-diagnostics-provider :flycheck))))
 	      (lsp)))
-    (_ t))
-  t)
+    (_ t)))
 
 (feature-ex! lsp
 	     "Enable lsp mode"

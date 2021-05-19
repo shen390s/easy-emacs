@@ -416,6 +416,24 @@
     (let ((features (plist-get config-options :features)))
       (call-mode-features mode 'prepare phase features))))
 
+(defun set-mode-features (mode features)
+  (DEBUG! "set-mode-features mode %s major mode %s features %s"
+	  mode major-mode features)
+  (let ((z (normalize-non-keyword-options features)))
+    (let ((z-features (filt-out-non-keywords (collect-keyword-values z)))
+	  (non-inherited (eq (intern (format "%s-mode" mode))
+			     major-mode)))
+      (cl-loop for feature in z-features
+	       do (if non-inherited
+		      (setq easy-emacs-mode-features
+			    (plist-put easy-emacs-mode-features
+				       feature
+				       (plist-get z feature)))
+		    (setq easy-emacs-mode-features-inherited
+			  (plist-put easy-emacs-mode-features-inherited
+				     feature
+				     (plist-get z feature))))))))
+
 (defun mode-feature-activate (mode phase options)
   (DEBUG! "mode feature activate mode %s phase %s options %s"
 	  mode phase options)
@@ -423,6 +441,7 @@
     (let ((features (plist-get config-options :features)))
       (add-hook `,(intern (format "%s-mode-hook" mode))
 		`(lambda ()
+		   (set-mode-features ',mode ',features)
 		   (call-mode-features ',mode 'activate
 				       ',phase ',features))))))
 
