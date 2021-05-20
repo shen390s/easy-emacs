@@ -23,6 +23,8 @@
        (poly-org :suffix .org)
        (poly-asciidoc :suffix .adoc)
        (fish :suffix .fish)
+       (tex :suffix .tex .latex .sty
+	    :features +auctex +magic-latex)
        :ui
        (evil
 	:after-activate (progn
@@ -51,6 +53,7 @@
        :completion ivy 
        :editor
        (undo-tree)
+       (yasnippet)
        ;;(-eldoc)
        :app
        (emacs-server)
