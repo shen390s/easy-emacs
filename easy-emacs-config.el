@@ -11,8 +11,10 @@
 	     +rainbow-identifiers +smartparens -flymake)
        (c :suffix .c .cc .cpp .c++ .h .hpp
 	  :features +eldoc +ggtags +google-c-style +lsp)
-       (emacs-lisp :suffix .el .el.gz)
-       (lisp :suffix .cl .lisp)
+       (emacs-lisp :suffix .el .el.gz
+		   :features +parinfer)
+       (lisp :suffix .cl .lisp
+	     :features +parinfer)
        (mermaid :suffix .mmd)
        (plantuml :suffix .plantuml)
        (poly-markdown :suffix .md .markdown
