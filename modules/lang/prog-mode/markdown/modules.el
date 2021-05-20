@@ -1,13 +1,13 @@
 
-(package! :name markdown-mode
-	  :docstring "A major Emacs mode for edit markdown document"
-	  :pkginfo markdown-mode)
+(package-ex! markdown-mode
+	     "A major Emacs mode for edit markdown document"
+	     markdown-mode)
 
-(package! :name vmd-mode
-	  :docstring "Snappy Markdown preview minor mode for emacs"
-	  :pkginfo (vmd-mode :type git
-			     :host github
-			     :repo "blak3mill3r/vmd-mode"))
+(package-ex! vmd-mode
+	     "Snappy Markdown preview minor mode for emacs"
+	     (vmd-mode :type git
+		       :host github
+		       :repo "blak3mill3r/vmd-mode"))
 
 (autoload-r! markdown-mode
 	     (markdown-mode)
@@ -32,6 +32,7 @@
 (defun activate-vmd (scope &optional phase options)
   (DEBUG! "activate-vmd scope %s phase %s options %s"
 	  scope phase options)
+  (require 'vmd-mode)
   (let ((status (plist-get options :status)))
     (when status
       (if (>= status 0)

@@ -16,7 +16,7 @@
        (mermaid :suffix .mmd)
        (plantuml :suffix .plantuml)
        (poly-markdown :suffix .md .markdown
-		      :feature +vmd)
+		      :features +vmd)
        (poly-noweb+r :suffix .Rmd)
        (poly-org :suffix .org)
        (poly-asciidoc :suffix .adoc)

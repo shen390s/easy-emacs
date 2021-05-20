@@ -43,12 +43,19 @@
   (require 'lsp-diagnostics)
   (pcase scope
     ('modes (progn
-	      (when (feature-off :flymake)
-		(if (eq lsp-diagnostics-provider :flymake)
-		    (setq lsp-diagnostics-provider :none)
-		  (when (or (eq lsp-diagnostics-provider :auto)
-			    (eq lsp-diagnostics-provider t))
-		    (setq lsp-diagnostics-provider :flycheck))))
+	      (cond
+	       ((and (feature-on :flymake options)
+		     (feature-on :flycheck options))
+		(setq lsp-diagnostics-provider :auto))
+	       ((and (feature-off :flymake options)
+		     (feature-off :flycheck options))
+		(setq lsp-diagnostics-provider :none))
+	       ((feature-on :flymake options)
+		(setq lsp-diagnostics-provider :flymake))
+	       (t
+		(setq lsp-diagnostics-provider :flycheck)))
+	      (DEBUG! "activate-lsp lsp-diagnostics-provider %s"
+		      lsp-diagnostics-provider)
 	      (lsp)))
     (_ t)))
 

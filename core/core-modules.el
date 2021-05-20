@@ -118,49 +118,52 @@
 	  zpkgs
 	(list zpkgs)))))
 
+(defvar-local easy-emacs-buffer-features nil
+  "feature setting activate/disabled for easy emacs buffer")
+
 (defun invoke-feature (name fn scope phase options)
   (DEBUG! "invoke-feature %s fn = %s scope = %s phase = %s options %s"
 	  name fn scope phase options)
   (when name
-    (let ((f (pcase (substring (symbol-name name) 0 1)
-	       ("-" (progn
-		      (setq options
-			    (plist-put options
-				       :status
-				       -1))
-		      (get-feature (intern
-				    (substring
-				     (symbol-name
-				      name)
-				     1)))))
-	       ("+" (progn
-		      (setq options
-			    (plist-put options
-				       :status
-				       1))
-		      (get-feature (intern
-				    (substring
-				     (symbol-name
-				      name)
-				     1)))))
-	       (_ (progn
-		    (get-feature name))))))
-      (DEBUG! "invoke-feature %s f = %s options = %s"
-	      name f options)
-      (when f
-	(pcase fn
-	  ('prepare
-	   (Feature/prepare f scope phase options))
-	  ('configure
-	   (Feature/configure f scope phase options))
-	  ('activate
-	   (progn
-	     (cl-loop for pkg in (Feature/pkglist f scope options)
-		      do (install-package-by-name pkg))
-	     (Feature/activate f scope phase options)))
-	  ('pkglist
-	   (Feature/pkglist f scope options))
-	  (_ nil))))))
+    (let ((rname (pcase (substring (symbol-name name) 0 1)
+		   ("-" (progn
+			  (setq options
+				(plist-put options
+					   :status
+					   -1))
+			  (substring (symbol-name name)
+				     1)))
+		   ("+" (progn
+			  (setq options
+				(plist-put options
+					   :status
+					   1))
+			  (substring (symbol-name name)
+				     1)))
+		   (_ (symbol-name name)))))
+      (let ((f (get-feature (intern rname))))
+	(DEBUG! "invoke-feature %s f = %s options = %s"
+		name f options)
+	(when f
+	  (pcase fn
+	    ('prepare
+	     (Feature/prepare f scope phase options))
+	    ('configure
+	     (Feature/configure f scope phase options))
+	    ('activate
+	     (progn
+	       (cl-loop for pkg in (Feature/pkglist f scope options)
+			do (install-package-by-name pkg))
+	       ;; setup setting of buffer features
+	       (setq easy-emacs-buffer-features
+		     (plist-put easy-emacs-buffer-features
+				(mk-keyword rname)
+				(plist-get options
+					   :status)))
+	       (Feature/activate f scope phase options)))
+	    ('pkglist
+	     (Feature/pkglist f scope options))
+	    (_ nil)))))))
 
 (defun activate-feature (name scope options)
   (invoke-feature name 'activate scope
@@ -194,24 +197,20 @@
 ;; check whether feature has been on
 ;; in buffer
 
-(defvar-local easy-emacs-mode-features nil
-  "features of easy emacs for local buffer")
-
-(defvar-local easy-emacs-mode-features-inherited nil
-  "inherited features of easy emacs local buffer")
-
-(defun feature-on (feature)
-  (let ((status (plist-get easy-emacs-mode-features
-			   feature)))
+(defun feature-on (feature options)
+  (DEBUG! "feature-on buffer %s feature %s options %s buffer-features %s"
+	  (buffer-name) feature options
+	  easy-emacs-buffer-features)
+  (let ((status (plist-get options feature)))
     (if status
 	(>= status 0)
-      (let ((status (plist-get easy-emacs-mode-features-inherited
+      (let ((status (plist-get easy-emacs-buffer-features
 			       feature)))
 	(and status
 	     (>= status 0))))))
 
-(defun feature-off (feature)
-  (not (feature-on feature)))
+(defun feature-off (feature options)
+  (not (feature-on feature options)))
 
 (defmethod Object/to-string ((obj Feature))
   (with-slots (name pkgs config-fn on-fn ) obj
