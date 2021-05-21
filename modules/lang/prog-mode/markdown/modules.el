@@ -23,15 +23,17 @@
   (let ((file (buffer-file-name)))
     (unless (file-exists-p file)
       (save-buffer)))
-  (vmd-mode))
+  (unless vmd-process
+    (vmd-mode)))
 
 (defun deactivate-vmd ()
   (unless vmd-process
     (delete-process vmd-process)))
 
 (defun activate-vmd (scope &optional phase options)
-  (DEBUG! "activate-vmd scope %s phase %s options %s"
-	  scope phase options)
+  (DEBUG! "activate-vmd scope %s phase %s options %s buffer %s major %s"
+	  scope phase options (buffer-name)
+	  major-mode)
   (require 'vmd-mode)
   (let ((status (plist-get options :status)))
     (when status

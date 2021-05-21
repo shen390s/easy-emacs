@@ -1,18 +1,21 @@
-(package! :name eglot
-	  :docstring "A client for Language Server Protocol servers "
-	  :pkginfo (eglot :type git
-			  :host github
-			  :repo "joaotavora/eglot"))
+(package-ex! eglot
+	     "A client for Language Server Protocol servers "
+	     (eglot :type git
+		    :host github
+		    :repo "joaotavora/eglot"))
 
-(defun config-eglot ()
-  t)
+(defun activate-eglot (scope &optional phase options)
+  (require 'eglot)
 
-(defun enable-eglot ()
-  (eglot-ensure))
+  (let ((status (plist-get options :status)))
+    (if (and status
+	     (>= status 0))
+	(eglot-ensure)
+      t)))
 
-(feature! eglot
-	  "A client for Language Server Protocol server"
-	  (eglot)
-	  config-eglot
-	  nil ;; eglot will be enabled indirectly by cquery/ccls
-	  nil)
+(feature-ex! eglot
+	     "A client for Language Server Protocol server"
+	     (eglot)
+	     nil
+	     nil ;; eglot will be enabled indirectly by cquery/ccls
+	     activate-eglot)

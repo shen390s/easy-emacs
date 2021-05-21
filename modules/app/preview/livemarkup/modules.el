@@ -1,16 +1,21 @@
-(package! :name emacs-livemarkup
-	  :docstring "live preview for org and asciidoc"
-	  :pkginfo (emacs-livemarkup :type git
-			             :host github
-			             :repo "shen390s/emacs-livemarkup"))
+(package-ex! emacs-livemarkup
+	     "live preview for org and asciidoc"
+	     (emacs-livemarkup :type git
+			       :host github
+			       :repo "shen390s/emacs-livemarkup"))
 
-(defun livemarkup-config ()
-  (setq livemarkup-output-directory nil
-	livemarkup-close-buffer-delete-temp-files t
-	livemarkup-refresh-interval 3)
-  t)
+(defun livemarkup-config (scope &optional phase options)
+  (pcase phase
+    (:check
+     (progn
+       (setq livemarkup-output-directory nil
+	     livemarkup-close-buffer-delete-temp-files t
+	     livemarkup-refresh-interval 3)))
+    (_ t)))
 
-(defun activate-livemarkup ()
+(defun activate-livemarkup (scope &optional phase options)
+  (DEBUG! "activate-livemarkup scope %s phase %s options %s"
+	  scope phase options)
   (require 'livemarkup)
   (let ((file-name (buffer-file-name)))
     (let ((ext-name (file-name-extension file-name)))
@@ -19,13 +24,10 @@
        ((string= ext-name "adoc") (livemarkup-track-asciidoc))
        (t t)))))
 
-(defun deactivate-livemarkup ()
-  (livemarkup-untrack))
-
-(feature! livemarkup
+(feature-ex! livemarkup
 	  "Emacs Editor Livemarkup"
 	  (emacs-livemarkup)
 	  livemarkup-config
-	  activate-livemarkup
-	  deactivate-livemarkup)
+	  nil
+	  activate-livemarkup)
 

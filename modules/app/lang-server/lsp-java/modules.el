@@ -1,17 +1,20 @@
-(package! :name lsp-java
-	  :docstring "LSP support for Java"
-	  :pkginfo (lsp-java :type git
-			     :host github
-			     :repo "emacs-lsp/lsp-java"))
+(package-ex! lsp-java
+	     "LSP support for Java"
+	     (lsp-java :type git
+		       :host github
+		       :repo "emacs-lsp/lsp-java"))
 
-(defun enable-java-lsp ()
+(defun activate-java-lsp (scope &optional phase options)
   (require 'lsp-java)
-  (enable-lsp))
+  (let ((status (plist-get options :status)))
+    (if (and status
+	     (>= status 0))
+	(lsp)
+      (lsp-mode -1))))
 
-(feature!
- lsp-java
- "LSP for java"
- (lsp-module lsp-ui lsp-java)
- nil
- enable-java-lsp
- nil)
+(feature-ex! lsp-java
+	     "LSP for java"
+	     (lsp-module lsp-ui lsp-java)
+	     nil
+	     nil
+	     activate-java-lsp)

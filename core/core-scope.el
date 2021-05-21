@@ -3,6 +3,7 @@
 (require 'cl-lib)
 (require 'subr-x)
 (require 'eieio)
+(require 'pp)
 (require 'core-lib)
 (require 'core-log)
 (require 'core-hooks)
@@ -28,7 +29,7 @@
 	(funcall f)))))
 
 (defun make-config-method (key name)
-  (DEBUG! "make-config-method key %s name %s" key name)
+  (DEBUG! "make-config-method key %s name %s" (pp-to-string key) name)
   `(defmethod ,(intern (format "Config/%s" name))
      ((config Base-Config) scope)
      (Config/Call config ,key scope)))
@@ -210,7 +211,7 @@
 
 (defun make-config (config name fns)
   (DEBUG! "make-config %s %s %s"
-	  config name fns)
+	  config name (pp-to-string fns))
   (let ((c (make-instance config
 			  :name name
 			  :fns fns)))
@@ -265,7 +266,7 @@
 
 (defun config/:make-scope (scope configs)
   `((DEBUG! "config/:make-%s %s"
-	    ',scope ',configs)
+	    ',scope ',(pp-to-string configs))
     (scope! ,(intern (symbol-name scope)))
     ,@(cl-loop for config in configs
 	       collect `(let ((c (config/:make-config ',scope
@@ -292,10 +293,10 @@
 
 (defun make-config-hook (config hook)
   (DEBUG! "make-config-hook config %s hook %s"
-	  config hook)
+	  (pp-to-string config) hook)
   (let ((hook-code (plist-get (collect-keyword-values config) hook)))
     (DEBUG! "make-config-hook code %s"
-	    hook-code)
+	    (pp-to-string hook-code))
     (if hook-code
 	`(,hook (lambda ()
 		  (progn
@@ -309,12 +310,14 @@
 				 collect (make-config-hook config
 							   hook)))))
     (DEBUG! "make-config-hooks hooks %s config %s"
-	    hooks config)
+	    (pp-to-string hooks)
+	    (pp-to-string config))
     hooks))
 
 (defun make-scope-help-fns (scope-handler config)
   (DEBUG! "make-scope-help-fns handler %s config %s"
-	  scope-handler config)
+	  (pp-to-string scope-handler)
+	  (pp-to-string config))
   (let ((fns (let ((app (if (listp config)
 			    (car config)
 			  config))
@@ -346,7 +349,7 @@
 			       'ignore
 			       config-options)))))))
     (DEBUG! "make-scope-help-fns fns %s"
-	    fns)
+	    (pp-to-string fns))
     fns))
 
 ;; define configuration scopes

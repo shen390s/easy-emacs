@@ -45,3 +45,21 @@
 	     config-parinfer
 	     nil
 	     activate-parinfer)
+
+(defun activate-iedit (scope &optional phase options)
+  (DEBUG! "activate-iedit scope %s phase %s options %s"
+	  scope phase options)
+  (require 'iedit)
+  
+  (let ((status (plist-get options :status)))
+    (if (and status
+	     (>= status 0))
+	(iedit-mode 1)
+      (iedit-mode -1))))
+
+(feature-ex! iedit
+	     "Edit multiple regions in the same way simultaneouesly"
+	     (iedit)
+	     nil
+	     nil
+	     activate-iedit)

@@ -39,7 +39,7 @@
 
 (defun make-easy-config (configs)
   (let ((config (collect-keyword-values configs)))
-    (DEBUG! "config = %s" config)
+    (DEBUG! "config = %s" (pp-to-string config))
     (save-easy-config config)
     (let ((keys (filt-out-non-keywords config)))
       (DEBUG! "scope keywords = %s" keys)

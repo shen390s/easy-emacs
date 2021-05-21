@@ -109,11 +109,11 @@ supported by Easy-Emacs in modules directory.
 ## Troubleshooting
 
 If you find any problem, you can:
-  - disable byte compile and remove all elc files for easy to troubleshooting.
-  - using command *log!* to trace the running of code
+- disable byte compile and remove all elc files for easy to troubleshooting.
+- using command *log!* to trace the running of code
 
 ## Contribute
 
-  - fork this repository
-  - fix bugs or add more features
-  - send pull requests
+- fork this repository
+- fix bugs or add more features
+- send pull requests

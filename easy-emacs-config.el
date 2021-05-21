@@ -8,7 +8,8 @@
        (c-eldoc-includes . "-I/usr/include -I/usr/local/include -I. -I..")
        :modes
        (prog :features +hlinum +ruler +rainbow-delimiters
-	     +rainbow-identifiers +smartparens -flymake)
+	     +rainbow-identifiers +smartparens -flymake
+	     +iedit)
        (c :suffix .c .cc .cpp .c++ .h .hpp
 	  :features +eldoc +ggtags +google-c-style +lsp)
        (emacs-lisp :suffix .el .el.gz
@@ -20,11 +21,17 @@
        (poly-markdown :suffix .md .markdown
 		      :features +vmd)
        (poly-noweb+r :suffix .Rmd)
-       (poly-org :suffix .org)
-       (poly-asciidoc :suffix .adoc)
+       (poly-org :suffix .org
+		 :features +livemarkup)
+       (poly-asciidoc :suffix .adoc
+		      :features +livemarkup)
        (fish :suffix .fish)
        (tex :suffix .tex .latex .sty
 	    :features +auctex +magic-latex)
+       (python :suffix .py
+	       :features +eglot)
+       (rust :suffix .rs
+	     :features +rls)
        :ui
        (evil
 	:after-activate (progn
@@ -50,6 +57,7 @@
        (load-custom :theme rshen)
        (smex)
        (icicles)
+       (powerline)
        :completion ivy 
        :editor
        (undo-tree)
@@ -61,9 +69,9 @@
        (magit)
        (emacs-quilt)
        (slime +slime-fancy
-	:before-activate (progn
-			   (DEBUG! "configure slime...")
-			   (setq inferior-lisp-program "/Users/rshen/.nix-profile/bin/sbcl")
-			   (setq slime-contribs '(slime-fancy)))))
+	      :before-activate (progn
+				 (DEBUG! "configure slime...")
+				 (setq inferior-lisp-program "/Users/rshen/.nix-profile/bin/sbcl")
+				 (setq slime-contribs '(slime-fancy)))))
 
 ;;(debug-on-entry 'evil-leader/set-key-for-mode)

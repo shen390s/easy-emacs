@@ -1,6 +1,7 @@
 ; -*- lexical-binding: t -*-
 ;; enable lexical scope
 
+(require 'pp)
 (require 'core-lib)
 
 (defvar log-level 0 "log level")  

@@ -12,9 +12,9 @@
 		 (>= status 0))
 	(yas-global-mode 1)))))
 
-(feature! yasnippet
-	  "YASnippet is a template system for Emacs"
-	  (yasnippet)
-	  nil
-	  nil
-	  activate-yasnippet)
+(feature-ex! yasnippet
+	     "YASnippet is a template system for Emacs"
+	     (yasnippet)
+	     nil
+	     nil
+	     activate-yasnippet)
