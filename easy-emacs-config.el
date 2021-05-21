@@ -68,6 +68,7 @@
        (which-key)
        (magit)
        (emacs-quilt)
+       (origami)
        (slime +slime-fancy
 	      :before-activate (progn
 				 (DEBUG! "configure slime...")

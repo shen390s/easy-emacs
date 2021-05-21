@@ -50,12 +50,8 @@
   (DEBUG! "activate-iedit scope %s phase %s options %s"
 	  scope phase options)
   (require 'iedit)
-  
-  (let ((status (plist-get options :status)))
-    (if (and status
-	     (>= status 0))
-	(iedit-mode 1)
-      (iedit-mode -1))))
+  t)
+
 
 (feature-ex! iedit
 	     "Edit multiple regions in the same way simultaneouesly"
