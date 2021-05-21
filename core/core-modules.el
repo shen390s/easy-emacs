@@ -41,9 +41,11 @@
       (apply-package-patches name patches))))
 
 (defmethod Object/to-string ((obj Package))
-  (with-slots (name pkg-info installed) obj
-      (format "Package name: %s pkginfo: %s installed: %s"
-	      name pkg-info installed)))
+  (pp-to-string obj))
+
+;; (with-slots (name pkg-info installed) obj
+;;   (format "Package name: %s pkginfo: %s installed: %s"
+;; 	    name pkg-info installed)))
 
 (defclass Feature ()
   ((name :initarg :name
@@ -123,7 +125,7 @@
 
 (defun invoke-feature (name fn scope phase options)
   (DEBUG! "invoke-feature %s fn = %s scope = %s phase = %s options %s"
-	  name fn scope phase options)
+	  name fn scope phase (pp-to-string options))
   (when name
     (let ((rname (pcase (substring (symbol-name name) 0 1)
 		   ("-" (progn
@@ -143,7 +145,7 @@
 		   (_ (symbol-name name)))))
       (let ((f (get-feature (intern rname))))
 	(DEBUG! "invoke-feature %s f = %s options = %s"
-		name f options)
+		name f (pp-to-string options))
 	(when f
 	  (pcase fn
 	    ('prepare
@@ -213,9 +215,11 @@
   (not (feature-on feature options)))
 
 (defmethod Object/to-string ((obj Feature))
-  (with-slots (name pkgs config-fn on-fn ) obj
-    (format "Feature name: %s pkgs: %s config-fn: %s on-fn:%s "
-	    name pkgs config-fn on-fn )))
+  (pp-to-string obj))
+
+;; (with-slots (name pkgs config-fn on-fn ) obj
+;;   (format "Feature name: %s pkgs: %s config-fn: %s on-fn:%s "
+;; 	  name pkgs config-fn on-fn )))
 
 (defvar all-packages (make-hash-table)
   "All defined packages")

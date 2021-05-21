@@ -164,7 +164,7 @@
 
 (defmethod Scope/Activate ((scope Scope))
   (DEBUG! "activate scope %s"
-	  scope)
+	  (pp-to-string scope))
   (with-slots (name configs) scope
     (cl-loop for config in configs
 	     do (Config/Activate config name))))
