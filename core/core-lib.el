@@ -207,4 +207,7 @@
 							       :default))))
     z-options))
 
+(defun indirect-buffer-p (&optional buffer)
+  (buffer-base-buffer buffer))
+
 (provide 'core-lib)

@@ -35,11 +35,13 @@
 	  scope phase options (buffer-name)
 	  major-mode)
   (require 'vmd-mode)
-  (let ((status (plist-get options :status)))
-    (when status
-      (if (>= status 0)
-	  (enable-vmd)
-	(deactivate-vmd)))))
+  
+  (unless (indirect-buffer-p)
+    (let ((status (plist-get options :status)))
+      (when status
+	(if (>= status 0)
+	    (enable-vmd)
+	  (deactivate-vmd))))))
 
 (feature-ex! vmd
 	     "Snappy Markdown preview minor mode for emacs"
