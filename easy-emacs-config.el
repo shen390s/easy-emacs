@@ -11,7 +11,7 @@
 	     +rainbow-identifiers +smartparens -flymake
 	     +iedit)
        (c :suffix .c .cc .cpp .c++ .h .hpp
-	  :features +eldoc +ggtags +google-c-style +lsp)
+	  :features +eldoc +ggtags +google-c-style +lsp +call-graph)
        (emacs-lisp :suffix .el .el.gz
 		   :features +parinfer)
        (lisp :suffix .cl .lisp
@@ -69,6 +69,7 @@
        (magit)
        (emacs-quilt)
        (origami)
+       (treemacs +evil +magit)
        (slime +slime-fancy
 	      :before-activate (progn
 				 (DEBUG! "configure slime...")

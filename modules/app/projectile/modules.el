@@ -1,15 +1,27 @@
-(package! :name projectile
-	  :docstring "Projectile is a project interaction library for Emacs. Its goal is to provide a nice set of features operating on a project level without introducing external dependencies (when feasible)."
-	  :pkginfo (projectile :type git
-			       :host github
-			       :repo "bbatsov/projectile"))
+(package-ex! projectile
+	     "Projectile is a project interaction library for Emacs. 
+Its goal is to provide a nice set of features operating on a project 
+level without introducing external dependencies (when feasible)."
+	     (projectile :type git
+			 :host github
+			 :repo "bbatsov/projectile"))
 
-(defun enable-projectile ()
-  (projectile-mode 1))
+(defun activate-projectile (scope &optional phase options)
+  (require 'projectile)
 
-(feature! projectile
-	  "Projectile is a project interaction library for Emacs. Its goal is to provide a nice set of features operating on a project level without introducing external dependencies (when feasible)."
-	  (projectile)
-	  nil
-	  enable-projectile
-	  nil)
+  (pcase scope
+    ('app (progn
+	    (let ((status (plist-get options :status)))
+	      (when (and status
+			 (>= status 0))
+		(projectile-mode 1)))))
+    (_ t)))
+
+(feature-ex! projectile
+	     "Projectile is a project interaction library for Emacs. 
+Its goal is to provide a nice set of features operating on a project 
+level without introducing external dependencies (when feasible)."
+	     (projectile)
+	     nil
+	     nil
+	     activate-projectile)

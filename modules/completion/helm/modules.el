@@ -1,25 +1,27 @@
-(package! :name helm
-	  :docstring "Helm is an Emacs framework for incremental completions and narrowing selections. "
-	  :pkginfo (helm :type git
-			 :host github
-			 :repo "emacs-helm/helm"))
+(package-ex! helm
+	     "Helm is an Emacs framework for incremental completions and narrowing selections. "
+	     (helm :type git
+		   :host github
+		   :repo "emacs-helm/helm"))
 
-(defun config-helm ()
+(defun activate-helm (scope &optional phase options)
   (require 'helm-config)
-  (progn
-    (global-set-key (kbd "M-x") #'helm-M-x)
-    (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
-    (global-set-key (kbd "C-x C-f") #'helm-find-files)))
 
-(defun enable-helm ()
-  (helm-mode))
+  (pcase scope
+    ('app (let ((status (plist-get options :status)))
+	    (if (and status
+		     (>= status 0))
+		(progn
+		  (global-set-key (kbd "M-x") #'helm-M-x)
+		  (global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
+		  (global-set-key (kbd "C-x C-f") #'helm-find-files)
+		  (helm-mode 1))
+	      (helm-mode -1))))
+    (_ t)))
 
-(defun disable-helm ()
-  t)
-
-(feature! helm
-	  "Helm is an Emacs framework for incremental completion"
-	  (helm)
-	  config-helm
-	  enable-helm
-	  disable-helm)
+(feature-ex! helm
+	     "Helm is an Emacs framework for incremental completion"
+	     (helm)
+	     nil
+	     nil
+	     activate-helm)

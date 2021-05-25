@@ -1,42 +1,46 @@
-(package! :name tsc
-	  :docstring "tree-sitter core"
-	  :pkginfo (tsc :type git
-			:host github
-			:repo "ubolonton/emacs-tree-sitter"
-			:files ("core/*.el")))
+(package-ex!  tsc
+	      "tree-sitter core"
+	      (tsc :type git
+		   :host github
+		   :repo "ubolonton/emacs-tree-sitter"
+		   :files ("core/*.el")))
 
-(package! :name tree-sitter
-	  :docstring "tree-sitter framework"
-	  :pkginfo (tree-sitter :type git
-				:host github
-				:repo "ubolonton/emacs-tree-sitter"
-				:files ("lisp/*.el")))
+(package-ex!  tree-sitter
+	      "tree-sitter framework"
+	      (tree-sitter :type git
+			   :host github
+			   :repo "ubolonton/emacs-tree-sitter"
+			   :files ("lisp/*.el")))
 
-(package! :name tree-sitter-langs
-	  :docstring "tree-sitter languages bundle"
-	  :pkginfo (tree-sitter-langs :type git
-				      :host github
-				      :repo
-				      "ubolonton/emacs-tree-sitter"
-				      :files ("langs/*.el"
-					      "langs/queries")))
+(package-ex!  tree-sitter-langs
+	      "tree-sitter languages bundle"
+	      (tree-sitter-langs :type git
+				 :host github
+				 :repo
+				 "ubolonton/emacs-tree-sitter"
+				 :files ("langs/*.el"
+					 "langs/queries")))
 
-(defun config-tree-sitter ()
-  t)
-
-(defun activate-tree-sitter ()
+(defun activate-tree-sitter (scope &optional phase options)
   (require 'tree-sitter-langs)
-  (tree-sitter-mode)
-  (tree-sitter-hl-mode))
 
-(defun deactivate-tree-sitter ()
-  (tree-sitter-hl-mode -1)
-  (tree-sitter-mode -1))
+  (pcase scope
+    ('modes (progn
+	      (let ((status (plist-get options :status)))
+		(if (and status
+			 (>= status 0))
+		    (progn
+		      (tree-sitter-mode 1)
+		      (tree-sitter-hl-mode 1))
+		  (progn
+		    (tree-sitter-mode -1)
+		    (tree-sitter-hl-mode -1))))))
+    (_ t)))
 
-(feature! tree-sitter
-	  "enable tree-sitter for buffer local syntax highlight"
-	  (tsc tree-sitter tree-sitter-langs)
-	  config-tree-sitter
-	  activate-tree-sitter
-	  deactivate-tree-sitter)
+(feature-ex! tree-sitter
+	     "enable tree-sitter for buffer local syntax highlight"
+	     (tsc tree-sitter tree-sitter-langs)
+	     nil
+	     nil
+	     activate-tree-sitter)
 

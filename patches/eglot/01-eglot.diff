@@ -9,7 +9,7 @@ index db468d8..08a43f2 100644
 +(defvar eglot-disable-flymake nil
 +  "disable flymake in eglot")
 +
-+(defvar eglot-disable-flymake nil
++(defvar eglot-disable-eldoc nil
 +  "disable eldoc in eglot")
 +
  (define-minor-mode eglot--managed-mode

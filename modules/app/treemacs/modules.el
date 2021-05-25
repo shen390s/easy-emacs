@@ -1,42 +1,52 @@
-(package! :name treemacs
-	  :docstring "Treemacs can be extended to display arbitrary nodes as well as be used as a general rendering backend for any tree-like structures."
-	  :pkginfo treemacs)
+(package-ex!  treemacs
+	      "Treemacs can be extended to display arbitrary nodes 
+as well as be used as a general rendering backend for any tree-like 
+structures."
+	      treemacs)
 
-(package! :name treemacs-evil
-	  :docstring "treemacs evil integration"
-	  :pkginfo treemacs-evil)
+(package-ex!  treemacs-evil
+	      "treemacs evil integration"
+	      treemacs-evil)
 
-(package! :name treemacs-magit
-	  :docstring "treemacs magit integration"
-	  :pkginfo treemacs-magit)
+(package-ex!  treemacs-magit
+	      "treemacs magit integration"
+	      treemacs-magit)
 
-(package! :name treemacs-projectile
-	  :docstring "treemacs projectile integration"
-	  :pkginfo treemacs-projectile)
+(package-ex!  treemacs-projectile
+	      "treemacs projectile integration"
+	      treemacs-projectile)
 
-(package! :name treemacs-icons-dired
-	  :docstring "treemacs with icons dired"
-	  :pkginfo treemacs-icons-dired)
+(package-ex!  treemacs-icons-dired
+	      "treemacs with icons dired"
+	      treemacs-icons-dired)
 
-(defun treemacs-pkgs ()
+(defun treemacs-pkgs (scope &optional phase options)
   (let ((pkgs '(treemacs treemacs-icons-dired)))
-    (when (feature-enabled 'evil)
+    (when (feature-on :evil options)
       (push 'treemacs-evil pkgs))
-    (when (feature-enabled 'magit)
+    (when (feature-on :magit options)
       (push 'treemacs-magit pkgs))
-    (when (feature-enabled 'projectile)
+    (when (feature-on :projectile options)
       (push 'treemacs-projectile pkgs))
     pkgs))
 
-(defun enable-treemacs ()
-  (treemacs)
+(defun activate-treemacs (scope &optional phase options)
   (require 'dired)
-  (treemacs-icons-dired-mode))
 
-(feature!
- treemacs
- "Treemacs can be extended to display arbitrary nodes as well as be used as a general rendering backend for any tree-like structures."
- treemacs-pkgs
- nil
- enable-treemacs
- nil)
+  (pcase scope
+    ('app (progn
+	    (let ((status (plist-get options :status)))
+	      (when (and status
+			 (>= status 0))
+		(treemacs)
+		(treemacs-icons-dired-mode)))))
+    (_ t)))
+
+(feature-ex! treemacs
+	     "Treemacs can be extended to display arbitrary nodes 
+as well as be used as a general rendering backend for any tree-like 
+structures."
+	     treemacs-pkgs
+	     nil
+	     nil
+	     activate-treemacs)
