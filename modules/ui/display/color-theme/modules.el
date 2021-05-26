@@ -1,12 +1,17 @@
-(defun config-color-theme ()
-  t)
+(defvar the-theme nil
+  "The theme which activated by color-theme")
 
-(defun activate-color-theme (the-theme)
-  (load-theme the-theme t))
+(defun activate-color-theme (scope &optional phase options)
+  (pcase scope
+    ('ui (let ((status (plist-get options :status)))
+	   (when (and status
+		      (>= status 0))
+	     (load-theme the-theme t))))
+    (_ t)))
   
-(feature! color-theme
-	  "choose color theme"
-          nil
-          config-color-theme
-          activate-color-theme
-          nil)
+(feature-ex! color-theme
+	     "choose color theme"
+             nil
+	     nil
+	     nil
+             activate-color-theme)

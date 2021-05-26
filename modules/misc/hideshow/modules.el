@@ -1,13 +1,18 @@
-(defun enable-hideshow ()
+(defun activate-hideshow (scope &optional phase options)
   (require 'hideshow)
-  (hs-minor-mode 1))
+  (pcase scope
+    ('modes (let ((status (plist-get options :status)))
+	      (if (and status
+		       (>= status 0))
+		  (progn 
+		    (hs-minor-mode 1))
+		(progn
+		  (turn-off-hideshow)))))
+    (_ t)))
 
-(defun deactive-hidehsow ()
-  (turn-off-hideshow))
-
-(feature! hideshow
-	  "show/hide blocks"
-          nil
-          nil
-          enable-hideshow
-          deactivate-hideshow)
+(feature-ex! hideshow
+	     "show/hide blocks"
+             nil
+             nil
+	     nil
+             activate-hideshow)

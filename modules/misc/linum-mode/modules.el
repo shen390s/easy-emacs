@@ -1,10 +1,17 @@
-(defun enable-linumber ()
-  (linum-mode 1))
+(defun activate-linumber (scope &optional phase options)
+  (pcase scope
+    ('modes (let ((status (plist-get options :status)))
+	      (if (and status
+		       (>= status 0))
+		  (progn
+		    (linum-mode 1))
+		(progn
+		  (linum-mode -1)))))
+    (_ t)))
 
-(feature!
- linum
- "Show line number"
- nil
- nil
- enable-linumber
- nil)
+(feature-ex! linum
+	     "Show line number"
+	     nil
+	     nil
+	     nil
+	     activate-linumber)

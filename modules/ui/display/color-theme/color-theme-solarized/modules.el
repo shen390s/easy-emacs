@@ -1,17 +1,25 @@
-(package! :name color-theme-solarized
-	  :docstring "Solarized is a sixteen color palette (eight monotones, eight accent colors) designed for use with terminal and gui applications."
-	  :pkginfo (color-theme-solarized :type  git
-					  :host github
-					  :repo "sellout/emacs-color-theme-solarized"))
+(package-ex! color-theme-solarized
+	  "Solarized is a sixteen color palette (eight monotones, 
+eight accent colors) designed for use with terminal and gui 
+applications."
+	  (color-theme-solarized :type  git
+				 :host github
+				 :repo "sellout/emacs-color-theme-solarized"))
 
 
-(defun enable-color-theme-solarized ()
-  (load-theme 'solarized t))
+(defun activate-color-theme-solarized (scope &optional phase options)
+  (pcase scope
+    ('ui (let ((status (plist-get options :status)))
+	   (when (and status
+		      (>= status 0))
+	     (load-theme 'solarized t))))
+    (_ t)))
 
-(feature!
- color-theme-solarized
- "Solarized is a sixteen color palette (eight monotones, eight accent colors) designed for use with terminal and gui applications."
- (color-theme-solarized)
- nil
- enable-color-theme-solarized
- nil)
+(feature-ex! color-theme-solarized
+	     "Solarized is a sixteen color palette (eight monotones,
+ eight accent colors) designed for use with terminal and gui 
+applications."
+	     (color-theme-solarized)
+	     nil
+	     nil
+	     activate-color-theme-solarized)

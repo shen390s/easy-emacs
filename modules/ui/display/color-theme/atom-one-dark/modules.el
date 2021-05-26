@@ -1,18 +1,20 @@
-(package! :name atom-one-dark
-	  :docstring "Atom One Dark theme for Emacs from Atom.io"
-          :pkginfo (atom-one-dark :type git
-				  :host github
-				  :repo "emacsmirror/atom-one-dark-theme"))
+(package-ex!  atom-one-dark
+	      "Atom One Dark theme for Emacs from Atom.io"
+              (atom-one-dark :type git
+			     :host github
+			     :repo "emacsmirror/atom-one-dark-theme"))
 
-(defun config-atom-one-dark ()
-  t)
+(defun activate-atom-one-dark (scope &optional phase options)
+  (pcase scope
+    ('ui (let ((status (plist-get options :status)))
+	   (when (and status
+		      (>= status 0))
+	     (load-theme 'atom-one-dark t))))
+    (_ t)))
 
-(defun enable-atom-one-dark ()
-  (load-theme 'atom-one-dark t))
-
-(feature! atom-one-dark
-	  "Atom One Dark theme for Emacs"
-          (atom-one-dark)
-          config-atom-one-dark
-          enable-atom-one-dark
-          nil)
+(feature-ex! atom-one-dark
+	     "Atom One Dark theme for Emacs"
+             (atom-one-dark)
+	     nil
+	     nil
+             activate-atom-one-dark)

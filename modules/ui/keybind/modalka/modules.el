@@ -1,16 +1,24 @@
-(package! :name modalka
-	  :docstring "Easily introduce native modal editing of your own design"
-	  :pkginfo (modalka :type git
-			    :host github
-			    :repo "mrkkrp/modalka"))
+(package-ex! modalka
+	     "Easily introduce native modal editing of your own design"
+	     (modalka :type git
+		      :host github
+		      :repo "mrkkrp/modalka"))
 
-(defun activate-modalka ()
+(defun activate-modalka (scope &optional phase options)
   (require 'modalka)
-  (modalka-mode 1))
+  (pcase scope
+    ('app (let ((status (plist-get options :status)))
+	    (if (and status
+		     (>= status 0))
+		(progn
+		  (modalka-mode 1))
+	      (progn
+		(modalka-mode -1)))))
+    (_ t)))
 
-(feature! modalka
-	  "Easily introduce native modal editing of your own design"
-	  (modalka)
-	  nil
-	  activate-modalka
-	  nil)
+(feature-ex! modalka
+	     "Easily introduce native modal editing of your own design"
+	     (modalka)
+	     nil
+	     nil
+	     activate-modalka)

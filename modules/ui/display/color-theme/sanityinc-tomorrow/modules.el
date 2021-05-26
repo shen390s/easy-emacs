@@ -1,23 +1,31 @@
-(package! :name sanityinc-tomorrow
-	  :docstring "A set of comprehensive Emacs color themes based on Chris Kempson's 'tomorrow' themes"
-	  :pkginfo (sanityinc-tomorrow :type git
-				       :host github
-				       :repo "purcell/color-theme-sanityinc-tomorrow"))
+(package-ex! sanityinc-tomorrow
+	     "A set of comprehensive Emacs color themes based on 
+Chris Kempson's 'tomorrow' themes"
+	     (sanityinc-tomorrow :type git
+				 :host github
+				 :repo "purcell/color-theme-sanityinc-tomorrow"))
 
-(defun config-sanityinc-tomorrow ()
-  t)
+(defvar sanityinc-theme-actived nil
+  "Activated sanityinc theme")
 
-(defmacro  activate-sanityinc-tomorrow (actived)
+(defmacro load-sanityinc-tomorrow (actived)
   `(funcall (intern (concat "color-theme-sanityinc-tomorrow-"
 			    (symbol-name ,actived)))))
 
-(defun enable-sanityinc-tomorrow (actived-theme)
+(defun activate-sanityinc-tomorrow (scope &optional phase options)
   (require 'color-theme-sanityinc-tomorrow)
-  (activate-sanityinc-tomorrow actived-theme))
+  (pcase scope
+    ('ui (let ((status (plist-get options :status)))
+	   (when (and status
+		      (>= status 0))
+	     (progn
+	       (when anityinc-theme-actived
+		 (load-sanityinc-tomorrow anityinc-theme-actived))))))
+    (_ t)))
 
-(feature! sanityinc-tomorrow
+(feature-ex! sanityinc-tomorrow
 	  "A set of comprehensive Emacs color themes based on Chris Kempson's 'tomorrow' themes"
 	  (sanityinc-tomorrow)
-	  config-sanityinc-tomorrow
-	  enable-sanityinc-tomorrow
-	  nil)
+	  nil
+	  nil
+	  activate-sanityinc-tomorrow

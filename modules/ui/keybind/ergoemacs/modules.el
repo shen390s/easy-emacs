@@ -1,21 +1,28 @@
-(package! :name ergoemacs
-	  :docstring "ErgoEmacs"
-          :pkginfo (ergoemacs :type git
-			      :host github
-			      :repo "ergoemacs/ergoemacs-mode"))
+(package-ex! ergoemacs
+	     "ErgoEmacs"
+             (ergoemacs :type git
+			:host github
+			:repo "ergoemacs/ergoemacs-mode"))
 
-(defun config-ergoemacs ()
-  t)
-
-(defun enable-ergoemacs ()
+(defun config-ergoemacs (scope &optional phase options)
   (setq ergoemacs-theme nil)
-  (setq ergoemacs-keyboard-layout "us")
-  (require 'ergoemacs-mode)
-  (ergoemacs-mode 1))
+  (setq ergoemacs-keyboard-layout "us"))
 
-(feature! ergoemacs
+(defun activate-ergoemacs (scope &optional phase options)
+  (require 'ergoemacs-mode)
+  (pcase scope
+    ('app (let ((status (plist-get options :status)))
+	    (if (and status
+		     (>= status 0))
+		(progn
+		  (ergoemacs-mode 1))
+	      (progn
+		(ergomacs-mode -1)))))
+    (_ t)))
+
+(feature-ex! ergoemacs
 	  "ErgoEmacs"
           (ergoemacs)
           config-ergoemacs
-          enable-ergoemacs
-          nil)  
+	  nil
+          activate-ergoemacs)

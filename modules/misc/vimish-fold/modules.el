@@ -1,14 +1,22 @@
-(package! :name vimish-fold
-	  :docstring "Vim-like text folding for Emacs"
-	  :pkginfo vimish-fold)
+(package-ex! vimish-fold
+	     "Vim-like text folding for Emacs"
+	     vimish-fold)
 
-(defun activate-vimish-fold ()
+(defun activate-vimish-fold (scope &optional phase options)
   (require 'vimish-fold)
-  (vimish-fold-mode 1))
+  (pcase scope
+    ('modes (let ((status (plist-get options :status)))
+	      (if (and status
+		       (>= status 0))
+		  (progn
+		    (vimish-fold-mode 1))
+		(progn
+		  (vimish-fold-mode -1)))))
+    (_ t)))
 
-(feature! vimish-fold
+(feature-ex! vimish-fold
 	  "Vim-like text folding for Emacs"
 	  (vimish-fold)
 	  nil
-	  activate-vimish-fold
-	  nil)
+	  nil
+	  activate-vimish-fold)
