@@ -1,4 +1,4 @@
-(package-ex! forge
+(package! forge
 	     "Work with git forge from comfort of magit"
              (forge :type git
 		    :host github
@@ -8,7 +8,7 @@
   (require 'magit)
   (require 'forge))
 
-(feature-ex! forge
+(feature! forge
 	     "work with git forge from comfort of magit"
              (magit forge)
              nil

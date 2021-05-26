@@ -1,5 +1,5 @@
 
-(package-ex! graphviz
+(package! graphviz
 	     "Emacs mode for the graphviz"
 	     (graphviz-dot-mode :type git
 				:host github

@@ -1,4 +1,4 @@
-(package-ex! icicles
+(package! icicles
 	     "Minibuffer input completion and cycling"
 	     (icicles :type git
 		      :host github
@@ -18,7 +18,7 @@
                   (error-message-string err))
            nil)))
 
-(feature-ex! icicles
+(feature! icicles
 	     "minibuffer input completion and cycling"
 	     (icicles)
 	     nil

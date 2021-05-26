@@ -30,7 +30,7 @@
 	  (emacs-quilt/:activate)
 	(emacs-quilt/:deactivate)))))
 
-(feature-ex! emacs-quilt
+(feature! emacs-quilt
 	     "Emacs Editor Quilt"
 	     nil
 	     emacs-quilt-check

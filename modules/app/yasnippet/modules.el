@@ -1,4 +1,4 @@
-(package-ex! yasnippet
+(package! yasnippet
 	     "YASnippet is a template system for Emacs"
 	     (yasnippet :type git
 			:host github
@@ -12,7 +12,7 @@
 		 (>= status 0))
 	(yas-global-mode 1)))))
 
-(feature-ex! yasnippet
+(feature! yasnippet
 	     "YASnippet is a template system for Emacs"
 	     (yasnippet)
 	     nil

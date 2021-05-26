@@ -1,4 +1,4 @@
-(package-ex! smex
+(package! smex
 	     "Smex is a M-x enhancement for Emacs"
 	     (smex :type git
 		   :host github
@@ -20,7 +20,7 @@
 	  (smex-bind-keys))
       t)))
 
-(feature-ex! smex
+(feature! smex
 	     "Smex is a M-x enhancement for Emacs"
 	     (smex)
 	     nil

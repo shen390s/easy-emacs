@@ -1,4 +1,4 @@
-(package-ex! rainbow-identifiers
+(package! rainbow-identifiers
 	     "rainbow identifiers"
 	     rainbow-identifiers)
 
@@ -12,7 +12,7 @@
 	(rainbow-identifiers-mode 1)
       (rainbow-identifiers-mode -1))))
 
-(feature-ex! rainbow-identifiers
+(feature! rainbow-identifiers
 	  "Enable rainbow identifiers"
 	  (rainbow-identifiers)
 	  nil

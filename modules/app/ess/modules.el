@@ -1,4 +1,4 @@
-(package-ex! ess
+(package! ess
 	     "Emacs Speaks Statistics"
              ess)
 
@@ -7,7 +7,7 @@
 	     (> (plist-get options :status) 0))
     (load "ess-autoloads")))
   
-(feature-ex! ess
+(feature! ess
 	     "Emacs Speaks Statistics"
              (ess)
              nil

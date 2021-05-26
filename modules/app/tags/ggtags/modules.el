@@ -1,5 +1,5 @@
 ;; -*- lexical-binding: t -*-
-(package-ex! ggtags
+(package! ggtags
 	     "Emacs frontend to GNU Global source code tagging system. "
 	     ggtags)
 
@@ -31,7 +31,7 @@
 	(progn
 	  (ggtags-mode -1))))))
 
-(feature-ex! ggtags
+(feature! ggtags
 	     "Emacs frontend to GNU Global source code tagging system. "
 	     (ggtags)
 	     config-ggtags

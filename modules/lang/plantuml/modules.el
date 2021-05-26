@@ -1,5 +1,5 @@
 
-(package-ex! plantuml
+(package! plantuml
 	     "A major mode for editing PlantUML sources in Emacs"
 	     plantuml-mode)
 
@@ -13,7 +13,7 @@
 (defun config-plantuml (scope &optional phase options)
   t)
 
-(feature-ex! plantuml
+(feature! plantuml
 	     "Feature for plantuml mode"
 	     (plantuml)
 	     config-plantuml

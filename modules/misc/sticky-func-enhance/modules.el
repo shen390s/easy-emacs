@@ -1,4 +1,4 @@
-(package-ex! semantic-stickyfunc-enhance
+(package! semantic-stickyfunc-enhance
 	     "Improved version of semantic-stickyfunc-mode that handles parameters on multiple lines "
 	     (semantic-stickyfunc-enhance :type git
 					  :host github
@@ -17,7 +17,7 @@
 		  (semantic-stickyfunc-mode -1)))))
     (_ t)))
 
-(feature-ex! stickyfunc-enhance
+(feature! stickyfunc-enhance
 	     "Improved version of semantic-stickyfunc-mode that handles parameters on multiple lines"
 	     (semantic-stickyfunc-enhance)
 	     nil

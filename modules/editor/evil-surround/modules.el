@@ -1,4 +1,4 @@
-(package-ex! evil-surround
+(package! evil-surround
 	     "This package emulates surround.vim by Tim Pope. 
 The functionality is wrapped into a minor mode.
 This package uses Evil as its vi layer."
@@ -18,7 +18,7 @@ This package uses Evil as its vi layer."
 				      (global-evil-surround-mode 1)))))))
     (_ t)))
   
-(feature-ex! evil-surround
+(feature! evil-surround
 	     "This package emulates surround.vim by Tim Pope. 
 The functionality is wrapped into a minor mode.
 This package uses Evil as its vi layer."

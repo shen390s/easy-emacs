@@ -5,7 +5,7 @@
 	       (>= status 0)))
     (auto-fill-mode 1)))
 
-(feature-ex! auto-fill
+(feature! auto-fill
 	     "Autofill when you edit text"
 	     nil
 	     nil

@@ -10,7 +10,7 @@
 		  (turn-off-hideshow)))))
     (_ t)))
 
-(feature-ex! hideshow
+(feature! hideshow
 	     "show/hide blocks"
              nil
              nil

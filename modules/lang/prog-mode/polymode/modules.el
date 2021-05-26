@@ -1,29 +1,29 @@
 
-(package-ex!  polymode
+(package!  polymode
 	      "Extensible framework for multiple major modes"
 	      (polymode :type git
 			:host github
 			:repo "emacsmirror/polymode"))
 
-(package-ex!  poly-markdown
+(package!  poly-markdown
 	      "polymode for markdown mode"
 	      (poly-markdown :type git
 			     :host github
 			     :repo "emacsmirror/poly-markdown"))
 
-(package-ex!  poly-org
+(package!  poly-org
 	      "Poly org mode"
 	      (poly-org :type git
 			:host github
 			:repo "emacsmirror/poly-org"))
 
-(package-ex!  poly-R
+(package!  poly-R
 	      "Poly R mode"
 	      (poly-R :type git
 		      :host github
 		      :repo "emacsmirror/poly-R"))
 
-(package-ex!  poly-asciidoc
+(package!  poly-asciidoc
 	      "Poly asciidoc mode"
 	      (poly-asciidoc :type git
 			     :host github
@@ -57,7 +57,7 @@
 			  (kbd "mf") 'poly-asciidoc-set-output-format))))
     (_ t)))
 
-(feature-ex! poly-asciidoc-keybind
+(feature! poly-asciidoc-keybind
 	     "Bind keys for poly-asciidoc mode"
 	     nil
 	     config-poly-asciidoc-keybind
@@ -80,7 +80,7 @@
 		 auto-mode-alist))))
     (_ t)))
 
-(feature-ex! fix-poly-markdown
+(feature! fix-poly-markdown
 	     "fix ext assoc of poly-markdown"
 	     nil
 	     config-fix-poly-markdown

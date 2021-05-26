@@ -1,4 +1,4 @@
-(package-ex! zenburn-emacs
+(package! zenburn-emacs
 	     "The Zenburn colour theme ported to Emacs"
 	     (zenburn-emacs :type git
 			    :host github
@@ -12,7 +12,7 @@
 	     (load-theme 'zenburn t))))
     (_ t)))
 
-(feature-ex! zenburn-emacs
+(feature! zenburn-emacs
 	     "The Zenburn colour theme ported to Emacs"
 	     (zenburn-emacs)
 	     nil

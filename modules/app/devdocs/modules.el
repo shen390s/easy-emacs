@@ -1,4 +1,4 @@
-(package-ex! devdocs-lookup
+(package! devdocs-lookup
 	     "Search the word at point with devdocs"
 	     (devdocs-lookup :type git
 			     :host github
@@ -9,7 +9,7 @@
   (when (> (plist-get options) 0)
     (global-set-key "\C-cds" #'devdocs-search)))
 
-(feature-ex! devdocs
+(feature! devdocs
 	     "Search the word at point with Devdocs"
 	     (devdocs-lookup)
 	     nil

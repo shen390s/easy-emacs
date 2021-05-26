@@ -7,7 +7,7 @@
 	(flymake-mode-on)
       (flymake-mode-off))))
 
-(feature-ex! flymake
+(feature! flymake
 	     "flymake"
 	     nil
 	     nil

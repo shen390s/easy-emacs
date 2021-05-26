@@ -1,5 +1,5 @@
 
-(package-ex! fish-mode
+(package! fish-mode
 	     "A major Emacs mode for edit Fish source code"
 	     (fish-mode :type git
 			:host github

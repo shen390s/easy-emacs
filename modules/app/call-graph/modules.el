@@ -1,10 +1,10 @@
-(package-ex! call-graph
+(package! call-graph
 	     "Generate call graph for c/c++ functions"
 	     (call-graph :type git
 			 :host github
 			 :repo "emacsmirror/call-graph"))
 
-(package-ex! hierarchy
+(package! hierarchy
 	     "hierarchy"
 	     (hierarchy :type git
 			:host github
@@ -29,7 +29,7 @@
 		  (call-graph)))))
     (_ t)))
   
-(feature-ex! call-graph
+(feature! call-graph
 	     "Generate call graph for c/c++ functions"
 	     (hierarchy ggtags ivy call-graph)
 	     nil

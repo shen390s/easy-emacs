@@ -1,4 +1,4 @@
-(package-ex!  aanila
+(package!  aanila
 	      "A dark emacs theme"
               (aanila :type git
 		      :host github
@@ -12,7 +12,7 @@
 	     (load-theme 'aanila t))))
     (_ t)))
 
-(feature-ex! aanila
+(feature! aanila
 	  "A dark emacs theme"
           (aanila)
           nil

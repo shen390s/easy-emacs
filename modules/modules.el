@@ -1,4 +1,4 @@
-(package-ex! dash
+(package! dash
 	     "A modern list API for Emacs. No 'cl required."
 	     (dash :type git
 		   :host github

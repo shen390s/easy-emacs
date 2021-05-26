@@ -1,10 +1,10 @@
 ;; -*- lexical-binding: t -*-
 
-(package-ex! lsp-module
+(package! lsp-module
 	     "Emacs lisp client to language server"
 	     lsp-mode)
 
-(package-ex! lsp-ui
+(package! lsp-ui
 	     "This contains all the higher level UI modules of
 	     lsp-mode,like flycheck support and code lenses."
 	     (lsp-ui :type git
@@ -63,7 +63,7 @@
 	  (_ t))
       (lsp-mode -1))))
 
-(feature-ex! lsp
+(feature! lsp
 	     "Enable lsp mode"
 	     (lsp-module lsp-ui)
 	     config-lsp

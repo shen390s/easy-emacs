@@ -1,4 +1,4 @@
-(package-ex! smartparen-module
+(package! smartparen-module
 	     "smartparen in buffer"
 	     (smartparens :type git
 			  :host github
@@ -16,7 +16,7 @@
       (smartparens-mode -1)
       (turn-off-show-smartparens-mode))))
 
-(feature-ex! smartparens
+(feature! smartparens
  	     "Enable smart parents"
  	     (smartparen-module)
  	     nil

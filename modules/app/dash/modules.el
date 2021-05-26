@@ -1,4 +1,4 @@
-(package-ex! dash-at-point
+(package! dash-at-point
 	     "Search the word at point with Dash"
 	     (dash-at-point :type git
 			    :host github
@@ -10,7 +10,7 @@
     (progn
       (global-set-key "\C-cds" #'dash-at-point))))
 
-(feature-ex! dash
+(feature! dash
 	     "Search the word at point with Dash"
 	     (dash-at-point)
 	     nil

@@ -1,4 +1,4 @@
-(package-ex! vimish-fold
+(package! vimish-fold
 	     "Vim-like text folding for Emacs"
 	     vimish-fold)
 
@@ -14,7 +14,7 @@
 		  (vimish-fold-mode -1)))))
     (_ t)))
 
-(feature-ex! vimish-fold
+(feature! vimish-fold
 	  "Vim-like text folding for Emacs"
 	  (vimish-fold)
 	  nil

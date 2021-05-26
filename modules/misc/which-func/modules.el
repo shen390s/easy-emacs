@@ -10,7 +10,7 @@
 		  (which-function-mode -1)))))
     (_ t)))
 
-(feature-ex! which-func
+(feature! which-func
 	     "Show the name of current function"
 	     nil
 	     nil

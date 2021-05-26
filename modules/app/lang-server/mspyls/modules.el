@@ -1,4 +1,4 @@
-(package-ex! lsp-python-ms
+(package! lsp-python-ms
 	     "emacs lsp-mode client for Microsoft's python language server "
 	     (lsp-python-ms :type git
 			    :host github
@@ -34,7 +34,7 @@
 (defun deactivate-lsp-python-ms ()
   (lsp-mode -1))
 
-(feature-ex! lsp-python-ms
+(feature! lsp-python-ms
 	     "Emacs lsp-mode client for Microsoft python language server"
 	     (lsp-module lsp-python-ms)
 	     nil

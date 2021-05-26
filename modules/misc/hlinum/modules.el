@@ -1,4 +1,4 @@
-(package-ex! hlinum
+(package! hlinum
 	  "This library extends linum-mode to highlight 
 current line number."
 	  (hlinum-mode :type git
@@ -18,7 +18,7 @@ current line number."
 	(hlinum-deactivate)
 	(linum-mode -1)))))
 
-(feature-ex! hlinum
+(feature! hlinum
 	     "This library extends linum-mode to highlight current line number."
 	     (hlinum)
 	     nil

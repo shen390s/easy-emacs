@@ -1,19 +1,19 @@
-(package-ex! ivy
+(package! ivy
 	  "Ivy is for quick and easy selection from a list. 
 When Emacs prompts for a string from a list of several possible 
 choices, Ivy springs into action to assist in narrowing and 
 picking the right string from a vast number of choices. "
 	  ivy)
 
-(package-ex! counsel
+(package! counsel
 	     "Ivy counsel"
 	     counsel)
 
-(package-ex! swiper
+(package! swiper
 	     "Ivy swiper"
 	     swiper)
 
-(package-ex!  ivy-posframe
+(package!  ivy-posframe
 	      "Using posframe to show Ivy"
               (ivy-posframe :type git
 			    :host github
@@ -26,7 +26,7 @@ picking the right string from a vast number of choices. "
   (ivy-mode 1)
   (ivy-posframe-mode 1))
 
-(feature-ex! ivy
+(feature! ivy
 	     "Ivy is for quick and easy selection from a list. 
 When Emacs prompts for a string from a list of several possible 
 choices, Ivy springs into action to assist in narrowing and 

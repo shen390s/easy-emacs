@@ -1,4 +1,4 @@
-(package-ex! sanityinc-tomorrow
+(package! sanityinc-tomorrow
 	     "A set of comprehensive Emacs color themes based on 
 Chris Kempson's 'tomorrow' themes"
 	     (sanityinc-tomorrow :type git
@@ -23,7 +23,7 @@ Chris Kempson's 'tomorrow' themes"
 		 (load-sanityinc-tomorrow anityinc-theme-actived))))))
     (_ t)))
 
-(feature-ex! sanityinc-tomorrow
+(feature! sanityinc-tomorrow
 	  "A set of comprehensive Emacs color themes based on Chris Kempson's 'tomorrow' themes"
 	  (sanityinc-tomorrow)
 	  nil

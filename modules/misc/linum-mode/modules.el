@@ -9,7 +9,7 @@
 		  (linum-mode -1)))))
     (_ t)))
 
-(feature-ex! linum
+(feature! linum
 	     "Show line number"
 	     nil
 	     nil

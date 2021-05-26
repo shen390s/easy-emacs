@@ -1,4 +1,4 @@
-(package-ex! fold-this
+(package! fold-this
 	     "Fold the active region"
              (fold-this :type git
 			:host github
@@ -17,7 +17,7 @@
 		    (fold-this-mode -1))))))
     (_ t)))
 
-(feature-ex! fold-this
+(feature! fold-this
 	     "fold the actived region"
              (fold-this)
              nil

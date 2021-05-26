@@ -1,4 +1,4 @@
-(package-ex! emacs-livemarkup
+(package! emacs-livemarkup
 	     "live preview for org and asciidoc"
 	     (emacs-livemarkup :type git
 			       :host github
@@ -24,7 +24,7 @@
        ((string= ext-name "adoc") (livemarkup-track-asciidoc))
        (t t)))))
 
-(feature-ex! livemarkup
+(feature! livemarkup
 	  "Emacs Editor Livemarkup"
 	  (emacs-livemarkup)
 	  livemarkup-config

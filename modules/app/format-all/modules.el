@@ -1,4 +1,4 @@
-(package-ex!  format-all
+(package!  format-all
 	      "Auto-format c,c++,JS,Python and more"
               (format-all :type git
 			  :host github
@@ -16,7 +16,7 @@
 		  (format-all-mode -1)))))
     (_ t)))
   
-(feature-ex! format-all
+(feature! format-all
 	     "Auto-format c,c++,JS,Python and more"
              (format-all)
              nil

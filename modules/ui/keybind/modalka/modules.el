@@ -1,4 +1,4 @@
-(package-ex! modalka
+(package! modalka
 	     "Easily introduce native modal editing of your own design"
 	     (modalka :type git
 		      :host github
@@ -16,7 +16,7 @@
 		(modalka-mode -1)))))
     (_ t)))
 
-(feature-ex! modalka
+(feature! modalka
 	     "Easily introduce native modal editing of your own design"
 	     (modalka)
 	     nil

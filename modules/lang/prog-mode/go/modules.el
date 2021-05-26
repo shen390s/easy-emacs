@@ -1,5 +1,5 @@
 
-(package-ex! go-mode
+(package! go-mode
 	     "A major Emacs mode for edit Go source code"
 	     (go-mode :type git
 		      :host github

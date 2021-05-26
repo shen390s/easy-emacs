@@ -1,4 +1,4 @@
-(package-ex! undo-tree
+(package! undo-tree
 	     "undo-tree-mode treats undo history as a branching tree
 	     of changes, similar to the way Vim handles it. This makes
 	     it substantially easier to undo and redo any change,
@@ -14,7 +14,7 @@
 	(global-undo-tree-mode 1)
       (global-undo-tree-mode -1))))
 
-(feature-ex! undo-tree
+(feature! undo-tree
 	     "undo-tree-mode treats undo history as a branching tree
 	     of changes, similar to the way Vim handles it. This makes
 	     it substantially easier to undo and redo any change, while

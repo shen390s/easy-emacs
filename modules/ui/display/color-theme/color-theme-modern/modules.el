@@ -1,4 +1,4 @@
-(package-ex! color-theme-modern
+(package! color-theme-modern
 	     "color theme modern"
 	     (color-theme-modern :type git
 				 :host github
@@ -17,7 +17,7 @@
 	       (enable-theme color-theme-used)))))
     (_ t)))
 
-(feature-ex! color-theme-modern
+(feature! color-theme-modern
 	     "color theme modern"
 	     (color-theme-modern)
 	     nil

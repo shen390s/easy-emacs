@@ -1,5 +1,5 @@
 
-(package-ex! gnuplot-mode
+(package! gnuplot-mode
 	     "A major Emacs mode for edit gnuplot document"
 	     (gnuplot-mode :type git
 			   :host github

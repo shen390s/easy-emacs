@@ -1,5 +1,5 @@
 
-(package-ex! mermaid-mode
+(package! mermaid-mode
 	     "A major Emacs mode for edit mermaid document"
 	     (mermaid-mode :type git
 			   :host github
@@ -27,7 +27,7 @@
 
 (add-auto-features "mermaid-mode" 'mermaid)
 
-(feature-ex! mermaid
+(feature! mermaid
 	     "Feature for mermaid-mode"
 	     (mermaid-mode)
 	     config-mermaid

@@ -1,4 +1,4 @@
-(package-ex! which-key
+(package! which-key
 	     "which-key is a minor mode for Emacs that displays the 
 key bindings following your currently entered incomplete command (a prefix) 
 in a popup"
@@ -15,7 +15,7 @@ in a popup"
 	    (which-key-mode 1))
 	(which-key-mode -1)))))
 
-(feature-ex! which-key
+(feature! which-key
 	     "which-key is a minor mode for Emacs that displays the 
 key bindings following your currently entered incomplete command (a prefix) 
 in a popup"

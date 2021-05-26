@@ -1,4 +1,4 @@
-(package-ex! helm
+(package! helm
 	     "Helm is an Emacs framework for incremental completions and narrowing selections. "
 	     (helm :type git
 		   :host github
@@ -19,7 +19,7 @@
 	      (helm-mode -1))))
     (_ t)))
 
-(feature-ex! helm
+(feature! helm
 	     "Helm is an Emacs framework for incremental completion"
 	     (helm)
 	     nil

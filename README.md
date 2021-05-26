@@ -65,10 +65,10 @@
 
 #### define a new package
 
-Package is defined using command *package!*:
+Package is defined using command *package-origin!*:
 
 ```{elisp}
-(package-ex! my-package
+(package! my-package
 			 "The description of my package"
 			 (my-package :type git
 						 :host github

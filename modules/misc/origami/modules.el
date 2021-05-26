@@ -1,4 +1,4 @@
-(package-ex! origami
+(package! origami
 	     "A text folding minor mode for EMACS"
 	     (origami :type git
 		      :host github
@@ -32,7 +32,7 @@
 	  (_ t))
 	(origami-evil-keybind)))))
 
-(feature-ex! origami
+(feature! origami
 	     "A text folding minor mode for EMACS"
 	     (origami)
 	     nil

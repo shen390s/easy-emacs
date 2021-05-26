@@ -1,4 +1,4 @@
-(package-ex! boon
+(package! boon
 	     "An Ergonomic Command mode"
 	     (boon :type git
 		   :host github
@@ -16,7 +16,7 @@
 		(boon-mode -1)))))
     (_ t)))
 
-(feature-ex! boon
+(feature! boon
 	     "An Ergonomic command mode"
 	     (boon)
 	     config-boon

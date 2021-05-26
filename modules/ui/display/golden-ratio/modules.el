@@ -1,4 +1,4 @@
-(package-ex! golden-ratio
+(package! golden-ratio
 	     "Automatic resizing of Emacs windows to the golden ratio "
 	     (golden-ratio :type git
 			   :host github
@@ -16,7 +16,7 @@
 		(golden-ratio-mode -1)))))
     (_ t)))
 
-(feature-ex! golden-ratio
+(feature! golden-ratio
 	     "roman/golden-ratio.el"
 	     (golden-ratio)
 	     nil

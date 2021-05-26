@@ -65,7 +65,7 @@ FACE defaults to inheriting from default and highlight."
 	       (>= status 0))
       (show-paren-line))))
 
-(feature-ex! show-paren-line 
+(feature! show-paren-line 
 	     "Show matching lines when parentheses go off-screen"
              nil
              nil

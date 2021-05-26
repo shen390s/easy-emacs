@@ -1,4 +1,4 @@
-(package-ex! noccur
+(package! noccur
 	     "Run multi-occur on project/dired files"
 	     (noccur :type git
 		     :host github
@@ -15,7 +15,7 @@
 	      (require 'noccur))))
     (_ t)))
 
-(feature-ex! noccur
+(feature! noccur
 	     "NicolasPetton/noccur.el"
 	     (noccur)
 	     config-noccur

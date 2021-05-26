@@ -1,4 +1,4 @@
-(package-ex! lsp-java
+(package! lsp-java
 	     "LSP support for Java"
 	     (lsp-java :type git
 		       :host github
@@ -12,7 +12,7 @@
 	(lsp)
       (lsp-mode -1))))
 
-(feature-ex! lsp-java
+(feature! lsp-java
 	     "LSP for java"
 	     (lsp-module lsp-ui lsp-java)
 	     nil

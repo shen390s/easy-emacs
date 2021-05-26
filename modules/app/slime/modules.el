@@ -1,4 +1,4 @@
-(package-ex! slime
+(package! slime
 	     "SLIME is the Superior Lisp Interaction Mode for Emacs."
 	     slime)
 
@@ -10,7 +10,7 @@
       (when (>= fancy status 0)
 	(setq slime-contribs '(slime-fancy))))))
 
-(feature-ex! slime
+(feature! slime
 	     "SLIME is the Superior Lisp Interaction Mode for Emacs."
 	     (slime)
 	     nil

@@ -3,7 +3,7 @@
 	:prog '(c-eldoc))
   "Configuration of eldoc for modes")
 
-(package-ex! c-eldoc
+(package! c-eldoc
 	     "Display description of the function under the cursor."
 	     (c-eldoc :type git
 		      :host github
@@ -50,7 +50,7 @@
       (eldoc (eq scope 'editor) 1)
     (eldoc (eq scope 'editor) -1)))
 
-(feature-ex! eldoc
+(feature! eldoc
 	     "eldoc"
 	     eldoc-pkgs
 	     eldoc-config

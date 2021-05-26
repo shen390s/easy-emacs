@@ -41,7 +41,7 @@
     (when custom-themes
       (load-themes custom-themes t))))
 
-(feature-ex! load-custom
+(feature! load-custom
 	     "load customization file"
 	     nil
 	     config-load-custom

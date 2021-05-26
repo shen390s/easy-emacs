@@ -9,7 +9,7 @@
 	     (load-theme the-theme t))))
     (_ t)))
   
-(feature-ex! color-theme
+(feature! color-theme
 	     "choose color theme"
              nil
 	     nil

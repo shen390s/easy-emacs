@@ -1,6 +1,6 @@
 ;;; modules.el --- description
 
-(package-ex! google-c-style
+(package! google-c-style
 	     "Google C/C++ style"
 	     (google-c-style :type git
 			     :host github
@@ -12,7 +12,7 @@
       (when (>= status 0)
 	(google-set-c-style)))))
 
-(feature-ex! google-c-style
+(feature! google-c-style
 	     "Google C/C++ style"
 	     (google-c-style)
 	     nil

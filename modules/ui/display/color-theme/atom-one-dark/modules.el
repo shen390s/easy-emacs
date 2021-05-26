@@ -1,4 +1,4 @@
-(package-ex!  atom-one-dark
+(package!  atom-one-dark
 	      "Atom One Dark theme for Emacs from Atom.io"
               (atom-one-dark :type git
 			     :host github
@@ -12,7 +12,7 @@
 	     (load-theme 'atom-one-dark t))))
     (_ t)))
 
-(feature-ex! atom-one-dark
+(feature! atom-one-dark
 	     "Atom One Dark theme for Emacs"
              (atom-one-dark)
 	     nil

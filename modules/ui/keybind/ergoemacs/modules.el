@@ -1,4 +1,4 @@
-(package-ex! ergoemacs
+(package! ergoemacs
 	     "ErgoEmacs"
              (ergoemacs :type git
 			:host github
@@ -20,7 +20,7 @@
 		(ergomacs-mode -1)))))
     (_ t)))
 
-(feature-ex! ergoemacs
+(feature! ergoemacs
 	  "ErgoEmacs"
           (ergoemacs)
           config-ergoemacs

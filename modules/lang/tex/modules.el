@@ -1,5 +1,5 @@
 
-(package-ex! magic-latex-buffer
+(package! magic-latex-buffer
 	     "magical syntax highlighting for LaTeX-mode buffers"
 	     (magic-latex-buffer :type git
 				 :host github
@@ -13,14 +13,14 @@
 	       (>= status 0))
       (magic-latex-buffer))))
 
-(feature-ex! magic-latex
+(feature! magic-latex
 	  "magical syntax hightlighting for Latex-mode"
 	  (magic-latex-buffer)
 	  nil
 	  nil
 	  activate-magic-latex)
 
-(package-ex! auctex
+(package! auctex
 	     "AUCTeX is TeX IDE using Emacs" 
 	     auctex)
 
@@ -34,7 +34,7 @@
   (load "auctex-preview.el" nil t t)
   t)
 
-(feature-ex! auctex
+(feature! auctex
 	     "TeX IDE using Emacs"
 	     (auctex)
 	     config-auctex

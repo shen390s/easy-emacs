@@ -1,22 +1,22 @@
-(package-ex!  treemacs
+(package!  treemacs
 	      "Treemacs can be extended to display arbitrary nodes 
 as well as be used as a general rendering backend for any tree-like 
 structures."
 	      treemacs)
 
-(package-ex!  treemacs-evil
+(package!  treemacs-evil
 	      "treemacs evil integration"
 	      treemacs-evil)
 
-(package-ex!  treemacs-magit
+(package!  treemacs-magit
 	      "treemacs magit integration"
 	      treemacs-magit)
 
-(package-ex!  treemacs-projectile
+(package!  treemacs-projectile
 	      "treemacs projectile integration"
 	      treemacs-projectile)
 
-(package-ex!  treemacs-icons-dired
+(package!  treemacs-icons-dired
 	      "treemacs with icons dired"
 	      treemacs-icons-dired)
 
@@ -42,7 +42,7 @@ structures."
 		(treemacs-icons-dired-mode)))))
     (_ t)))
 
-(feature-ex! treemacs
+(feature! treemacs
 	     "Treemacs can be extended to display arbitrary nodes 
 as well as be used as a general rendering backend for any tree-like 
 structures."

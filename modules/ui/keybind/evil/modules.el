@@ -1,10 +1,10 @@
-(package-ex! evil
+(package! evil
 	  "Evil is an extensible vi layer for Emacs. 
 It emulates the main features of Vim, and provides 
 facilities for writing custom extensions. "
 	  evil)
 
-(package-ex! evil-collection
+(package! evil-collection
 	  "This is a collection of Evil bindings for 
 the parts of Emacs that Evil does not cover properly 
 by default"
@@ -12,7 +12,7 @@ by default"
 			   :host github
 			   :repo "emacs-evil/evil-collection"))
 
-(package-ex! evil-leader
+(package! evil-leader
 	  "Provide leader (prefix key) key feature in Emacs
 evil"
 	  (evil-leader :type git
@@ -32,7 +32,7 @@ evil"
   (global-evil-leader-mode)
   (evil-mode 1))
 
-(feature-ex! evil
+(feature! evil
 	     "Evil is an extensible vi layer for Emacs. 
 It emulates the main features of Vim, 
 and provides facilities for writing custom extensions. "

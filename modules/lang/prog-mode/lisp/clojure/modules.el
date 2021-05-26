@@ -1,5 +1,5 @@
 
-(package-ex! clojure-mode
+(package! clojure-mode
 	     "A major Emacs mode for edit Clojure source code"
 	     (clojure-mode :type git
 			   :host github

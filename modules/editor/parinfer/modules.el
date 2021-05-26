@@ -1,11 +1,11 @@
-(package-ex! parinfer
+(package! parinfer
 	     "Parinfer is a proof-of-concept editor mode for Lisp programming languages.
  It will infer some changes to keep Parens and Indentation inline with one another. "
 	     (parinfer :type git
 		       :host github
 		       :repo "DogLooksGood/parinfer-mode"))
 
-(package-ex! iedit
+(package! iedit
 	     "Edit multiple regions in the same way simultaneously"
 	     (iedit :type git
 		    :host github
@@ -39,7 +39,7 @@
 	(parinfer-mode 1)
       (parinfer-mode -1))))
 
-(feature-ex! parinfer
+(feature! parinfer
 	     "Parinfer"
 	     (parinfer iedit lispy paredit)
 	     config-parinfer
@@ -53,7 +53,7 @@
   t)
 
 
-(feature-ex! iedit
+(feature! iedit
 	     "Edit multiple regions in the same way simultaneouesly"
 	     (iedit)
 	     nil

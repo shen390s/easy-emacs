@@ -1,4 +1,4 @@
-(package-ex! color-theme-solarized
+(package! color-theme-solarized
 	  "Solarized is a sixteen color palette (eight monotones, 
 eight accent colors) designed for use with terminal and gui 
 applications."
@@ -15,7 +15,7 @@ applications."
 	     (load-theme 'solarized t))))
     (_ t)))
 
-(feature-ex! color-theme-solarized
+(feature! color-theme-solarized
 	     "Solarized is a sixteen color palette (eight monotones,
  eight accent colors) designed for use with terminal and gui 
 applications."

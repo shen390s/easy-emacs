@@ -24,7 +24,7 @@
 	  (_ t))
       (lsp-mode -1))))
 
-(feature-ex! rls
+(feature! rls
 	     "Rust language server"
 	     (lsp-module)
 	     nil

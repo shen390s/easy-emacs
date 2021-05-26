@@ -1,5 +1,5 @@
 
-(package-ex! yaml-mode
+(package! yaml-mode
 	     "A major Emacs mode for edit yaml document"
 	     (yaml-mode :type git
 			:host github

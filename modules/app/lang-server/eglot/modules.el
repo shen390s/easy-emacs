@@ -1,4 +1,4 @@
-(package-ex! eglot
+(package! eglot
 	     "A client for Language Server Protocol servers "
 	     (eglot :type git
 		    :host github
@@ -25,7 +25,7 @@
 	  (_ t))
       t)))
 
-(feature-ex! eglot
+(feature! eglot
 	     "A client for Language Server Protocol server"
 	     (project eglot)
 	     nil

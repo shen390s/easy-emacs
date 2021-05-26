@@ -1,18 +1,18 @@
-(package-ex!  tsc
+(package!  tsc
 	      "tree-sitter core"
 	      (tsc :type git
 		   :host github
 		   :repo "ubolonton/emacs-tree-sitter"
 		   :files ("core/*.el")))
 
-(package-ex!  tree-sitter
+(package!  tree-sitter
 	      "tree-sitter framework"
 	      (tree-sitter :type git
 			   :host github
 			   :repo "ubolonton/emacs-tree-sitter"
 			   :files ("lisp/*.el")))
 
-(package-ex!  tree-sitter-langs
+(package!  tree-sitter-langs
 	      "tree-sitter languages bundle"
 	      (tree-sitter-langs :type git
 				 :host github
@@ -37,7 +37,7 @@
 		    (tree-sitter-hl-mode -1))))))
     (_ t)))
 
-(feature-ex! tree-sitter
+(feature! tree-sitter
 	     "enable tree-sitter for buffer local syntax highlight"
 	     (tsc tree-sitter tree-sitter-langs)
 	     nil

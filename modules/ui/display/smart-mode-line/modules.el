@@ -1,4 +1,4 @@
-(package-ex! smart-mode-line
+(package! smart-mode-line
 	     "A powerful and beautiful mode-line for Emacs. "
 	     (smart-mode-line :type git
 			      :host github
@@ -8,7 +8,7 @@
   (require 'smart-mode-line)
   (sml/setup))
 
-(feature-ex! smart-mode-line
+(feature! smart-mode-line
 	     "A powerful and beautiful mode-line for Emacs."
 	     (smart-mode-line)
 	     nil

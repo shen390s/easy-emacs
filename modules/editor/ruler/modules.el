@@ -6,7 +6,7 @@
 	(ruler-mode 1)
       (ruler-mode -1))))
 
-(feature-ex! ruler
+(feature! ruler
 	  "Display ruler when editing"
 	  nil
 	  nil

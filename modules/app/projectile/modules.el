@@ -1,4 +1,4 @@
-(package-ex! projectile
+(package! projectile
 	     "Projectile is a project interaction library for Emacs. 
 Its goal is to provide a nice set of features operating on a project 
 level without introducing external dependencies (when feasible)."
@@ -17,7 +17,7 @@ level without introducing external dependencies (when feasible)."
 		(projectile-mode 1)))))
     (_ t)))
 
-(feature-ex! projectile
+(feature! projectile
 	     "Projectile is a project interaction library for Emacs. 
 Its goal is to provide a nice set of features operating on a project 
 level without introducing external dependencies (when feasible)."

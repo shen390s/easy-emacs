@@ -1,11 +1,11 @@
 
-(package-ex! racket-mode
+(package! racket-mode
 	     "GNU Emacs major modes for Racket: Edit and REPL. "
 	     (racket-mode :type git
 			  :host github
 			  :repo "greghendershott/racket-mode"))
 
-(package-ex! pollen-mode
+(package! pollen-mode
 	     "An Emacs major mode for editing in pollen markup language "
 	     (pollen-mode :type git
 			  :host github

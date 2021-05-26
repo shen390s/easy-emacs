@@ -1,9 +1,9 @@
 
-(package-ex! markdown-mode
+(package! markdown-mode
 	     "A major Emacs mode for edit markdown document"
 	     markdown-mode)
 
-(package-ex! vmd-mode
+(package! vmd-mode
 	     "Snappy Markdown preview minor mode for emacs"
 	     (vmd-mode :type git
 		       :host github
@@ -43,7 +43,7 @@
 	    (enable-vmd)
 	  (deactivate-vmd))))))
 
-(feature-ex! vmd
+(feature! vmd
 	     "Snappy Markdown preview minor mode for emacs"
 	     (vmd-mode)
 	     nil

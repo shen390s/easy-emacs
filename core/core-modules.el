@@ -230,7 +230,7 @@
 (defvar all-modes (make-hash-table)
   "All defined models")
 
-(defmacro package! (&rest args)
+(defmacro package-origin! (&rest args)
   `(let ((name (plist-get ',args :name))
 	 (docstring (plist-get ',args :docstring))
 	 (pkginfo (plist-get ',args :pkginfo)))
@@ -244,9 +244,9 @@
 	 (progn
 	   (puthash name package all-packages))))))
 
-(defmacro package-ex! (name docstring pkginfo)
+(defmacro package! (name docstring pkginfo)
   (declare (doc-string 2))
-  `(package! :name ,name
+  `(package-origin! :name ,name
 	     :docstring ,docstring
 	     :pkginfo ,pkginfo))
 
@@ -255,7 +255,7 @@
 	  scope phase options)
   t)
 
-(defmacro feature-ex! (name docstring pkgs config-fn prepare-fn on-fn)
+(defmacro feature! (name docstring pkgs config-fn prepare-fn on-fn)
   (declare (doc-string 2))
   (unless on-fn
     (setq on-fn 'dummy-activate-fun))
@@ -301,19 +301,6 @@
 			      (symbol-name feature)))
 	     (lambda ()
 	       ,@body)))
-
-(defmacro feature! (name docstring pkgs config-fn on-fn unused)
-  `(let ((feature (make-instance 'Feature
-				 :name ',name
-				 :docstring ,docstring
-				 :pkgs ',pkgs
-				 :config-fn ',config-fn
-				 :on-fn ',on-fn)))
-     (progn
-       (puthash ',name feature all-features)
-       (set (intern (concat (symbol-name ',name)
-			    "-actived"))
-	    nil))))
 
 (defun install-package-by-name (pkg)
   (DEBUG! "installing package %s..." pkg)

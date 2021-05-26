@@ -1,4 +1,4 @@
-(package-ex! rainbow-delimiters
+(package! rainbow-delimiters
 	     "rainbow delimiters"
 	     rainbow-delimiters)
 
@@ -12,7 +12,7 @@
 	(rainbow-delimiters-mode 1)
       (rainbow-delimiters-mode -1))))
 
-(feature-ex! rainbow-delimiters
+(feature! rainbow-delimiters
 	     "Enable rainbow delimiters"
 	     (rainbow-delimiters)
 	     nil

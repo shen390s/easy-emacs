@@ -1,5 +1,5 @@
 
-(package-ex! rust-mode
+(package! rust-mode
 	     "A major Emacs mode for edit Rust source code"
 	     (rust-mode :type git
 			:host github

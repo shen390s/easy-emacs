@@ -32,7 +32,7 @@
 	  scope phase options)
   (emacs-server/:start scope options))
 
-(feature-ex! emacs-server
+(feature! emacs-server
 	     "Emacs Editor Server"
 	     nil
 	     emacs-server-config

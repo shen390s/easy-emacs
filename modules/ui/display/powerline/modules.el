@@ -1,4 +1,4 @@
-(package-ex!  powerline
+(package!  powerline
 	      "Emacs version of the VIM powerline"
 	      (powerline :type git
 			 :host github
@@ -11,7 +11,7 @@
 	       (>= status 0))
       (powerline-default-theme))))
 
-(feature-ex! powerline
+(feature! powerline
 	     "Emacs version of the VIM powerline"
 	     (powerline)
 	     nil
