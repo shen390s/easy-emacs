@@ -1,6 +1,6 @@
-(package! :name rainbow-identifiers
-	  :docstring "rainbow identifiers"
-	  :pkginfo rainbow-identifiers)
+(package-ex! rainbow-identifiers
+	     "rainbow identifiers"
+	     rainbow-identifiers)
 
 (defun activate-rainbow-identifiers (scope &optional phase options)
   (DEBUG! "activate-rainbow-delimiters scope %s phase %s options %s"

@@ -1,17 +1,21 @@
-(package! :name evil
-	  :docstring "Evil is an extensible vi layer for Emacs. It emulates the main features of Vim, and provides facilities for writing custom extensions. "
-	  :pkginfo evil)
+(package-ex! evil
+	  "Evil is an extensible vi layer for Emacs. 
+It emulates the main features of Vim, and provides 
+facilities for writing custom extensions. "
+	  evil)
 
-(package! :name evil-collection
-	  :docstring "This is a collection of Evil bindings for the parts of Emacs that Evil does not cover properly by default"
-	  :pkginfo (evil-collection :type git
-				    :host github
-				    :repo "emacs-evil/evil-collection"))
+(package-ex! evil-collection
+	  "This is a collection of Evil bindings for 
+the parts of Emacs that Evil does not cover properly 
+by default"
+	  (evil-collection :type git
+			   :host github
+			   :repo "emacs-evil/evil-collection"))
 
-(package! :name evil-leader
-	  :docstring "Provide leader (prefix key) key feature in Emacs
-	  evil"
-	  :pkginfo (evil-leader :type git
+(package-ex! evil-leader
+	  "Provide leader (prefix key) key feature in Emacs
+evil"
+	  (evil-leader :type git
 				:host github
 				:repo "cofi/evil-leader"))
 

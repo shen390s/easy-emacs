@@ -1,8 +1,9 @@
-(package! :name hlinum
-	  :docstring "This library extends linum-mode to highlight current line number."
-	  :pkginfo (hlinum-mode :type git
-				:host github
-				:repo "tom-tan/hlinum-mode"))
+(package-ex! hlinum
+	  "This library extends linum-mode to highlight 
+current line number."
+	  (hlinum-mode :type git
+		       :host github
+		       :repo "tom-tan/hlinum-mode"))
 
 (defun activate-hlinum (scope &optional phase options)
   (DEBUG! "activate-hlinum scope %s phase %s options %s"

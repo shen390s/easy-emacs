@@ -71,6 +71,7 @@
        (emacs-quilt)
        (origami)
        (treemacs +evil +magit)
+       (noccur)
        (slime +slime-fancy
 	      :before-activate (progn
 				 (DEBUG! "configure slime...")

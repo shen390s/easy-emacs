@@ -1,8 +1,8 @@
-(package! :name adoc-mode
-	  :docstring "A major Emacs mode for edit ascii-doctor document"
-	  :pkginfo (adoc-mode :type git
-			      :host github
-			      :repo "shen390s/adoc-mode"))
+(package-ex! adoc-mode
+	     "A major Emacs mode for edit ascii-doctor document"
+	     (adoc-mode :type git
+			:host github
+			:repo "shen390s/adoc-mode"))
 
 (defun adoc-tune-faces ()
   (progn

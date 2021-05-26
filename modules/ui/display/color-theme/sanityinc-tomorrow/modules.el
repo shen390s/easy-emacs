@@ -28,4 +28,4 @@ Chris Kempson's 'tomorrow' themes"
 	  (sanityinc-tomorrow)
 	  nil
 	  nil
-	  activate-sanityinc-tomorrow
+	  activate-sanityinc-tomorrow)
