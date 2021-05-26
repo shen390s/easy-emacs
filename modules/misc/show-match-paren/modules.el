@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t -*-
 ;; enable lexical scope
 
-(defun active-show-paren-line ()
+(defun show-paren-line ()
   ;; we will call `blink-matching-open` ourselves...
   (remove-hook 'post-self-insert-hook
 	       #'blink-paren-post-self-insert-function)
@@ -59,9 +59,15 @@ FACE defaults to inheriting from default and highlight."
                  (or face '(:inherit default :inherit highlight)))
     ol))
 
-(feature! show-paren-line 
-	  "Show matching lines when parentheses go off-screen"
-          nil
-          nil
-          active-show-paren-line
-          nil)
+(defun activate-show-paren-line (scope &optional phase options)
+  (let ((status (plist-get  options :status)))
+    (when (and status
+	       (>= status 0))
+      (show-paren-line))))
+
+(feature-ex! show-paren-line 
+	     "Show matching lines when parentheses go off-screen"
+             nil
+             nil
+	     nil
+             active-show-paren-line)

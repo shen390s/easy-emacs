@@ -13,9 +13,9 @@
        (c :suffix .c .cc .cpp .c++ .h .hpp
 	  :features +eldoc +ggtags +google-c-style +lsp +call-graph)
        (emacs-lisp :suffix .el .el.gz
-		   :features +parinfer)
+		   :features -parinfer)
        (lisp :suffix .cl .lisp
-	     :features +parinfer)
+	     :features -parinfer)
        (mermaid :suffix .mmd)
        (plantuml :suffix .plantuml)
        (poly-markdown :suffix .md .markdown
@@ -62,6 +62,7 @@
        :editor
        (undo-tree)
        (yasnippet)
+       (evil-surround)
        ;;(-eldoc)
        :app
        (emacs-server)

@@ -1,16 +1,25 @@
-(package! :name semantic-stickyfunc-enhance
-	  :docstring "Improved version of semantic-stickyfunc-mode that handles parameters on multiple lines "
-	  :pkginfo (semantic-stickyfunc-enhance :type git :host github :repo "tuhdo/semantic-stickyfunc-enhance"))
+(package-ex! semantic-stickyfunc-enhance
+	     "Improved version of semantic-stickyfunc-mode that handles parameters on multiple lines "
+	     (semantic-stickyfunc-enhance :type git
+					  :host github
+					  :repo "tuhdo/semantic-stickyfunc-enhance"))
 
-(defun enable-stickyfunc-enhance ()
-  (semantic-mode 1)
+(defun activate-stickyfunc-enhance (scope &optional phase options)
   (require 'stickyfunc-enhance)
-  (semantic-stickyfunc-mode 1))
+  (pcase scope
+    ('modes (progn
+	      (let ((status (plist-get options :status)))
+		(if (and status
+			 (>= status 0))
+		    (progn
+		      (semantic-mode 1)
+		      (semantic-stickyfunc-mode 1))
+		  (semantic-stickyfunc-mode -1)))))
+    (_ t)))
 
-(feature!
- stickyfunc-enhance
- "Improved version of semantic-stickyfunc-mode that handles parameters on multiple lines"
- (semantic-stickyfunc-enhance)
- nil
- enable-stickyfunc-enhance
- nil)
+(feature-ex! stickyfunc-enhance
+	     "Improved version of semantic-stickyfunc-mode that handles parameters on multiple lines"
+	     (semantic-stickyfunc-enhance)
+	     nil
+	     nil
+	     activate-stickyfunc-enhance)
