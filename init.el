@@ -39,21 +39,6 @@
 
 (byte-recompile-directory easy-emacs-core-dir 0)
 
-(defun prepend-env (s env-var)
-  (let ((env-val (getenv env-var)))
-    (setenv env-var
-	    (if env-val
-		(format "%s:%s" s env-val)
-	      s))))
-
-;; Enable git_best_mirror_tool to use fast mirrors in china
-(let ((git-best-mirror-tool-dir (getenv "GIT_BEST_MIRROR_TOOL_DIR")))
-  (when git-best-mirror-tool-dir
-    (progn
-      (setq exec-path (cons git-best-mirror-tool-dir exec-path))
-      (prepend-env git-best-mirror-tool-dir "PATH")
-      (prepend-env git-best-mirror-tool-dir "EMACSPATH"))))
-
 (require 'core)
 
 (let ((easy-emacs-config-file (concat easy-emacs-config-dir "/" easy-emacs-config)))

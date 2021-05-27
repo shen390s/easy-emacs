@@ -210,4 +210,11 @@
 (defun indirect-buffer-p (&optional buffer)
   (buffer-base-buffer buffer))
 
+(defun prepend-env (s env-var)
+  (let ((env-val (getenv env-var)))
+    (setenv env-var
+	    (if env-val
+		(format "%s:%s" s env-val)
+	      s))))
+
 (provide 'core-lib)

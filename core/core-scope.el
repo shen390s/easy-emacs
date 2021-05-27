@@ -61,6 +61,13 @@
 (defmethod Config/Pkgs:update ((config Vars-Config) scope-name)
   nil)
 
+(defclass Core-Config (Base-Config)
+  ()
+  "Configuration for core")
+
+(defmethod Config/Pkgs:update ((config Core-Config) scope)
+  nil)
+
 (defclass Mode-Config (Base-Config)
   ()
   "Configuration for modes")
@@ -261,6 +268,10 @@
      (make-config 'Editor-Config
 		  (config/:name scope config)
 		  (make-editor-help-fns config)))
+    ('core
+     (make-config 'Core-Config
+		  (config/:name scope config)
+		  (make-core-help-fns config)))
     (_
      nil)))
 
@@ -364,6 +375,45 @@
 (defun config/:make-vars (config)
   (config/:make-scope 'vars (list config)))
 
+;;
+(defun core-feature-config (core phase options)
+  (let ((options (plist-put (normalize-options options)
+			    :status 1)))
+    (DEBUG! "config core %s phase %s options %s"
+	    core phase options)
+    (invoke-feature core 'configure 'core
+		    phase options)))
+
+(defun core-feature-prepare (core phase options)
+  (let ((options (plist-put (normalize-options options)
+			    :status 1)))
+    (DEBUG! "prepare core %s phase %s options %s"
+	    core phase options)
+    (invoke-feature core 'prepare 'core
+		    phase options)))
+
+(defun core-feature-activate (core phase options)
+  (let ((options (plist-put (normalize-options options)
+			    :status 1)))
+    (DEBUG! "activate core %s options %s"
+	    core options)
+
+    (after-boot-run #'(lambda (core options)
+			(invoke-feature core 'activate 'core
+					'ignore options))
+		    core options)))
+
+(defun make-core-help-fns (config)
+  (DEBUG! "make-core-help-fns %s"
+	  (pp-to-string config))
+  (make-scope-help-fns (list :config #'core-feature-config
+			     :prepare #'core-feature-prepare
+			     :activate #'core-feature-activate)
+		       config))
+
+(defun config/:make-core (configs)
+  (config/:make-scope 'core configs))
+  
 ;; (mode +mode_feature -mode-feature)
 (defun call-mode-features (mode action phase features)
   (DEBUG! "call-mode-features mode %s action %s phase %s features %s major mode %s"
@@ -586,6 +636,8 @@
   (pcase key
     (:vars
      `(,@(config/:make-vars config)))
+    (:core
+     `(,@(config/:make-core config)))
     (:modes
      `(,@(config/:make-modes config)))
     (:ui

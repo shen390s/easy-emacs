@@ -6,6 +6,8 @@
        (a . 10)
        (b . 20)
        (c-eldoc-includes . "-I/usr/include -I/usr/local/include -I. -I..")
+       :core
+       (best_git_mirrors)
        :modes
        (prog :features +hlinum +ruler +rainbow-delimiters
 	     +rainbow-identifiers +smartparens -flymake
