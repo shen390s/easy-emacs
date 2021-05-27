@@ -355,7 +355,7 @@
 ;; define configuration scopes
 ;; (vars (a . 1) (b . 2) ...)
 (defun make-vars-help-fns (config)
-  (list :pre-check
+  (list :pre-prepare
 	`(lambda ()
 	   ,@(cl-loop for var in config
 		      collect `(setq ,(car var)
