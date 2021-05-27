@@ -599,4 +599,7 @@
     (_ nil)))
 
 
+(defun sort-scopes (scopes)
+  scopes)
+
 (provide 'core-scope)

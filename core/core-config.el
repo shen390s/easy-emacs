@@ -41,7 +41,7 @@
   (let ((config (collect-keyword-values configs)))
     (DEBUG! "config = %s" (pp-to-string config))
     (save-easy-config config)
-    (let ((keys (filt-out-non-keywords config)))
+    (let ((keys (sort-scopes (filt-out-non-keywords config))))
       (DEBUG! "scope keywords = %s" keys)
       (let ((c (collect-lists nil
 			      (cl-loop for key in keys
