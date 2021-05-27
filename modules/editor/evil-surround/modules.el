@@ -6,6 +6,13 @@ This package uses Evil as its vi layer."
 			    :host github
 			    :repo "emacs-evil/evil-surround"))
 
+;; use autoload-r! to ensure
+;; evil-surround to be installed
+(autoload-r! global-evil-surround-mode
+	     (evil-surround)
+	     "evil-surround"
+	     t)
+
 (defun config-evil-surround (scope &optional phase options)
   (pcase scope
     ('editor (let ((status (plist-get options :status)))
@@ -14,7 +21,6 @@ This package uses Evil as its vi layer."
 		 (progn
 		   (after-activate! evil
 				    (progn
-				      (require 'evil-surround)
 				      (global-evil-surround-mode 1)))))))
     (_ t)))
   

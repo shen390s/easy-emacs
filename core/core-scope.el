@@ -599,7 +599,24 @@
     (_ nil)))
 
 
+(defvar scope-priorities
+  '(:vars 0 :core 1 :editor 10 :modes 15 :editor 25 :completion 50 :app 100)
+  "priority/order of scope")
+
+(defvar scope-default-priority 500
+  "The default priority for scopes which have not been listed in scope-priorities")
+
+(defun scope-priority (scope)
+  (let ((prio (plist-get scope-priorities scope)))
+    (if prio
+	prio
+      scope-default-priority)))
+
+(defun scope<= (scope1 scope2)
+  (<= (scope-priority scope1)
+      (scope-priority scope2)))
+
 (defun sort-scopes (scopes)
-  scopes)
+  (sort scopes 'scope<=))
 
 (provide 'core-scope)
