@@ -1,9 +1,9 @@
 (package! best_git_mirrors
 	  "best mirror of github for china users"
 	  (best_git_mirrors :type git
-			   :host github
-			   :repo "shen390s/git_best_mirrors"
-			   :no-built t))
+			    :host github
+			    :repo "shen390s/git_best_mirrors"
+			    :no-built t))
 
 (autoload-r! git_best_mirrors
 	     (best_git_mirrors)
