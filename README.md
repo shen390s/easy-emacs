@@ -38,10 +38,13 @@
 	 - smartparens
 	 - emacs server
 	 
-  7. for china user
-     - clone https://github.com/shen390s/git_best_mirrors.git
-     - set GIT_BEST_MIRROR_TOOL_DIR to the bin sub-directory of cloned 
-       directory to enable using fast github mirrors from china
+  7. for china user to use faster github mirrors in china, you need to 
+  ensure that following line configured in easy-emacs-config.el:
+  
+```{elisp}
+:core
+(best_git_mirrors)
+```
 
 ## Hack Easy-Emacs
 
