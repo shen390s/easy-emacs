@@ -19,7 +19,7 @@
 		- C/C++, python, rust, java,R,plantuml, graphviz,clojure
 		
 	 - Language server support
-		- C/C++. cquery and ccls
+		- C/C++ with clangd
 		- python. Microsoft python language server
 		- rust. rls
 		- Java language server
@@ -72,10 +72,10 @@ Package is defined using command *package-origin!*:
 
 ```{elisp}
 (package! my-package
-			 "The description of my package"
-			 (my-package :type git
-						 :host github
-						 :repo "my-github-id/my-package"))
+		  "The description of my package"
+		  (my-package :type git
+					  :host github
+					  :repo "my-github-id/my-package"))
 ```
 
 #### define a feature
@@ -83,7 +83,7 @@ Package is defined using command *package-origin!*:
 The feature is defined using command *feature!*:
 
 ```{elisp}
-(defun my-feature-pre-config-function ()
+(defun my-feature-config-function ()
   ;; code goes here
   ;; everything is ok, this function will return t
   t)
