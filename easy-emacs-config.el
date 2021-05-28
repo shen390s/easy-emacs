@@ -2,10 +2,11 @@
 ;; Configuration for easy-emacs
 ;; this file will be loaded
 
-(easy! :vars
-       (a . 10)
-       (b . 20)
-       (c-eldoc-includes . "-I/usr/include -I/usr/local/include -I. -I..")
+(easy! :init
+       (setq a 10)
+       (setq b 20)
+       (setq c-eldoc-includes
+	     "-I/usr/include -I/usr/local/include -I. -I..")
        :core
        (best_git_mirrors)
        :modes

@@ -54,11 +54,11 @@
 (defmethod Config/Pkgs:get ((config Base-Config))
   (oref config pkgs))
 
-(defclass Vars-Config (Base-Config)
+(defclass InitialSettings-Config (Base-Config)
   ()
-  "for configuration variables")
+  "for initial settings")
 
-(defmethod Config/Pkgs:update ((config Vars-Config) scope-name)
+(defmethod Config/Pkgs:update ((config InitialSettings-Config) scope-name)
   nil)
 
 (defclass Core-Config (Base-Config)
@@ -235,7 +235,7 @@
 
 (defun config/:name (scope config)
   (pcase scope
-    ('vars 'vars)
+    ('init 'init)
     (_ (if (listp config)
 	   (if config
 	       (car config)
@@ -244,10 +244,10 @@
 
 (defun config/:make-config (scope config)
   (pcase scope
-    ('vars
-     (make-config 'Vars-Config
+    ('init
+     (make-config 'InitialSettings-Config
 		  (config/:name scope config)
-		  (make-vars-help-fns config)))
+		  (make-initial-setting-help-fns config)))
     ('modes
      (make-config 'Mode-Config
 		  (config/:name scope config)
@@ -364,16 +364,14 @@
     fns))
 
 ;; define configuration scopes
-;; (vars (a . 1) (b . 2) ...)
-(defun make-vars-help-fns (config)
+;; (init (a . 1) (b . 2) ...)
+(defun make-initial-setting-help-fns (config)
   (list :pre-prepare
 	`(lambda ()
-	   ,@(cl-loop for var in config
-		      collect `(setq ,(car var)
-				     ,(cdr var))))))
+	   ,@config)))
 
-(defun config/:make-vars (config)
-  (config/:make-scope 'vars (list config)))
+(defun config/:make-init (config)
+  (config/:make-scope 'init (list config)))
 
 ;;
 (defun core-feature-config (core phase options)
@@ -634,8 +632,8 @@
 
 (defun make-scope-by-config (key config)
   (pcase key
-    (:vars
-     `(,@(config/:make-vars config)))
+    (:init
+     `(,@(config/:make-init config)))
     (:core
      `(,@(config/:make-core config)))
     (:modes
@@ -652,7 +650,7 @@
 
 
 (defvar scope-priorities
-  '(:vars 0 :core 1 :editor 10 :modes 15 :editor 25 :completion 50 :app 100)
+  '(:init 0 :core 1 :editor 10 :modes 15 :editor 25 :completion 50 :app 100)
   "priority/order of scope")
 
 (defvar scope-default-priority 500
