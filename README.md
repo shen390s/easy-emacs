@@ -19,7 +19,7 @@
 		- C/C++, python, rust, java,R,plantuml, graphviz,clojure
 		
 	 - Language server support
-		- C/C++. cquery and ccls
+		- C/C++ with clangd
 		- python. Microsoft python language server
 		- rust. rls
 		- Java language server
@@ -38,10 +38,13 @@
 	 - smartparens
 	 - emacs server
 	 
-  7. for china user
-     - clone https://github.com/shen390s/git_best_mirrors.git
-     - set GIT_BEST_MIRROR_TOOL_DIR to the bin sub-directory of cloned 
-       directory to enable using fast github mirrors from china
+  7. for china user to use faster github mirrors in china, you need to 
+  ensure that following line configured in easy-emacs-config.el:
+  
+```{elisp}
+:core
+(best_git_mirrors)
+```
 
 ## Hack Easy-Emacs
 
@@ -69,10 +72,10 @@ Package is defined using command *package-origin!*:
 
 ```{elisp}
 (package! my-package
-			 "The description of my package"
-			 (my-package :type git
-						 :host github
-						 :repo "my-github-id/my-package"))
+		  "The description of my package"
+		  (my-package :type git
+					  :host github
+					  :repo "my-github-id/my-package"))
 ```
 
 #### define a feature
@@ -80,7 +83,7 @@ Package is defined using command *package-origin!*:
 The feature is defined using command *feature!*:
 
 ```{elisp}
-(defun my-feature-pre-config-function ()
+(defun my-feature-config-function ()
   ;; code goes here
   ;; everything is ok, this function will return t
   t)
