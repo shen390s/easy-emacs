@@ -28,6 +28,16 @@
       (when f
 	(funcall f)))))
 
+(defmethod Config/make-init ((config Base-Config))
+  (with-slots (name fns) config
+    (cl-loop for hook in '(:before-activate :after-activate)
+	     do (let ((fn (plist-get fns hook)))
+		  (when fn
+		    (add-hook (intern (format "%s-%s-hook"
+					      name
+					      (keyword-name hook)))
+			      `,@fn))))))
+
 (defun make-config-method (key name)
   (DEBUG! "make-config-method key %s name %s" (pp-to-string key) name)
   `(defmethod ,(intern (format "Config/%s" name))
@@ -54,9 +64,15 @@
 (defmethod Config/Pkgs:get ((config Base-Config))
   (oref config pkgs))
 
+
 (defclass InitialSettings-Config (Base-Config)
   ()
   "for initial settings")
+
+(defmethod Config/make-init ((config InitialSettings-Config))
+  (with-slots (config) config
+    (setf fns (make-initial-setting-help-fns config)))
+  (call-next-method))
 
 (defmethod Config/Pkgs:update ((config InitialSettings-Config) scope-name)
   nil)
@@ -65,12 +81,22 @@
   ()
   "Configuration for core")
 
+(defmethod Config/make-init ((config Core-Config))
+  (with-slots (fns config) config
+    (setf fns (make-core-help-fns config)))
+  (call-next-method))
+
 (defmethod Config/Pkgs:update ((config Core-Config) scope)
   nil)
 
 (defclass Mode-Config (Base-Config)
   ()
   "Configuration for modes")
+
+(defmethod Config/make-init ((config Mode-Config))
+  (with-slots (fns config) config
+    (setf fns (make-mode-help-fns config)))
+  (call-next-method))
 
 (defmethod Config/Pkgs:update ((config Mode-Config) scope-name)
   nil)
@@ -80,6 +106,11 @@
 	  :initform nil))
   "UI Related configurations")
 
+(defmethod Config/make-init ((config UI-Config))
+  (with-slots (fns config) config
+    (setf fns (make-ui-help-fns config)))
+  (call-next-method))
+
 (defmethod Config/Pkgs:update ((config UI-Config) scope-name)
   nil)
 
@@ -88,6 +119,11 @@
 	       :initform nil))
   "Configuration of completion")
 
+(defmethod Config/make-init ((config Completion-Config))
+  (with-slots (fns config) config
+    (setf fns (make-completion-help-fns config)))
+  (call-next-method))
+
 (defmethod Config/Pkgs:update ((config Completion-Config) scope-name)
   nil)
 
@@ -95,6 +131,11 @@
   ((apps :initarg :apps
 	 :initform nil))
   "Application Configuration")
+
+(defmethod Config/make-init ((config App-Config))
+  (with-slots (fns config) config
+    (setf fns (make-app-help-fns config)))
+  (call-next-method))
 
 (defmethod Config/Pkgs:update ((config App-Config) scope-name)
   (DEBUG! "update package requires for %s scope %s"
@@ -112,6 +153,11 @@
 (defclass Editor-Config (Base-Config)
   ()
   "Editor Configuration")
+
+(defmethod Config/make-init ((config Editor-Config))
+  (with-slots (fns config) config
+    (setf fns (make-editor-help-fns config)))
+  (call-next-method))
 
 (defmethod Config/Pkgs:update ((config Editor-Config) scope)
   t)
@@ -216,21 +262,13 @@
 	       ,@body)
 	    all-scopes))
 
-(defun make-config (config name fns)
+(defun make-config (config name configs)
   (DEBUG! "make-config %s %s %s"
-	  config name (pp-to-string fns))
+	  config name (pp-to-string configs))
   (let ((c (make-instance config
 			  :name name
-			  :fns fns)))
-    (cl-loop for hook in '(:before-activate :after-activate)
-	     do (let ((fn (plist-get fns hook)))
-		  (DEBUG! "make-config hook %s fn %s"
-			  hook fn)
-		  (when fn
-		    (add-hook (intern (format "%s-%s-hook"
-					      name
-					      (keyword-name hook)))
-			      `,@fn))))
+			  :config configs)))
+    (Config/make-init c)
     c))
 
 (defun config/:name (scope config)
@@ -247,31 +285,31 @@
     ('init
      (make-config 'InitialSettings-Config
 		  (config/:name scope config)
-		  (make-initial-setting-help-fns config)))
+		  config))
     ('modes
      (make-config 'Mode-Config
 		  (config/:name scope config)
-		  (make-mode-help-fns config)))
+		  config))
     ('ui
      (make-config 'UI-Config
 		  (config/:name scope config)
-		  (make-ui-help-fns config)))
+		  config))
     ('completion
      (make-config 'Completion-Config
 		  (config/:name scope config)
-		  (make-completion-help-fns config)))
+		  config))
     ('app
      (make-config 'App-Config
 		  (config/:name scope config)
-		  (make-app-help-fns config)))
+		  config))
     ('editor
      (make-config 'Editor-Config
 		  (config/:name scope config)
-		  (make-editor-help-fns config)))
+		  config))
     ('core
      (make-config 'Core-Config
 		  (config/:name scope config)
-		  (make-core-help-fns config)))
+		  config))
     (_
      nil)))
 
