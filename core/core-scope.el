@@ -251,18 +251,97 @@
 	       do (install-package-by-name pkg))
       (setf (oref scope pkg-installed) t))))
 
+(defmethod Scope/make-config ((scope Scope) config)
+  (let ((config-name (Scope/config-name scope config))
+	(config-class (Scope/config-class scope)))
+    (when config-class
+      (make-config config-class
+		   config-name
+		   config))))
+
+(defmethod Scope/config-name ((scope Scope) config)
+  (if (listp config)
+      (if config
+	  (car config)
+	'Null)
+    `,config))
+
+(defmethod Scope/config-class ((scope Scope))
+  nil)
+
+(defclass Initial-Scope (Scope)
+  ()
+  "Scope for initialization")
+
+(defmethod Scope/config-name ((scope Initial-Scope) config)
+  'init)
+
+(defmethod Scope/config-class ((scope Initial-Scope))
+  'InitialSettings-Config)
+
+(defclass Core-Scope (Scope)
+  ()
+  "Core scope of easy-emacs")
+
+(defmethod Scope/config-class ((scope Core-Scope))
+  'Core-Config)
+
+(defclass Mode-Scope (Scope)
+  ()
+  "Scope for modes")
+
+(defmethod Scope/config-class ((scope Mode-Scope))
+  'Mode-Config)
+
+(defclass UI-Scope (Scope)
+  ()
+  "Scope for UI")
+
+(defmethod Scope/config-class ((scope UI-Scope))
+  'UI-Config)
+
+(defclass Completion-Scope (Scope)
+  ()
+  "Scope for completion")
+
+(defmethod Scope/config-class ((scope Completion-Scope))
+  'Completion-Config)
+
+(defclass App-Scope (Scope)
+  ()
+  "Scope for Application")
+
+(defmethod Scope/config-class ((scope App-Scope))
+  'App-Config)
+
+(defclass Editor-Scope (Scope)
+  ()
+  "Scope for editor related")
+
+(defmethod Scope/config-class ((scope Editor-Scope))
+  'Editor-Config)
+
 (defvar all-scopes (make-hash-table)
   "All defined scopes")
 
 (defun make-scope (scope-name &optional configs)
   (DEBUG! "make-scope %s %s"
 	  scope-name configs)
-  (let ((scope (make-instance 'Scope
-			      :name scope-name
-			      :configs nil)))
-    (cl-loop for c in configs
-	     do (Scope/add-config scope c))
-    (puthash scope-name scope all-scopes)))
+  (let ((scope-class
+	 (pcase scope-name
+	   ('init 'Initial-Scope)
+	   ('modes 'Mode-Scope)
+	   ('ui 'UI-Scope)
+	   ('completion 'Completion-Scope)
+	   ('app 'App-Scope)
+	   ('editor 'Editor-Scope)
+	   ('core 'Core-Scope)
+	   (_ nil))))
+    (let ((scope (make-instance scope-class
+				:name scope-name)))
+      (cl-loop for c in configs
+	       do (Scope/add-config scope c))
+      (puthash scope-name scope all-scopes))))
 
 (defmacro scope! (name &optional configs) 
   `(progn
@@ -293,59 +372,15 @@
     (Config/make-init c)
     c))
 
-(defun config/:name (scope config)
-  (pcase scope
-    ('init 'init)
-    (_ (if (listp config)
-	   (if config
-	       (car config)
-	     'Null)
-	 `,config))))
-
-(defun config/:make-config (scope config)
-  (pcase scope
-    ('init
-     (make-config 'InitialSettings-Config
-		  (config/:name scope config)
-		  config))
-    ('modes
-     (make-config 'Mode-Config
-		  (config/:name scope config)
-		  config))
-    ('ui
-     (make-config 'UI-Config
-		  (config/:name scope config)
-		  config))
-    ('completion
-     (make-config 'Completion-Config
-		  (config/:name scope config)
-		  config))
-    ('app
-     (make-config 'App-Config
-		  (config/:name scope config)
-		  config))
-    ('editor
-     (make-config 'Editor-Config
-		  (config/:name scope config)
-		  config))
-    ('core
-     (make-config 'Core-Config
-		  (config/:name scope config)
-		  config))
-    (_
-     nil)))
-
-(defun config/:make-scope (scope configs)
+(defun config/:make-scope (scope-name configs)
   `((DEBUG! "config/:make-%s %s"
-	    ',scope ',(pp-to-string configs))
-    (scope! ,(intern (symbol-name scope)))
-    ,@(cl-loop for config in configs
-	       collect `(let ((c (config/:make-config ',scope
-						      ',config)))
-			  (when c
-			    (setf (oref c config) ',config)
-			    (with-scope! ',(intern (symbol-name scope))
-					 scope
+	    ',scope-name ',(pp-to-string configs))
+    (scope! ,(intern (symbol-name scope-name)))
+    (with-scope! ',(intern (symbol-name scope-name)) scope
+		 ,@(cl-loop for config in configs
+			    collect `(let ((c (Scope/make-config scope ',config)))
+				       (when c
+					 (setf (oref c config) ',config)
 					 (Scope/add-config scope c)))))))
 
 (defun mk-scope-handler-call (handler action app phase options)
@@ -424,11 +459,6 @@
     fns))
 
 ;; define configuration scopes
-;; (init (a . 1) (b . 2) ...)
-
-(defun config/:make-init (config)
-  (config/:make-scope 'init (list config)))
-
 ;;
 (defun core-feature-config (core phase options)
   (let ((options (plist-put (normalize-options options)
@@ -457,9 +487,6 @@
 					'ignore options))
 		    core options)))
 
-(defun config/:make-core (configs)
-  (config/:make-scope 'core configs))
-  
 ;; (mode +mode_feature -mode-feature)
 (defun call-mode-features (mode action phase features)
   (DEBUG! "call-mode-features mode %s action %s phase %s features %s major mode %s"
@@ -527,9 +554,6 @@
 		   (call-mode-features ',mode 'activate
 				       ',phase ',features))))))
 
-(defun config/:make-modes (configs)
-  (config/:make-scope 'modes configs))
-
 ;; (ui_feature options ...)
 (defun ui-config (ui phase options)
   (let ((options (plist-put (normalize-options options)
@@ -557,9 +581,6 @@
 					'ignore options))
 		    ui options)))
 
-(defun config/:make-ui (configs)
-  (config/:make-scope 'ui configs))
-
 ;; (+ivy -autocompletion )
 
 (defun completion-config (app phase options)
@@ -585,9 +606,6 @@
 			(invoke-feature compl 'activate 'completion
 					'ignore options))
 		    compl options)))
-
-(defun config/:make-completion (config)
-  (config/:make-scope 'completion (list config)))
 
 ;; app
 ;; (app +options -options)
@@ -618,9 +636,6 @@
 					'ignore options))
 		    app options)))
 
-(defun config/:make-app (configs)
-  (config/:make-scope 'app configs))
-
 (defun editor-feature-config (editor phase options)
   (let ((options (normalize-options options)))
     (DEBUG! "editor-feature-config editor %s phase %s options %s"
@@ -644,25 +659,13 @@
 					'ignore options))
 		    editor options)))
 
-(defun config/:make-editor (configs)
-  (config/:make-scope 'editor configs))
-
 (defun make-scope-by-config (key config)
   (pcase key
     (:init
-     `(,@(config/:make-init config)))
-    (:core
-     `(,@(config/:make-core config)))
-    (:modes
-     `(,@(config/:make-modes config)))
-    (:ui
-     `(,@(config/:make-ui config)))
-    (:completion
-     `(,@(config/:make-completion config)))
-    (:app
-     `(,@(config/:make-app config)))
-    (:editor
-     `(,@(config/:make-editor config)))
+     `(,@(config/:make-scope 'init (list config))))
+    ((or :core :modes :ui :completion :app :editor)
+     (let ((scope-class (intern (keyword-name key))))
+       `(,@(config/:make-scope scope-class config))))
     (_ nil)))
 
 

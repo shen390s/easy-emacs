@@ -37,7 +37,7 @@
 (push easy-emacs-core-dir load-path)
 (push easy-emacs-config-dir custom-theme-load-path)
 
-;;(byte-recompile-directory easy-emacs-core-dir 0)
+(byte-recompile-directory easy-emacs-core-dir 0)
 
 (require 'core)
 
