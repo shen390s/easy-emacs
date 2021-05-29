@@ -71,7 +71,9 @@
 
 (defmethod Config/make-init ((config InitialSettings-Config))
   (with-slots (config) config
-    (setf fns (make-initial-setting-help-fns config)))
+    (setf fns (list :pre-prepare
+		    `(lambda ()
+		       ,@config))))
   (call-next-method))
 
 (defmethod Config/Pkgs:update ((config InitialSettings-Config) scope-name)
@@ -83,7 +85,10 @@
 
 (defmethod Config/make-init ((config Core-Config))
   (with-slots (fns config) config
-    (setf fns (make-core-help-fns config)))
+    (setf fns (make-scope-help-fns (list :config #'core-feature-config
+					 :prepare #'core-feature-prepare
+					 :activate #'core-feature-activate)
+				   config)))
   (call-next-method))
 
 (defmethod Config/Pkgs:update ((config Core-Config) scope)
@@ -95,7 +100,10 @@
 
 (defmethod Config/make-init ((config Mode-Config))
   (with-slots (fns config) config
-    (setf fns (make-mode-help-fns config)))
+    (setf fns (make-scope-help-fns (list :config #'mode-feature-config
+					 :prepare #'mode-feature-prepare
+					 :activate #'mode-feature-activate)
+				   config)))
   (call-next-method))
 
 (defmethod Config/Pkgs:update ((config Mode-Config) scope-name)
@@ -108,7 +116,10 @@
 
 (defmethod Config/make-init ((config UI-Config))
   (with-slots (fns config) config
-    (setf fns (make-ui-help-fns config)))
+    (setf fns (make-scope-help-fns (list :config #'ui-config
+					 :prepare #'ui-prepare
+					 :activate #'ui-activate)
+				   config)))
   (call-next-method))
 
 (defmethod Config/Pkgs:update ((config UI-Config) scope-name)
@@ -121,7 +132,10 @@
 
 (defmethod Config/make-init ((config Completion-Config))
   (with-slots (fns config) config
-    (setf fns (make-completion-help-fns config)))
+    (setf fns (make-scope-help-fns (list :config #'completion-config
+					 :prepare #'completion-prepare
+					 :activate #'completion-activate)
+				   config)))
   (call-next-method))
 
 (defmethod Config/Pkgs:update ((config Completion-Config) scope-name)
@@ -134,7 +148,10 @@
 
 (defmethod Config/make-init ((config App-Config))
   (with-slots (fns config) config
-    (setf fns (make-app-help-fns config)))
+    (setf fns (make-scope-help-fns (list :config #'app-feature-config
+					 :prepare #'app-feature-prepare
+					 :activate #'app-feature-activate)
+				   config)))
   (call-next-method))
 
 (defmethod Config/Pkgs:update ((config App-Config) scope-name)
@@ -156,7 +173,10 @@
 
 (defmethod Config/make-init ((config Editor-Config))
   (with-slots (fns config) config
-    (setf fns (make-editor-help-fns config)))
+    (setf fns (make-scope-help-fns (list :config #'editor-feature-config
+					 :prepare #'editor-feature-prepare
+					 :activate #'editor-feature-activate)
+				   config)))
   (call-next-method))
 
 (defmethod Config/Pkgs:update ((config Editor-Config) scope)
@@ -179,10 +199,12 @@
 	 ,@body))))
 
 (defmethod Scope/name ((scope Scope))
-  (oref scope name))
+  (with-slots (name) scope
+    name))
 
 (defmethod Scope/add-config ((scope Scope) config)
-  (push config (oref scope configs)))
+  (with-slots (configs) scope
+    (push config configs)))
 
 (defmethod Scope/get-pkgs ((scope Scope))
   (collect-lists nil
@@ -403,10 +425,6 @@
 
 ;; define configuration scopes
 ;; (init (a . 1) (b . 2) ...)
-(defun make-initial-setting-help-fns (config)
-  (list :pre-prepare
-	`(lambda ()
-	   ,@config)))
 
 (defun config/:make-init (config)
   (config/:make-scope 'init (list config)))
@@ -438,14 +456,6 @@
 			(invoke-feature core 'activate 'core
 					'ignore options))
 		    core options)))
-
-(defun make-core-help-fns (config)
-  (DEBUG! "make-core-help-fns %s"
-	  (pp-to-string config))
-  (make-scope-help-fns (list :config #'core-feature-config
-			     :prepare #'core-feature-prepare
-			     :activate #'core-feature-activate)
-		       config))
 
 (defun config/:make-core (configs)
   (config/:make-scope 'core configs))
@@ -517,13 +527,6 @@
 		   (call-mode-features ',mode 'activate
 				       ',phase ',features))))))
 
-(defun make-mode-help-fns (config)
-  (make-scope-help-fns (list :config #'mode-feature-config
-			     :prepare #'mode-feature-prepare
-			     :activate #'mode-feature-activate)
-		       config))
-
-
 (defun config/:make-modes (configs)
   (config/:make-scope 'modes configs))
 
@@ -554,12 +557,6 @@
 					'ignore options))
 		    ui options)))
 
-(defun make-ui-help-fns (config)
-  (make-scope-help-fns (list :config #'ui-config
-			     :prepare #'ui-prepare
-			     :activate #'ui-activate)
-		       config))
-
 (defun config/:make-ui (configs)
   (config/:make-scope 'ui configs))
 
@@ -588,12 +585,6 @@
 			(invoke-feature compl 'activate 'completion
 					'ignore options))
 		    compl options)))
-
-(defun make-completion-help-fns (config)
-  (make-scope-help-fns (list :config #'completion-config
-			     :prepare #'completion-prepare
-			     :activate #'completion-activate)
-		       config))
 
 (defun config/:make-completion (config)
   (config/:make-scope 'completion (list config)))
@@ -627,12 +618,6 @@
 					'ignore options))
 		    app options)))
 
-(defun make-app-help-fns (config)
-  (make-scope-help-fns (list :config #'app-feature-config
-			     :prepare #'app-feature-prepare
-			     :activate #'app-feature-activate)
-		       config))
-
 (defun config/:make-app (configs)
   (config/:make-scope 'app configs))
 
@@ -658,12 +643,6 @@
 			(invoke-feature editor 'activate 'editor
 					'ignore options))
 		    editor options)))
-
-(defun make-editor-help-fns (config)
-  (make-scope-help-fns (list :config #'editor-feature-config
-			     :prepare #'editor-feature-prepare
-			     :activate #'editor-feature-activate)
-		       config))
 
 (defun config/:make-editor (configs)
   (config/:make-scope 'editor configs))
