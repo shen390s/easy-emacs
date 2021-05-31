@@ -22,13 +22,13 @@
 		  :initform nil))
   "Configuration in scope")
 
-(cl-defmethod Config/Call ((config Base-Config) fn scope)
+(cl-defmethod Config/Call ((config Base-Config) fn _scope)
   (with-slots (fns) config
     (let ((f (plist-get fns fn)))
       (when f
 	(funcall f)))))
 
-(cl-defmethod Config/make-init ((config Base-Config))
+(cl-defmethod Config/make-init ((config Base-Config) _scope)
   (with-slots (name fns) config
     (cl-loop for hook in '(:before-activate :after-activate)
 	     do (let ((fn (plist-get fns hook)))
@@ -38,11 +38,12 @@
 					      (keyword-name hook)))
 			      `,@fn))))))
 
-(defun make-config-method (key name)
-  (DEBUG! "make-config-method key %s name %s" (pp-to-string key) name)
-  `(cl-defmethod ,(intern (format "Config/%s" name))
-     ((config Base-Config) scope)
-     (Config/Call config ,key scope)))
+(eval-and-compile
+  (defun make-config-method (key name)
+    (DEBUG! "make-config-method key %s name %s" (pp-to-string key) name)
+    `(cl-defmethod ,(intern (format "Config/%s" name))
+       ((config Base-Config) scope)
+       (Config/Call config ,key scope))))
 
 (defmacro make-config-methods! (methods)
   `(progn
@@ -59,7 +60,7 @@
 				  :activate Activate
 				  :after-activate Activate:after))
 
-(cl-defgeneric Config/Pkgs:update ((config Base-Config) scope-name))
+(cl-defgeneric Config/Pkgs:update ((_config Base-Config) _scope))
 
 (cl-defmethod Config/Pkgs:get ((config Base-Config))
   (oref config pkgs))
@@ -69,36 +70,21 @@
   ()
   "for initial settings")
 
-(cl-defmethod Config/make-init ((config InitialSettings-Config))
-  (with-slots (config) config
+(cl-defmethod Config/make-init ((config InitialSettings-Config) _scope)
+  (with-slots (config fns) config
     (setf fns (list :pre-prepare
 		    `(lambda ()
 		       ,@config))))
   (cl-call-next-method))
 
-(cl-defmethod Config/Pkgs:update ((config InitialSettings-Config) scope-name)
-  nil)
-
-(defclass Core-Config (Base-Config)
-  ()
-  "Configuration for core")
-
-(cl-defmethod Config/make-init ((config Core-Config))
-  (with-slots (fns config) config
-    (setf fns (make-scope-help-fns (list :config #'core-feature-config
-					 :prepare #'core-feature-prepare
-					 :activate #'core-feature-activate)
-				   config)))
-  (cl-call-next-method))
-
-(cl-defmethod Config/Pkgs:update ((config Core-Config) scope)
+(cl-defmethod Config/Pkgs:update ((_config InitialSettings-Config) _scope)
   nil)
 
 (defclass Mode-Config (Base-Config)
   ()
   "Configuration for modes")
 
-(cl-defmethod Config/make-init ((config Mode-Config))
+(cl-defmethod Config/make-init ((config Mode-Config) _scope)
   (with-slots (fns config) config
     (setf fns (make-scope-help-fns (list :config #'mode-feature-config
 					 :prepare #'mode-feature-prepare
@@ -106,39 +92,7 @@
 				   config)))
   (cl-call-next-method))
 
-(cl-defmethod Config/Pkgs:update ((config Mode-Config) scope-name)
-  nil)
-
-(defclass UI-Config (Base-Config)
-  ((theme :initarg :theme
-	  :initform nil))
-  "UI Related configurations")
-
-(cl-defmethod Config/make-init ((config UI-Config))
-  (with-slots (fns config) config
-    (setf fns (make-scope-help-fns (list :config #'ui-config
-					 :prepare #'ui-prepare
-					 :activate #'ui-activate)
-				   config)))
-  (cl-call-next-method))
-
-(cl-defmethod Config/Pkgs:update ((config UI-Config) scope-name)
-  nil)
-
-(defclass Completion-Config (Base-Config)
-  ((completion :initarg :completion
-	       :initform nil))
-  "Configuration of completion")
-
-(cl-defmethod Config/make-init ((config Completion-Config))
-  (with-slots (fns config) config
-    (setf fns (make-scope-help-fns (list :config #'completion-config
-					 :prepare #'completion-prepare
-					 :activate #'completion-activate)
-				   config)))
-  (cl-call-next-method))
-
-(cl-defmethod Config/Pkgs:update ((config Completion-Config) scope-name)
+(cl-defmethod Config/Pkgs:update ((_config Mode-Config) _scope)
   nil)
 
 (defclass App-Config (Base-Config)
@@ -146,11 +100,17 @@
 	 :initform nil))
   "Application Configuration")
 
-(cl-defmethod Config/make-init ((config App-Config))
+(cl-defmethod Config/make-init ((config App-Config) scope)
   (with-slots (fns config) config
-    (setf fns (make-scope-help-fns (list :config #'app-feature-config
-					 :prepare #'app-feature-prepare
-					 :activate #'app-feature-activate)
+    (setf fns (make-scope-help-fns (list :config #'(lambda (app phase options)
+						     (app-feature-config app scope
+									 phase options))
+					 :prepare #'(lambda (app phase options)
+						      (app-feature-prepare app scope
+									   phase options))
+					 :activate #'(lambda (app phase options)
+						       (app-feature-activate app scope
+									     phase options)))
 				   config)))
   (cl-call-next-method))
 
@@ -167,20 +127,6 @@
       (DEBUG! "app = %s options = %s" app options)
       (invoke-feature app 'pkglist 'app 'ignore options))))
 
-(defclass Editor-Config (Base-Config)
-  ()
-  "Editor Configuration")
-
-(cl-defmethod Config/make-init ((config Editor-Config))
-  (with-slots (fns config) config
-    (setf fns (make-scope-help-fns (list :config #'editor-feature-config
-					 :prepare #'editor-feature-prepare
-					 :activate #'editor-feature-activate)
-				   config)))
-  (cl-call-next-method))
-
-(cl-defmethod Config/Pkgs:update ((config Editor-Config) scope)
-  t)
 
 (defclass Scope ()
   ((name :initarg :name
@@ -214,17 +160,18 @@
 				      (Config/Pkgs:update config name)
 				      (Config/Pkgs:get config))))))
 
-(defun make-scope-method (action phase)
-  `(cl-defmethod ,(intern (format "Scope/%s:%s" action phase))
-     ((scope Scope))
-     (with-slots (name configs) scope
-       (cl-loop  for config in configs
-		 do (,(intern (format "Config/%s:%s"
-				      (if (string= action "Configure")
-					  "Check"
-					action)
-				      phase))
-		     config name)))))
+(eval-and-compile
+  (defun make-scope-method (action phase)
+    `(cl-defmethod ,(intern (format "Scope/%s:%s" action phase))
+       ((scope Scope))
+       (with-slots (name configs) scope
+	 (cl-loop  for config in configs
+		   do (,(intern (format "Config/%s:%s"
+					(if (string= action "Configure")
+					    "Check"
+					  action)
+					phase))
+		       config name))))))
 
 (defmacro make-scope-methods! ()
   (let ((actions '(Configure Prepare))
@@ -255,71 +202,73 @@
   (let ((config-name (Scope/config-name scope config))
 	(config-class (Scope/config-class scope)))
     (when config-class
-      (make-config config-class
-		   config-name
-		   config))))
+      (with-slots (name) scope
+	(make-config name
+		     config-class
+		     config-name
+		     config)))))
 
-(cl-defmethod Scope/config-name ((scope Scope) config)
+(cl-defmethod Scope/config-name ((_scope Scope) config)
   (if (listp config)
       (if config
 	  (car config)
 	'Null)
     `,config))
 
-(cl-defmethod Scope/config-class ((scope Scope))
+(cl-defmethod Scope/config-class ((_scope Scope))
   nil)
 
 (defclass Initial-Scope (Scope)
   ()
   "Scope for initialization")
 
-(cl-defmethod Scope/config-name ((scope Initial-Scope) config)
+(cl-defmethod Scope/config-name ((_scope Initial-Scope) _config)
   'init)
 
-(cl-defmethod Scope/config-class ((scope Initial-Scope))
+(cl-defmethod Scope/config-class ((_scope Initial-Scope))
   'InitialSettings-Config)
 
 (defclass Core-Scope (Scope)
   ()
   "Core scope of easy-emacs")
 
-(cl-defmethod Scope/config-class ((scope Core-Scope))
-  'Core-Config)
+(cl-defmethod Scope/config-class ((_scope Core-Scope))
+  'App-Config)
 
 (defclass Mode-Scope (Scope)
   ()
   "Scope for modes")
 
-(cl-defmethod Scope/config-class ((scope Mode-Scope))
+(cl-defmethod Scope/config-class ((_scope Mode-Scope))
   'Mode-Config)
 
 (defclass UI-Scope (Scope)
   ()
   "Scope for UI")
 
-(cl-defmethod Scope/config-class ((scope UI-Scope))
-  'UI-Config)
+(cl-defmethod Scope/config-class ((_scope UI-Scope))
+  'App-Config)
 
 (defclass Completion-Scope (Scope)
   ()
   "Scope for completion")
 
-(cl-defmethod Scope/config-class ((scope Completion-Scope))
-  'Completion-Config)
+(cl-defmethod Scope/config-class ((_scope Completion-Scope))
+  'App-Config)
 
 (defclass App-Scope (Scope)
   ()
   "Scope for Application")
 
-(cl-defmethod Scope/config-class ((scope App-Scope))
+(cl-defmethod Scope/config-class ((_scope App-Scope))
   'App-Config)
 
 (defclass Editor-Scope (Scope)
   ()
   "Scope for editor related")
 
-(cl-defmethod Scope/config-class ((scope Editor-Scope))
-  'Editor-Config)
+(cl-defmethod Scope/config-class ((_scope Editor-Scope))
+  'App-Config)
 
 (defvar all-scopes (make-hash-table)
   "All defined scopes")
@@ -363,13 +312,13 @@
 	       ,@body)
 	    all-scopes))
 
-(defun make-config (config name configs)
-  (DEBUG! "make-config %s %s %s"
-	  config name (pp-to-string configs))
+(defun make-config (scope config name configs)
+  (DEBUG! "make-config %s %s %s %s"
+	  scope config name (pp-to-string configs))
   (let ((c (make-instance config
 			  :name name
 			  :config configs)))
-    (Config/make-init c)
+    (Config/make-init c scope)
     c))
 
 (defun config/:make-scope (scope-name configs)
@@ -460,33 +409,6 @@
 
 ;; define configuration scopes
 ;;
-(defun core-feature-config (core phase options)
-  (let ((options (plist-put (normalize-options options)
-			    :status 1)))
-    (DEBUG! "config core %s phase %s options %s"
-	    core phase options)
-    (invoke-feature core 'configure 'core
-		    phase options)))
-
-(defun core-feature-prepare (core phase options)
-  (let ((options (plist-put (normalize-options options)
-			    :status 1)))
-    (DEBUG! "prepare core %s phase %s options %s"
-	    core phase options)
-    (invoke-feature core 'prepare 'core
-		    phase options)))
-
-(defun core-feature-activate (core phase options)
-  (let ((options (plist-put (normalize-options options)
-			    :status 1)))
-    (DEBUG! "activate core %s options %s"
-	    core options)
-
-    (after-boot-run #'(lambda (core options)
-			(invoke-feature core 'activate 'core
-					'ignore options))
-		    core options)))
-
 ;; (mode +mode_feature -mode-feature)
 (defun call-mode-features (mode action phase features)
   (DEBUG! "call-mode-features mode %s action %s phase %s features %s major mode %s"
@@ -555,109 +477,34 @@
 				       ',phase ',features))))))
 
 ;; (ui_feature options ...)
-(defun ui-config (ui phase options)
-  (let ((options (plist-put (normalize-options options)
-			    :status 1)))
-    (DEBUG! "ui-config ui %s phase %s options %s"
-	    ui phase options)
-    (invoke-feature ui 'configure
-		    'ui phase options)))
-
-(defun ui-prepare (ui phase options)
-  (let ((options (plist-put (normalize-options options)
-			    :status 1)))
-    (DEBUG! "ui-prepare ui %s phase %s options %s"
-	    ui phase options)
-    (invoke-feature ui 'prepare
-		    'ui phase options)))
-
-(defun ui-activate (ui phase options)
-  (let ((options (plist-put (normalize-options options)
-			    :status 1)))
-    (DEBUG! "ui-activate ui %s phase %s options %s"
-	    ui phase options)
-    (after-boot-run #'(lambda (ui options)
-			(invoke-feature ui 'activate 'ui
-					'ignore options))
-		    ui options)))
-
-;; (+ivy -autocompletion )
-
-(defun completion-config (app phase options)
-  (let ((options (plist-put (normalize-options options)
-			    :status 1)))
-    (DEBUG! "completion configure app %s phase %s options %s"
-	    app phase options)
-    (invoke-feature app 'configure
-		    'completion phase options)))
-
-(defun completion-prepare (app phase options)
-  (let ((options (plist-put (normalize-options options)
-			    :status 1)))
-    (DEBUG! "completion prepare app %s phase %s options %s"
-	    app phase options)
-    (invoke-feature app 'prepare
-		    'completion phase options)))
-
-(defun completion-activate (compl phase options)
-  (let ((options (plist-put (normalize-options options)
-			    :status 1)))
-    (after-boot-run #'(lambda (compl options)
-			(invoke-feature compl 'activate 'completion
-					'ignore options))
-		    compl options)))
-
 ;; app
 ;; (app +options -options)
-(defun app-feature-config (app phase options)
+(defun app-feature-config (app scope phase options)
   (let ((options (plist-put (normalize-options options)
 			    :status 1)))
-    (DEBUG! "config app %s phase %s options %s"
-	    app phase options)
-    (invoke-feature app 'configure 'app
+    (DEBUG! "config app %s scope %s phase %s options %s"
+	    app scope phase options)
+    (invoke-feature app 'configure scope
 		    phase options)))
 
-(defun app-feature-prepare (app phase options)
+(defun app-feature-prepare (app scope phase options)
   (let ((options (plist-put (normalize-options options)
 			    :status 1)))
-    (DEBUG! "prepare app %s phase %s options %s"
-	    app phase options)
-    (invoke-feature app 'prepare 'app
+    (DEBUG! "prepare app %s scope %s phase %s options %s"
+	    app scope phase options)
+    (invoke-feature app 'prepare scope
 		    phase options)))
 
-(defun app-feature-activate (app phase options)
+(defun app-feature-activate (app scope phase options)
   (let ((options (plist-put (normalize-options options)
 			    :status 1)))
-    (DEBUG! "activate app %s options %s"
-	    app options)
+    (DEBUG! "activate app %s scope %s options %s"
+	    app scope options)
 
     (after-boot-run #'(lambda (app options)
-			(invoke-feature app 'activate 'app
-					'ignore options))
+			(invoke-feature app 'activate scope
+					phase options))
 		    app options)))
-
-(defun editor-feature-config (editor phase options)
-  (let ((options (normalize-options options)))
-    (DEBUG! "editor-feature-config editor %s phase %s options %s"
-	    editor phase options)
-    (invoke-feature editor 'configure 'editor
-		    phase (plist-put options :status 1))))
-
-(defun editor-feature-prepare (editor phase options)
-  (let ((options (plist-put (normalize-options options)
-			    :status 1)))
-    (DEBUG! "editor-feature-prepare editor %s phase %s options %s"
-	    editor phase options)
-    (invoke-feature editor 'prepare 'editor
-		    phase options)))
-
-(defun editor-feature-activate (editor phase options)
-  (let ((options (plist-put (normalize-options options)
-			    :status 1)))
-    (after-boot-run #'(lambda (editor options)
-			(invoke-feature editor 'activate 'editor
-					'ignore options))
-		    editor options)))
 
 (defun make-scope-by-config (key config)
   (pcase key
@@ -670,7 +517,7 @@
 
 
 (defvar scope-priorities
-  '(:init 0 :core 1 :editor 10 :modes 15 :editor 25 :completion 50 :app 100)
+  '(:init 0 :core 1 :editor 10 :modes 15  :completion 50 :app 100)
   "priority/order of scope")
 
 (defvar scope-default-priority 500
