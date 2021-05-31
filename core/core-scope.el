@@ -22,13 +22,13 @@
 		  :initform nil))
   "Configuration in scope")
 
-(defmethod Config/Call ((config Base-Config) fn scope)
+(cl-defmethod Config/Call ((config Base-Config) fn scope)
   (with-slots (fns) config
     (let ((f (plist-get fns fn)))
       (when f
 	(funcall f)))))
 
-(defmethod Config/make-init ((config Base-Config))
+(cl-defmethod Config/make-init ((config Base-Config))
   (with-slots (name fns) config
     (cl-loop for hook in '(:before-activate :after-activate)
 	     do (let ((fn (plist-get fns hook)))
@@ -40,7 +40,7 @@
 
 (defun make-config-method (key name)
   (DEBUG! "make-config-method key %s name %s" (pp-to-string key) name)
-  `(defmethod ,(intern (format "Config/%s" name))
+  `(cl-defmethod ,(intern (format "Config/%s" name))
      ((config Base-Config) scope)
      (Config/Call config ,key scope)))
 
@@ -59,9 +59,9 @@
 				  :activate Activate
 				  :after-activate Activate:after))
 
-(defgeneric Config/Pkgs:update ((config Base-Config) scope-name))
+(cl-defgeneric Config/Pkgs:update ((config Base-Config) scope-name))
 
-(defmethod Config/Pkgs:get ((config Base-Config))
+(cl-defmethod Config/Pkgs:get ((config Base-Config))
   (oref config pkgs))
 
 
@@ -69,44 +69,44 @@
   ()
   "for initial settings")
 
-(defmethod Config/make-init ((config InitialSettings-Config))
+(cl-defmethod Config/make-init ((config InitialSettings-Config))
   (with-slots (config) config
     (setf fns (list :pre-prepare
 		    `(lambda ()
 		       ,@config))))
-  (call-next-method))
+  (cl-call-next-method))
 
-(defmethod Config/Pkgs:update ((config InitialSettings-Config) scope-name)
+(cl-defmethod Config/Pkgs:update ((config InitialSettings-Config) scope-name)
   nil)
 
 (defclass Core-Config (Base-Config)
   ()
   "Configuration for core")
 
-(defmethod Config/make-init ((config Core-Config))
+(cl-defmethod Config/make-init ((config Core-Config))
   (with-slots (fns config) config
     (setf fns (make-scope-help-fns (list :config #'core-feature-config
 					 :prepare #'core-feature-prepare
 					 :activate #'core-feature-activate)
 				   config)))
-  (call-next-method))
+  (cl-call-next-method))
 
-(defmethod Config/Pkgs:update ((config Core-Config) scope)
+(cl-defmethod Config/Pkgs:update ((config Core-Config) scope)
   nil)
 
 (defclass Mode-Config (Base-Config)
   ()
   "Configuration for modes")
 
-(defmethod Config/make-init ((config Mode-Config))
+(cl-defmethod Config/make-init ((config Mode-Config))
   (with-slots (fns config) config
     (setf fns (make-scope-help-fns (list :config #'mode-feature-config
 					 :prepare #'mode-feature-prepare
 					 :activate #'mode-feature-activate)
 				   config)))
-  (call-next-method))
+  (cl-call-next-method))
 
-(defmethod Config/Pkgs:update ((config Mode-Config) scope-name)
+(cl-defmethod Config/Pkgs:update ((config Mode-Config) scope-name)
   nil)
 
 (defclass UI-Config (Base-Config)
@@ -114,15 +114,15 @@
 	  :initform nil))
   "UI Related configurations")
 
-(defmethod Config/make-init ((config UI-Config))
+(cl-defmethod Config/make-init ((config UI-Config))
   (with-slots (fns config) config
     (setf fns (make-scope-help-fns (list :config #'ui-config
 					 :prepare #'ui-prepare
 					 :activate #'ui-activate)
 				   config)))
-  (call-next-method))
+  (cl-call-next-method))
 
-(defmethod Config/Pkgs:update ((config UI-Config) scope-name)
+(cl-defmethod Config/Pkgs:update ((config UI-Config) scope-name)
   nil)
 
 (defclass Completion-Config (Base-Config)
@@ -130,15 +130,15 @@
 	       :initform nil))
   "Configuration of completion")
 
-(defmethod Config/make-init ((config Completion-Config))
+(cl-defmethod Config/make-init ((config Completion-Config))
   (with-slots (fns config) config
     (setf fns (make-scope-help-fns (list :config #'completion-config
 					 :prepare #'completion-prepare
 					 :activate #'completion-activate)
 				   config)))
-  (call-next-method))
+  (cl-call-next-method))
 
-(defmethod Config/Pkgs:update ((config Completion-Config) scope-name)
+(cl-defmethod Config/Pkgs:update ((config Completion-Config) scope-name)
   nil)
 
 (defclass App-Config (Base-Config)
@@ -146,15 +146,15 @@
 	 :initform nil))
   "Application Configuration")
 
-(defmethod Config/make-init ((config App-Config))
+(cl-defmethod Config/make-init ((config App-Config))
   (with-slots (fns config) config
     (setf fns (make-scope-help-fns (list :config #'app-feature-config
 					 :prepare #'app-feature-prepare
 					 :activate #'app-feature-activate)
 				   config)))
-  (call-next-method))
+  (cl-call-next-method))
 
-(defmethod Config/Pkgs:update ((config App-Config) scope-name)
+(cl-defmethod Config/Pkgs:update ((config App-Config) scope-name)
   (DEBUG! "update package requires for %s scope %s"
 	  config scope-name)
   (with-slots (config) config
@@ -171,15 +171,15 @@
   ()
   "Editor Configuration")
 
-(defmethod Config/make-init ((config Editor-Config))
+(cl-defmethod Config/make-init ((config Editor-Config))
   (with-slots (fns config) config
     (setf fns (make-scope-help-fns (list :config #'editor-feature-config
 					 :prepare #'editor-feature-prepare
 					 :activate #'editor-feature-activate)
 				   config)))
-  (call-next-method))
+  (cl-call-next-method))
 
-(defmethod Config/Pkgs:update ((config Editor-Config) scope)
+(cl-defmethod Config/Pkgs:update ((config Editor-Config) scope)
   t)
 
 (defclass Scope ()
@@ -189,7 +189,7 @@
 	    :initform nil))
   "Class scope for EasyEmacs")
 
-(defmethod Object/to-string ((scope Scope))
+(cl-defmethod Object/to-string ((scope Scope))
   (format "scope %s" scope))
 
 (defmacro with-scope! (scope-name scope-var &rest body)
@@ -198,15 +198,15 @@
        (when ,scope-var
 	 ,@body))))
 
-(defmethod Scope/name ((scope Scope))
+(cl-defmethod Scope/name ((scope Scope))
   (with-slots (name) scope
     name))
 
-(defmethod Scope/add-config ((scope Scope) config)
+(cl-defmethod Scope/add-config ((scope Scope) config)
   (with-slots (configs) scope
     (push config configs)))
 
-(defmethod Scope/get-pkgs ((scope Scope))
+(cl-defmethod Scope/get-pkgs ((scope Scope))
   (collect-lists nil
 		 (with-slots (configs name) scope
 		   (cl-loop for config in configs
@@ -215,7 +215,7 @@
 				      (Config/Pkgs:get config))))))
 
 (defun make-scope-method (action phase)
-  `(defmethod ,(intern (format "Scope/%s:%s" action phase))
+  `(cl-defmethod ,(intern (format "Scope/%s:%s" action phase))
      ((scope Scope))
      (with-slots (name configs) scope
        (cl-loop  for config in configs
@@ -237,21 +237,21 @@
 									     phase)))))))
 (make-scope-methods!)
 
-(defmethod Scope/Activate ((scope Scope))
+(cl-defmethod Scope/Activate ((scope Scope))
   (DEBUG! "activate scope %s"
 	  (pp-to-string scope))
   (with-slots (name configs) scope
     (cl-loop for config in configs
 	     do (Config/Activate config name))))
 
-(defmethod Scope/install-pkgs ((scope Scope))
+(cl-defmethod Scope/install-pkgs ((scope Scope))
   (let ((pkg-installed (oref scope pkg-installed)))
     (unless pkg-installed
       (cl-loop for pkg in (Scope/get-pkgs scope)
 	       do (install-package-by-name pkg))
       (setf (oref scope pkg-installed) t))))
 
-(defmethod Scope/make-config ((scope Scope) config)
+(cl-defmethod Scope/make-config ((scope Scope) config)
   (let ((config-name (Scope/config-name scope config))
 	(config-class (Scope/config-class scope)))
     (when config-class
@@ -259,66 +259,66 @@
 		   config-name
 		   config))))
 
-(defmethod Scope/config-name ((scope Scope) config)
+(cl-defmethod Scope/config-name ((scope Scope) config)
   (if (listp config)
       (if config
 	  (car config)
 	'Null)
     `,config))
 
-(defmethod Scope/config-class ((scope Scope))
+(cl-defmethod Scope/config-class ((scope Scope))
   nil)
 
 (defclass Initial-Scope (Scope)
   ()
   "Scope for initialization")
 
-(defmethod Scope/config-name ((scope Initial-Scope) config)
+(cl-defmethod Scope/config-name ((scope Initial-Scope) config)
   'init)
 
-(defmethod Scope/config-class ((scope Initial-Scope))
+(cl-defmethod Scope/config-class ((scope Initial-Scope))
   'InitialSettings-Config)
 
 (defclass Core-Scope (Scope)
   ()
   "Core scope of easy-emacs")
 
-(defmethod Scope/config-class ((scope Core-Scope))
+(cl-defmethod Scope/config-class ((scope Core-Scope))
   'Core-Config)
 
 (defclass Mode-Scope (Scope)
   ()
   "Scope for modes")
 
-(defmethod Scope/config-class ((scope Mode-Scope))
+(cl-defmethod Scope/config-class ((scope Mode-Scope))
   'Mode-Config)
 
 (defclass UI-Scope (Scope)
   ()
   "Scope for UI")
 
-(defmethod Scope/config-class ((scope UI-Scope))
+(cl-defmethod Scope/config-class ((scope UI-Scope))
   'UI-Config)
 
 (defclass Completion-Scope (Scope)
   ()
   "Scope for completion")
 
-(defmethod Scope/config-class ((scope Completion-Scope))
+(cl-defmethod Scope/config-class ((scope Completion-Scope))
   'Completion-Config)
 
 (defclass App-Scope (Scope)
   ()
   "Scope for Application")
 
-(defmethod Scope/config-class ((scope App-Scope))
+(cl-defmethod Scope/config-class ((scope App-Scope))
   'App-Config)
 
 (defclass Editor-Scope (Scope)
   ()
   "Scope for editor related")
 
-(defmethod Scope/config-class ((scope Editor-Scope))
+(cl-defmethod Scope/config-class ((scope Editor-Scope))
   'Editor-Config)
 
 (defvar all-scopes (make-hash-table)

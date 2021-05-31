@@ -8,7 +8,7 @@
 (require 'core-log)
 (require 'core-package)
 
-(defgeneric Object/to-string (obj)
+(cl-defgeneric Object/to-string (obj)
   "A generic method to convert object to string")
 
 (defclass Package ()
@@ -24,14 +24,14 @@
 	      :initform nil))
   "Class to describe the package of Emacs")
 
-(defmethod Package/install ((pkg Package))
+(cl-defmethod Package/install ((pkg Package))
   (with-slots (name installed pkg-info patches) pkg
     (unless installed
       (when (fboundp 'install-pkg)
 	(install-pkg pkg-info)
 	(setf installed t)))))
 
-(defmethod Package/apply_patches ((pkg Package))
+(cl-defmethod Package/apply_patches ((pkg Package))
   (with-slots (name patches) pkg
     (DEBUG! "Package/apply_patches %s"
 	    pkg)
@@ -40,7 +40,7 @@
     (when patches
       (apply-package-patches name patches))))
 
-(defmethod Object/to-string ((obj Package))
+(cl-defmethod Object/to-string ((obj Package))
   (pp-to-string obj))
 
 ;; (with-slots (name pkg-info installed) obj
@@ -62,7 +62,7 @@
 	  :initform nil))
   "Class to describe the feature of Emacs")
 
-(defmethod Feature/prepare ((feature Feature) 
+(cl-defmethod Feature/prepare ((feature Feature) 
 			      &optional scope-name
 			      phase config-options)
   (let ((result t))
@@ -79,7 +79,7 @@
     result))
 
 
-(defmethod Feature/configure ((feature Feature) 
+(cl-defmethod Feature/configure ((feature Feature) 
 			      &optional scope-name
 			      phase config-options)
   (let ((result t))
@@ -95,7 +95,7 @@
 	     scope-name phase config-options)
     result))
 
-(defmethod Feature/activate ((feature Feature) 
+(cl-defmethod Feature/activate ((feature Feature) 
 			     &optional scope-name
 			     phase config-options)
   (let ((result t))
@@ -111,7 +111,7 @@
 	     scope-name phase config-options)
     result))
 
-(defmethod Feature/pkglist ((feature Feature) &optional scope-name config-options)
+(cl-defmethod Feature/pkglist ((feature Feature) &optional scope-name config-options)
   (with-slots (pkgs) feature
     (let ((zpkgs (if (functionp pkgs)
 		     (funcall pkgs scope-name config-options)
@@ -214,7 +214,7 @@
 (defun feature-off (feature options)
   (not (feature-on feature options)))
 
-(defmethod Object/to-string ((obj Feature))
+(cl-defmethod Object/to-string ((obj Feature))
   (pp-to-string obj))
 
 ;; (with-slots (name pkgs config-fn on-fn ) obj
