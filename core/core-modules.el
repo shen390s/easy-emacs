@@ -116,7 +116,7 @@
 	    ('activate
 	     (progn
 	       (cl-loop for pkg in (Feature/pkglist f scope options)
-			do (install-package-by-name pkg))
+			do (install-package pkg))
 	       ;; setup setting of buffer features
 	       (setq easy-emacs-buffer-features
 		     (plist-put easy-emacs-buffer-features
@@ -273,7 +273,7 @@
        ,(when interactive
 	  `(interactive))
        ,@(cl-loop for pkg in pkgs
-		  collect `(install-package-by-name ',pkg))
+		  collect `(install-package ',pkg))
        (let ((my-self (symbol-function ',fn)))
 	 (fmakunbound ',fn)
 	 (if (load-library ,filename)

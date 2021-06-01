@@ -83,7 +83,7 @@
 			       (if easy-emacs-deferred-packages
 				   (let ((pkg (pop easy-emacs-deferred-packages)))
 				     (progn
-				       (install-package-by-name pkg)))
+				       (install-package pkg)))
 				 (progn
 				   (when easy-emacs-idle-package-installation-timer
 				     (cancel-timer easy-emacs-idle-package-installation-timer)

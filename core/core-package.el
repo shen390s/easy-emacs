@@ -147,7 +147,7 @@
        (progn
 	 (puthash ',name package all-packages)))))
 
-(defun install-package-by-name (pkg)
+(defun install-package (pkg)
   (DEBUG! "installing package %s..." pkg)
   (let ((package (gethash pkg all-packages)))
     (when package

@@ -190,7 +190,7 @@
   (let ((pkg-installed (oref scope pkg-installed)))
     (unless pkg-installed
       (cl-loop for pkg in (Scope/get-pkgs scope)
-	       do (install-package-by-name pkg))
+	       do (install-package pkg))
       (setf (oref scope pkg-installed) t))))
 
 (cl-defmethod Scope/make-config ((scope Scope) config)
@@ -296,11 +296,6 @@
     (DEBUG2! "get-scope %s"
 	     (Object/to-string scope))
     scope))
-
-(defun install-packages-for-scope (scope-name)
-  (with-scope! scope-name
-	       scope
-	       (Scope/install-pkgs scope)))
 
 (defmacro foreach-scope! (name scope &rest body)
   `(maphash '(lambda (,name ,scope)
