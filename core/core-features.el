@@ -10,7 +10,4 @@
 (defvar feature-key-args '(:activate :deactivate :when)
   "Key args for feature")
 
-(defvar actived-modes nil
-  "A list of actived modes")
-
 (provide 'core-features)

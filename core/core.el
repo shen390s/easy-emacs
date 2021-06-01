@@ -11,7 +11,7 @@
 (require 'core-config)
 
 (defconst easy-emacs-version
-  "0.1"
+  "0.2"
   "The version of EasyEmacs")
 
 (unless (file-exists-p easy-emacs-config-dir)
@@ -81,9 +81,9 @@
 	(run-with-idle-timer easy-emacs-idle-time (1+ (length easy-emacs-deferred-packages))
 			     (lambda ()
 			       (if easy-emacs-deferred-packages
-				 (let ((pkg (pop easy-emacs-deferred-packages)))
-				   (progn
-				     (install-package-by-name pkg)))
+				   (let ((pkg (pop easy-emacs-deferred-packages)))
+				     (progn
+				       (install-package-by-name pkg)))
 				 (progn
 				   (when easy-emacs-idle-package-installation-timer
 				     (cancel-timer easy-emacs-idle-package-installation-timer)
@@ -107,7 +107,8 @@
 			     remote-autoload-pkgs)))
   (DEBUG! "Defer to install packages: %s"
 	  easy-emacs-deferred-packages)
-  (schedule-package-defer-installation))
+  (unless easy-emacs-idle-package-installation-timer
+    (schedule-package-defer-installation)))
 
 (easy-emacs-boot-start)
 

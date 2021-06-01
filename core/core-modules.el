@@ -227,28 +227,17 @@
 (defvar all-features (make-hash-table)
   "All defined features")
 
-(defvar all-modes (make-hash-table)
-  "All defined models")
-
-(defmacro package-origin! (&rest args)
-  `(let ((name (plist-get ',args :name))
-	 (docstring (plist-get ',args :docstring))
-	 (pkginfo (plist-get ',args :pkginfo)))
-     (let ((patches (package-patches name)))
-       (let ((package (make-instance 'Package
-				     :name name
-				     :docstring docstring
-				     :pkg-info pkginfo
-				     :patches patches
-				     :installed nil)))
-	 (progn
-	   (puthash name package all-packages))))))
-
 (defmacro package! (name docstring pkginfo)
   (declare (doc-string 2))
-  `(package-origin! :name ,name
-	     :docstring ,docstring
-	     :pkginfo ,pkginfo))
+  `(let ((patches (package-patches ',name)))
+     (let ((package (make-instance 'Package
+				   :name ',name
+				   :docstring ',docstring
+				   :pkg-info ',pkginfo
+				   :patches patches
+				   :installed nil)))
+       (progn
+	 (puthash ',name package all-packages)))))
 
 (defun dummy-activate-fun (scope &optional phase options)
   (DEBUG! "dummy-activate-fun scope %s phase %s options %s"
