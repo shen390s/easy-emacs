@@ -8,45 +8,6 @@
 (require 'core-log)
 (require 'core-package)
 
-(cl-defgeneric Object/to-string (obj)
-  "A generic method to convert object to string")
-
-(defclass Package ()
-  ((name :initarg :name
-	 :initform "Anonymous")
-   (docstring :initarg :docstring
-	      :initform "")
-   (pkg-info :initarg :pkg-info
-	     :initform nil)
-   (patches :initarg :patches
-	    :initform nil)
-   (installed :initarg :installed
-	      :initform nil))
-  "Class to describe the package of Emacs")
-
-(cl-defmethod Package/install ((pkg Package))
-  (with-slots (name installed pkg-info patches) pkg
-    (unless installed
-      (when (fboundp 'install-pkg)
-	(install-pkg pkg-info)
-	(setf installed t)))))
-
-(cl-defmethod Package/apply_patches ((pkg Package))
-  (with-slots (name patches) pkg
-    (DEBUG! "Package/apply_patches %s"
-	    pkg)
-    (unless patches
-      (setf patches (package-patches name)))
-    (when patches
-      (apply-package-patches name patches))))
-
-(cl-defmethod Object/to-string ((obj Package))
-  (pp-to-string obj))
-
-;; (with-slots (name pkg-info installed) obj
-;;   (format "Package name: %s pkginfo: %s installed: %s"
-;; 	    name pkg-info installed)))
-
 (defclass Feature ()
   ((name :initarg :name
 	 :initform "Anonymous")
@@ -217,28 +178,6 @@
 (cl-defmethod Object/to-string ((obj Feature))
   (pp-to-string obj))
 
-;; (with-slots (name pkgs config-fn on-fn ) obj
-;;   (format "Feature name: %s pkgs: %s config-fn: %s on-fn:%s "
-;; 	  name pkgs config-fn on-fn )))
-
-(defvar all-packages (make-hash-table)
-  "All defined packages")
-
-(defvar all-features (make-hash-table)
-  "All defined features")
-
-(defmacro package! (name docstring pkginfo)
-  (declare (doc-string 2))
-  `(let ((patches (package-patches ',name)))
-     (let ((package (make-instance 'Package
-				   :name ',name
-				   :docstring ',docstring
-				   :pkg-info ',pkginfo
-				   :patches patches
-				   :installed nil)))
-       (progn
-	 (puthash ',name package all-packages)))))
-
 (defun dummy-activate-fun (scope &optional phase options)
   (DEBUG! "dummy-activate-fun scope %s phase %s options %s"
 	  scope phase options)
@@ -291,23 +230,6 @@
 	     (lambda ()
 	       ,@body)))
 
-(defun install-package-by-name (pkg)
-  (DEBUG! "installing package %s..." pkg)
-  (let ((package (gethash pkg all-packages)))
-    (when package
-      (Package/install package))))
-
-(defun get-package (pkg)
-  (let ((package (gethash pkg all-packages)))
-    (unless package
-      (setq package (Package :name pkg
-			     :pkg-info pkg
-			     :installed nil))
-      (puthash pkg package all-packages))
-    (DEBUG2! "get-package %s"
-	     (Object/to-string package))
-    package))
-
 (defun get-feature (f)
   (let ((feature (gethash f all-features)))
     (if feature
@@ -329,15 +251,6 @@
 						   scope-name
 						   'ignore
 						   config-options)))))
-
-;; enable package patches when enable/install
-;; packages
-(add-hook 'straight-use-package-prepare-functions
-	  #'(lambda (pkg-name)
-	      (DEBUG! "prepare pkg %s" pkg-name)
-	      (let ((pkg (get-package pkg-name)))
-		(when pkg
-		  (Package/apply_patches pkg)))))
 
 (defun load-module-definition (module-file)
   (load-file module-file))

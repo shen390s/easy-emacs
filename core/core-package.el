@@ -93,5 +93,86 @@
    ((string= pkgmgr "straight") (bootstrap-straight))
    (t (bootstrap-straight))))
 
+(defclass Package ()
+  ((name :initarg :name
+	 :initform "Anonymous")
+   (docstring :initarg :docstring
+	      :initform "")
+   (pkg-info :initarg :pkg-info
+	     :initform nil)
+   (patches :initarg :patches
+	    :initform nil)
+   (mutex :initarg :mutex
+	  :initform nil)
+   (installed :initarg :installed
+	      :initform nil))
+  "Class to describe the package of Emacs")
+
+(cl-defmethod Package/install ((pkg Package))
+  (with-slots (name installed pkg-info mutex) pkg
+    (unless installed
+      (when (fboundp 'install-pkg)
+	(with-mutex mutex
+	  (install-pkg pkg-info)
+	  (setf installed t))))))
+
+(cl-defmethod Package/apply_patches ((pkg Package))
+  (with-slots (name patches) pkg
+    (DEBUG! "Package/apply_patches %s"
+	    pkg)
+    (unless patches
+      (setf patches (package-patches name)))
+    (when patches
+      (apply-package-patches name patches))))
+
+(cl-defmethod Object/to-string ((obj Package))
+  (pp-to-string obj))
+
+(defvar all-packages (make-hash-table)
+  "All defined packages")
+
+(defvar all-features (make-hash-table)
+  "All defined features")
+
+(defmacro package! (name docstring pkginfo)
+  (declare (doc-string 2))
+  `(let ((patches (package-patches ',name)))
+     (let ((package (make-instance 'Package
+				   :name ',name
+				   :docstring ',docstring
+				   :pkg-info ',pkginfo
+				   :patches patches
+				   :mutex (make-mutex (format "%s/:mutex" ',name))
+				   :installed nil)))
+       (progn
+	 (puthash ',name package all-packages)))))
+
+(defun install-package-by-name (pkg)
+  (DEBUG! "installing package %s..." pkg)
+  (let ((package (gethash pkg all-packages)))
+    (when package
+      (Package/install package))))
+
+(defun get-package (pkg)
+  (let ((package (gethash pkg all-packages)))
+    (unless package
+      (setq package (Package :name pkg
+			     :pkg-info pkg
+			     :installed nil))
+      (puthash pkg package all-packages))
+    (DEBUG2! "get-package %s"
+	     (Object/to-string package))
+    package))
+
+;; enable package patches when enable/install
+;; packages
+(add-hook 'straight-use-package-prepare-functions
+	  #'(lambda (pkg-name)
+	      (DEBUG! "prepare pkg %s" pkg-name)
+	      (let ((pkg (get-package pkg-name)))
+		(when pkg
+		  (Package/apply_patches pkg)))))
+
+
 (provide 'core-package)
 ;;; core-package.el ends here
