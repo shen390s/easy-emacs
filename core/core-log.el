@@ -60,7 +60,7 @@
      (when zel
        (setf log-level zel))))
 
-(eval-and-compile
+(eval-when-compile
   (log-levels! EMERG ERR WARN INFO DEBUG DEBUG2 DEBUG3))
 
 (provide 'core-log)

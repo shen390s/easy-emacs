@@ -70,11 +70,6 @@
       (setq zval (1+ zval))
       rval)))
 
-(eval-and-compile
-  (defun mode-function (mode)
-    (intern (concat (symbol-name mode)
-		    ":entry"))))
-
 (defun remove-all-assoc (key alist)
   (let ((e (assoc key alist)))
     (if e
@@ -92,10 +87,11 @@
   (defun dummy-fn ()
     t))
 
-(defun mk-action (action)
-  (if action
-      `,@action
-    `((dummy-fn))))
+(eval-when-compile
+  (defun mk-action (action)
+    (if action
+	`,@action
+      `((dummy-fn)))))
 
 (defmacro trace! (fn &optional action)
   `(advice-add ',fn

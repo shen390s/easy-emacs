@@ -38,7 +38,7 @@
 					      (keyword-name hook)))
 			      `,@fn))))))
 
-(eval-and-compile
+(eval-when-compile
   (defun make-config-method (key name)
     (DEBUG! "make-config-method key %s name %s" (pp-to-string key) name)
     `(cl-defmethod ,(intern (format "Config/%s" name))
@@ -60,11 +60,12 @@
 				  :activate Activate
 				  :after-activate Activate:after))
 
-(cl-defgeneric Config/Pkgs:update ((_config Base-Config) _scope))
-
 (cl-defmethod Config/Pkgs:get ((config Base-Config))
-  (oref config pkgs))
+  (with-slots (pkgs) config
+    pkgs))
 
+(cl-defmethod Config/Pkgs:update ((_config Base-Config) _scope)
+  t)
 
 (defclass InitialSettings-Config (Base-Config)
   ()
@@ -77,9 +78,6 @@
 		       ,@config))))
   (cl-call-next-method))
 
-(cl-defmethod Config/Pkgs:update ((_config InitialSettings-Config) _scope)
-  nil)
-
 (defclass Mode-Config (Base-Config)
   ()
   "Configuration for modes")
@@ -91,9 +89,6 @@
 					 :activate #'mode-feature-activate)
 				   config)))
   (cl-call-next-method))
-
-(cl-defmethod Config/Pkgs:update ((_config Mode-Config) _scope)
-  nil)
 
 (defclass App-Config (Base-Config)
   ((apps :initarg :apps
@@ -160,7 +155,7 @@
 				      (Config/Pkgs:update config name)
 				      (Config/Pkgs:get config))))))
 
-(eval-and-compile
+(eval-when-compile
   (defun make-scope-method (action phase)
     `(cl-defmethod ,(intern (format "Scope/%s:%s" action phase))
        ((scope Scope))
