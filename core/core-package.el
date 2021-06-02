@@ -76,10 +76,19 @@
 	     do (apply-patch dir
 			     patch))))
 
+(defun pkg-dir (pkg)
+  (let ((pkginfo (cdr (with-slots (pkg-info) (get-package pkg)
+			pkg-info))))
+    (if (and (listp pkginfo)
+	     pkginfo)
+	(file-name-nondirectory (plist-get pkginfo :repo))
+      pkg)))
+
 (defun apply-package-patches (pkg patches)
   (DEBUG! "apply-package-patches pkg %s patches %s"
 	  pkg patches)
-  (let ((dir (expand-file-name (format "straight/repos/%s" pkg)
+  (let ((dir (expand-file-name (format "straight/repos/%s"
+				       (pkg-dir (intern pkg)))
 			       user-emacs-directory)))
     (apply-patches dir patches)))
 

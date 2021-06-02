@@ -1,0 +1,13 @@
+diff --git a/origami-parsers.el b/origami-parsers.el
+index 78bee8f..4f49b6e 100644
+--- a/origami-parsers.el
++++ b/origami-parsers.el
+@@ -30,7 +30,7 @@
+ ;;; Commentary:
+ 
+ ;;; Code:
+-(require 'cl)
++(require 'cl-lib)
+ (require 'dash)
+ 
+ (defun origami-get-positions (content regex)
