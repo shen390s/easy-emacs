@@ -147,11 +147,36 @@
        (progn
 	 (puthash ',name package all-packages)))))
 
-(defun install-package (pkg)
-  (DEBUG! "installing package %s..." pkg)
+(defun do-package-install (pkg)
+  (DEBUG! "do-package-install %s..." pkg)
   (let ((package (gethash pkg all-packages)))
     (when package
       (Package/install package))))
+
+(defvar deferred-package-list nil
+  "list of packages to be installed later ")
+
+(defvar deferred-package-list-mutex (make-mutex "deferred-package-list")
+  "mutex to protect deferred-package-list")
+
+(defvar deferred-package-list-waiter (make-condition-variable deferred-package-list-mutex)
+  "condition variable to be wait when background installer thread is idle")
+
+(defun install-package (pkg &optional deferred)
+  (if deferred
+      (progn
+	(with-mutex deferred-package-list-mutex
+	  (setf deferred-package-list
+		(delete-dups (append deferred-package-list
+				     (list pkg))))
+	  (condition-notify deferred-package-list-waiter)))
+    (do-package-install pkg)))
+
+(defun install-packages (pkgs &optional deferred)
+  (DEBUG! "install-packages %s deferred %s"
+	  pkgs deferred)
+  (cl-loop for pkg in pkgs
+	   do (install-package pkg deferred)))
 
 (defun get-package (pkg)
   (let ((package (gethash pkg all-packages)))
@@ -173,6 +198,36 @@
 		(when pkg
 		  (Package/apply_patches pkg)))))
 
+(defvar background-package-installer-should-go nil
+  "set to t when background-package-installer should go")
+
+(add-hook 'after-init-hook
+	  #'(lambda ()
+	      (start-background-package-installer)))
+
+(defun start-background-package-installer ()
+  (let ((installer-thread (make-thread (lambda ()
+					 (DEBUG! "eay emacs background package installer is running")
+					 (while (not background-package-installer-should-go)
+					   (when (emacs-idle-p)
+					     (let ((pkg (with-mutex deferred-package-list-mutex
+							  (if (null deferred-package-list)
+							      (condition-wait deferred-package-list-waiter)
+							    (let ((pkg1 (car deferred-package-list)))
+							      (setf deferred-package-list
+								    (cdr deferred-package-list))
+							      pkg1)))))
+					       (when pkg
+						 (DEBUG! "I will install package %s"
+							 pkg)
+						 (do-package-install pkg))))
+					   (thread-yield))))))
+    (add-hook 'kill-emacs-hook
+	      #'(lambda ()
+		  (setf background-package-installer-should-go t)
+		  (with-mutex deferred-package-list-mutex
+		    (condition-notify deferred-package-list-waiter))
+		  (thread-join installer-thread)))))
 
 (provide 'core-package)
 ;;; core-package.el ends here

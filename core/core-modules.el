@@ -115,8 +115,7 @@
 	     (Feature/configure f scope phase options))
 	    ('activate
 	     (progn
-	       (cl-loop for pkg in (Feature/pkglist f scope options)
-			do (install-package pkg))
+	       (install-packages (Feature/pkglist f scope options))
 	       ;; setup setting of buffer features
 	       (setq easy-emacs-buffer-features
 		     (plist-put easy-emacs-buffer-features

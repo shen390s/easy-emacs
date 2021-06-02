@@ -30,15 +30,6 @@
 	'el-patch)
   "list of packages which will be used by easy-emacsi core")
 
-(defvar easy-emacs-deferred-packages nil
-  "List of deferred installed packages")
-
-(defvar easy-emacs-idle-package-installation-timer nil
-  "Timer to trigger package to be installed")
-
-(defvar easy-emacs-idle-time (* 60 15)
-  "Idle time(seconds) to trigger deferred package installation")
-
 (defun my-branch ()
   (let ((dir (file-name-directory load-file-name)))
     (git-branch dir)))
@@ -76,20 +67,6 @@
   (bootstrap-package "straight")
   (install-core-packages easy-emacs-core-packages))
 
-(defun schedule-package-defer-installation ()
-  (setf easy-emacs-idle-package-installation-timer
-	(run-with-idle-timer easy-emacs-idle-time (1+ (length easy-emacs-deferred-packages))
-			     (lambda ()
-			       (if easy-emacs-deferred-packages
-				   (let ((pkg (pop easy-emacs-deferred-packages)))
-				     (progn
-				       (install-package pkg)))
-				 (progn
-				   (when easy-emacs-idle-package-installation-timer
-				     (cancel-timer easy-emacs-idle-package-installation-timer)
-				     (setf easy-emacs-idle-package-installation-timer nil))))))))
-
-
 (defun easy-emacs-bootstrap (module-dir config)
   (load-modules module-dir)
 
@@ -100,15 +77,6 @@
 	    ;; works to do after bootstrap
 	    (lambda ()
 	      t)))
-
-(defun defer-package-install (pkgs)
-  (setf easy-emacs-deferred-packages
-	(delete-dups (append pkgs
-			     remote-autoload-pkgs)))
-  (DEBUG! "Defer to install packages: %s"
-	  easy-emacs-deferred-packages)
-  (unless easy-emacs-idle-package-installation-timer
-    (schedule-package-defer-installation)))
 
 (easy-emacs-boot-start)
 

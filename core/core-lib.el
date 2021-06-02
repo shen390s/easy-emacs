@@ -213,4 +213,7 @@
 		(format "%s:%s" s env-val)
 	      s))))
 
+(defun emacs-idle-p ()
+  (not (current-idle-time)))
+
 (provide 'core-lib)

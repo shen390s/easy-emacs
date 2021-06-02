@@ -90,6 +90,19 @@
 				   config)))
   (cl-call-next-method))
 
+(cl-defmethod Config/Pkgs:update ((config Mode-Config) _scope)
+  (with-slots (config pkgs) config
+    (let ((mode (if (listp config)
+		    (car config)
+		  config))
+	  (options (if (listp config)
+		       (cdr config)
+		     nil)))
+      (DEBUG! "mode = %s options = %s"
+	      mode options)
+      (setf pkgs
+	    (mode-feature-pkgs mode options)))))
+
 (defclass App-Config (Base-Config)
   ((apps :initarg :apps
 	 :initform nil))
@@ -112,7 +125,7 @@
 (cl-defmethod Config/Pkgs:update ((config App-Config) scope-name)
   (DEBUG! "update package requires for %s scope %s"
 	  config scope-name)
-  (with-slots (config) config
+  (with-slots (config pkgs) config
     (let ((app (if (listp config)
 		   (car config)
 		 config))
@@ -120,7 +133,8 @@
 		       (cdr config)
 		     nil)))
       (DEBUG! "app = %s options = %s" app options)
-      (invoke-feature app 'pkglist 'app 'ignore options))))
+      (setf pkgs
+	    (invoke-feature app 'pkglist 'app 'ignore options)))))
 
 
 (defclass Scope ()
@@ -428,6 +442,35 @@
 							(plist-get z
 								   feature))))))))))))
 
+(defun collect-mode-pkgs (mode features)
+  (let ((auto-feature-pkgs
+	 (collect-lists nil
+			(cl-loop for f in (auto-features (format "%s-mode" mode))
+				 collect (let ((options (plist-put nil :mode mode)))
+					   (invoke-feature f 'pkglist
+							   'modes 'ignore
+							   options))))))
+    (let ((pkgs1 (if (not features)
+		     nil
+		   (let ((z (normalize-non-keyword-options features)))
+		     (let ((z-features (filt-out-non-keywords (collect-keyword-values z)))
+			   (options (plist-put nil :mode mode)))
+		       (collect-lists nil
+				      (cl-loop for feature in z-features
+					       collect (pcase feature
+							 (:default nil)
+							 (_ (invoke-feature `,(intern (keyword-name feature))
+									    'pkglist 'modes
+									    'ignore
+									    (plist-put options
+										       :status
+										       (plist-get z feature))))))))))))
+      (DEBUG! "collect-mode-pkgs %s %s"
+	      auto-feature-pkgs
+	      pkgs1)
+      (append pkgs1
+	      auto-feature-pkgs))))
+
 (defun config-mode-features (mode phase features)
   (call-mode-features mode 'configure phase features))
 
@@ -465,6 +508,11 @@
 		`(lambda ()
 		   (call-mode-features ',mode 'activate
 				       ',phase ',features))))))
+
+(defun mode-feature-pkgs (mode options)
+  (let ((config-options (collect-keyword-values options)))
+    (let ((features (plist-get config-options :features)))
+      (collect-mode-pkgs mode features))))
 
 ;; (ui_feature options ...)
 ;; app
