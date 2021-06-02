@@ -88,7 +88,7 @@
   (DEBUG! "apply-package-patches pkg %s patches %s"
 	  pkg patches)
   (let ((dir (expand-file-name (format "straight/repos/%s"
-				       (pkg-dir (intern pkg)))
+				       (pkg-dir pkg))
 			       user-emacs-directory)))
     (apply-patches dir patches)))
 
@@ -188,15 +188,18 @@
 	   do (install-package pkg deferred)))
 
 (defun get-package (pkg)
-  (let ((package (gethash pkg all-packages)))
-    (unless package
-      (setq package (Package :name pkg
-			     :pkg-info pkg
-			     :installed nil))
-      (puthash pkg package all-packages))
-    (DEBUG2! "get-package %s"
-	     (Object/to-string package))
-    package))
+  (let ((pkg (if (symbolp pkg)
+		 pkg
+	       (intern (format "%s" pkg)))))
+    (let ((package (gethash pkg all-packages)))
+      (unless package
+	(setq package (Package :name pkg
+			       :pkg-info pkg
+			       :installed nil))
+	(puthash pkg package all-packages))
+      (DEBUG2! "get-package %s"
+	       (Object/to-string package))
+      package)))
 
 ;; enable package patches when enable/install
 ;; packages
