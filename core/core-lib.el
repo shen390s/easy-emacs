@@ -214,6 +214,17 @@
 	      s))))
 
 (defun emacs-idle-p ()
-  (not (current-idle-time)))
+  (let ((idle-time (current-idle-time)))
+    (and idle-time
+	 (let ((idle-h (nth 0 idle-time))
+	       (idle-l (nth 1 idle-time)))
+	   (or (> idle-h 0)
+	       (>= idle-l 1))))))
+
+(defmacro with-file! (filename &rest body)
+  `(append-to-file (progn
+		     ,@body)
+		   nil
+		   ,filename))
 
 (provide 'core-lib)
