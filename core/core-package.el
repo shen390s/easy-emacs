@@ -23,7 +23,7 @@
             (goto-char (point-max))
             (eval-print-last-sexp)))))
     (progn 
-        (load bootstrap-file nil 'nomessage))))
+      (load bootstrap-file nil 'nomessage))))
 
 (defun install-pkg (pkg)
   (when pkg
@@ -149,7 +149,7 @@
      (let ((package (make-instance 'Package
 				   :name ',name
 				   :docstring ',docstring
-				   :pkg-info ',pkginfo
+ 				   :pkg-info ',pkginfo
 				   :patches patches
 				   :mutex (make-mutex (format "%s/:mutex" ',name))
 				   :installed nil)))
@@ -165,11 +165,16 @@
 (defvar deferred-package-list nil
   "list of packages to be installed later ")
 
-(defvar deferred-package-list-mutex (make-mutex "deferred-package-list")
+(defvar deferred-package-list-mutex nil
   "mutex to protect deferred-package-list")
 
-(defvar deferred-package-list-waiter (make-condition-variable deferred-package-list-mutex)
+(defvar deferred-package-list-waiter nil
   "condition variable to be wait when background installer thread is idle")
+
+(setq deferred-package-list-mutex
+      (make-mutex "deferred-package-list"))
+(setq deferred-package-list-waiter
+      (make-condition-variable deferred-package-list-mutex))
 
 (defun install-package (pkg &optional deferred)
   (if deferred
@@ -218,22 +223,31 @@
 	      (start-background-package-installer)))
 
 (defun start-background-package-installer ()
-  (let ((installer-thread (make-thread (lambda ()
-					 (DEBUG! "eay emacs background package installer is running")
-					 (while (not background-package-installer-should-go)
-					   (when (emacs-idle-p)
-					     (let ((pkg (with-mutex deferred-package-list-mutex
-							  (if (null deferred-package-list)
-							      (condition-wait deferred-package-list-waiter)
-							    (let ((pkg1 (car deferred-package-list)))
-							      (setf deferred-package-list
-								    (cdr deferred-package-list))
-							      pkg1)))))
-					       (when pkg
-						 (DEBUG! "I will install package %s"
-							 pkg)
-						 (do-package-install pkg))))
-					   (thread-yield))))))
+  (DEBUG! "Starting easy-emacs background installer...")
+  (let ((installer-thread
+	 (make-thread
+	  (lambda ()
+	    (DEBUG! "eay emacs background package installer(%s) is running"
+		    (current-thread))
+	    (DEBUG! "installer current buffer %s"
+		    (current-buffer))
+	    (DEBUG! "packages %s will be installed later"
+		    deferred-package-list)
+	    (while (not background-package-installer-should-go)
+	      (when (emacs-idle-p)
+		(let ((pkg (with-mutex deferred-package-list-mutex
+			     (if (null deferred-package-list)
+				 (condition-wait deferred-package-list-waiter)
+			       (let ((pkg1 (car deferred-package-list)))
+				 (setf deferred-package-list
+				       (cdr deferred-package-list))
+				 pkg1)))))
+		  (when pkg
+		    (DEBUG! "I will install package %s" pkg)
+		    (do-package-install pkg)
+		    t)))
+	      ;;(thread-yield)
+	      (sit-for 1))))))
     (add-hook 'kill-emacs-hook
 	      #'(lambda ()
 		  (setf background-package-installer-should-go t)
