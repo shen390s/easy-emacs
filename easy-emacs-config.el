@@ -13,7 +13,7 @@
        (prog :features +hlinum +ruler +rainbow-delimiters
 	     +rainbow-identifiers +smartparens -flymake
 	     +iedit)
-       (c :suffix .c .cc .cpp .c++ .h .hpp
+       (c :suffix .c .cc .cpp .c++ .h .hpp .l .flex .y .bison
 	  :features +eldoc +ggtags +google-c-style +lsp +call-graph)
        (emacs-lisp :suffix .el .el.gz
 		   :features -parinfer)
@@ -35,6 +35,7 @@
 	       :features +eglot)
        (rust :suffix .rs
 	     :features +rls)
+       (rst :suffix .rst .rest)
        :ui
        (evil
 	:after-activate (progn

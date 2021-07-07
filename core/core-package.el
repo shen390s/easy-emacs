@@ -77,12 +77,14 @@
 			     patch))))
 
 (defun pkg-dir (pkg)
-  (let ((pkginfo (cdr (with-slots (pkg-info) (get-package pkg)
-			pkg-info))))
-    (if (and (listp pkginfo)
-	     pkginfo)
-	(file-name-nondirectory (plist-get pkginfo :repo))
-      pkg)))
+  (let ((pkg-info (with-slots (pkg-info) (get-package pkg))))
+    (let ((pkginfo (if (listp pkg-info)
+		       (cdr pkg-info)
+		     pkg-info)))
+      (if (and (listp pkginfo)
+	       pkginfo)
+	  (file-name-nondirectory (plist-get pkginfo :repo))
+	pkg))))
 
 (defun apply-package-patches (pkg patches)
   (DEBUG! "apply-package-patches pkg %s patches %s"
@@ -193,9 +195,10 @@
 	       (intern (format "%s" pkg)))))
     (let ((package (gethash pkg all-packages)))
       (unless package
-	(setq package (Package :name pkg
-			       :pkg-info pkg
-			       :installed nil))
+	(setq package (make-instance 'Package
+				     :name pkg
+				     :pkg-info pkg
+				     :installed nil))
 	(puthash pkg package all-packages))
       (DEBUG2! "get-package %s"
 	       (Object/to-string package))
