@@ -63,9 +63,9 @@
 					 (,(intern (format
 						    "Scope/Prepare:%s" phase)) scope)))
      (foreach-scope! scope-name scope
-		     (install-packages (Scope/get-pkgs scope) t))
+		     (install-packages (Scope/get-pkgs scope)))
 
-     (install-packages remote-autoload-pkgs t)
+     (install-packages remote-autoload-pkgs)
      ,@(cl-loop for phase in '(before primary after)
 		collect `(foreach-scope! scope-name
 					 scope

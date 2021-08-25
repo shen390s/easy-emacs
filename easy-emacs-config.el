@@ -36,6 +36,7 @@
        (rust :suffix .rs
 	     :features +rls)
        (rst :suffix .rst .rest)
+       (diff :suffix .diff)
        :ui
        (evil
 	:after-activate (progn
