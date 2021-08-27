@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package!  tsc
 	      "tree-sitter core"
 	      (tsc :type git

@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! hlinum
 	  "This library extends linum-mode to highlight 
 current line number."

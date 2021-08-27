@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! vimish-fold
 	     "Vim-like text folding for Emacs"
 	     vimish-fold)

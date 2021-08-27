@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! undo-tree
 	     "undo-tree-mode treats undo history as a branching tree
 	     of changes, similar to the way Vim handles it. This makes

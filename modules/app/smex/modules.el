@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! smex
 	     "Smex is a M-x enhancement for Emacs"
 	     (smex :type git

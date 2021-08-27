@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! parinfer
 	     "Parinfer is a proof-of-concept editor mode for Lisp programming languages.
  It will infer some changes to keep Parens and Indentation inline with one another. "

@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package!  atom-one-dark
 	      "Atom One Dark theme for Emacs from Atom.io"
               (atom-one-dark :type git

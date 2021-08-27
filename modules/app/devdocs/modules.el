@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! devdocs-lookup
 	     "Search the word at point with devdocs"
 	     (devdocs-lookup :type git

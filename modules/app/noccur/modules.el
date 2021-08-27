@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! noccur
 	     "Run multi-occur on project/dired files"
 	     (noccur :type git

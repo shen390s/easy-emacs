@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! projectile
 	     "Projectile is a project interaction library for Emacs. 
 Its goal is to provide a nice set of features operating on a project 

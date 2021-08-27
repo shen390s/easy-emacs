@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! best_git_mirrors
 	  "best mirror of github for china users"
 	  (best_git_mirrors :type git

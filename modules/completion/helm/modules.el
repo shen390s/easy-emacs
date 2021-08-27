@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! helm
 	     "Helm is an Emacs framework for incremental completions and narrowing selections. "
 	     (helm :type git

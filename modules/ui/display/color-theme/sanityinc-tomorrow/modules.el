@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! sanityinc-tomorrow
 	     "A set of comprehensive Emacs color themes based on 
 Chris Kempson's 'tomorrow' themes"

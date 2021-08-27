@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! color-theme-solarized
 	  "Solarized is a sixteen color palette (eight monotones, 
 eight accent colors) designed for use with terminal and gui 

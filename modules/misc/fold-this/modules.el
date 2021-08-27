@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! fold-this
 	     "Fold the active region"
              (fold-this :type git

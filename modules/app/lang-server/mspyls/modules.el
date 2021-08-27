@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! lsp-python-ms
 	     "emacs lsp-mode client for Microsoft's python language server "
 	     (lsp-python-ms :type git

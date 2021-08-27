@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 
 (package! mermaid-mode
 	     "A major Emacs mode for edit mermaid document"

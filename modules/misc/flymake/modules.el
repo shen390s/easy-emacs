@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 
 (defun activate-flymake (scope &optional phase options)
   (DEBUG! "activate-flymake scope %s phase %s options %s"

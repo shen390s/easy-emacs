@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! emacs-livemarkup
 	     "live preview for org and asciidoc"
 	     (emacs-livemarkup :type git

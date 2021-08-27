@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 
 (package! plantuml
 	     "A major mode for editing PlantUML sources in Emacs"

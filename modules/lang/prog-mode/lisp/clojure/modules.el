@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 
 (package! clojure-mode
 	     "A major Emacs mode for edit Clojure source code"

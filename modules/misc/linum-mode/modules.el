@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (defun activate-linumber (scope &optional phase options)
   (pcase scope
     ('modes (let ((status (plist-get options :status)))

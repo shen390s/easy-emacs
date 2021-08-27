@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! ivy
 	  "Ivy is for quick and easy selection from a list. 
 When Emacs prompts for a string from a list of several possible 

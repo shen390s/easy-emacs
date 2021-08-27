@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! dash-at-point
 	     "Search the word at point with Dash"
 	     (dash-at-point :type git

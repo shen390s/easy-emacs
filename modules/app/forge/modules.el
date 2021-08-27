@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! forge
 	     "Work with git forge from comfort of magit"
              (forge :type git

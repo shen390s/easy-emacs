@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package!  aanila
 	      "A dark emacs theme"
               (aanila :type git

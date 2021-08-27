@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! color-theme-modern
 	     "color theme modern"
 	     (color-theme-modern :type git

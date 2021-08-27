@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 
 (package! gnuplot-mode
 	     "A major Emacs mode for edit gnuplot document"

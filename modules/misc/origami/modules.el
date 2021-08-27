@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! origami
 	     "A text folding minor mode for EMACS"
 	     (origami :type git

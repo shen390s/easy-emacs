@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! smart-mode-line
 	     "A powerful and beautiful mode-line for Emacs. "
 	     (smart-mode-line :type git

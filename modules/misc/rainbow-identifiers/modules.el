@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! rainbow-identifiers
 	     "rainbow identifiers"
 	     rainbow-identifiers)

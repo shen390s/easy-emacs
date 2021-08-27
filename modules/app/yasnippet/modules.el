@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! yasnippet
 	     "YASnippet is a template system for Emacs"
 	     (yasnippet :type git

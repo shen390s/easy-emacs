@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! modalka
 	     "Easily introduce native modal editing of your own design"
 	     (modalka :type git

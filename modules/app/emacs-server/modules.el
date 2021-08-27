@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 
 (defun emacs-server-config/:pre-check (scope &optional options)
   (DEBUG! "configuring emacs server options %s"

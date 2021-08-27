@@ -144,7 +144,10 @@
 			       (plist-get options :mode)))))
     (DEBUG! "get-mode-from-options options %s mode %s"
 	    options mode)
-    mode))
+    (if mode
+	mode
+      (ERR! "get-mode-from-options get null mode from option %s"
+	    options))))
 
 (defun feature-off-in-options (feature options)
   (let ((status (plist-get options (mk-keyword (symbol-name feature)))))

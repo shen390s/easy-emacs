@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (defun activate-autofill (scope &optional phase options)
   (let ((status (plist-get options
 			   :status)))

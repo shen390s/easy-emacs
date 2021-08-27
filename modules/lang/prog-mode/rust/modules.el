@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 
 (package! rust-mode
 	     "A major Emacs mode for edit Rust source code"

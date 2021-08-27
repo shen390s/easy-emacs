@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (defun activate-ruler (scope &optional phase options)
   (DEBUG! "activate-ruler scope %s phase %s options %s"
 	  scope phase  options)

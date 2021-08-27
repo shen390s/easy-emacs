@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! rainbow-delimiters
 	     "rainbow delimiters"
 	     rainbow-delimiters)

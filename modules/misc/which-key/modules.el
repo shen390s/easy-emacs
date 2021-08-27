@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! which-key
 	     "which-key is a minor mode for Emacs that displays the 
 key bindings following your currently entered incomplete command (a prefix) 

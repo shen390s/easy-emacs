@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! lispy
 	     "Short and sweet LISP editing"
 	     (lispy :type git

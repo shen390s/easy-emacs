@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! semantic-stickyfunc-enhance
 	     "Improved version of semantic-stickyfunc-mode that handles parameters on multiple lines "
 	     (semantic-stickyfunc-enhance :type git

@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! smartparen-module
 	     "smartparen in buffer"
 	     (smartparens :type git

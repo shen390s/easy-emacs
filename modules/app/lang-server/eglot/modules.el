@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! eglot
 	     "A client for Language Server Protocol servers "
 	     (eglot :type git

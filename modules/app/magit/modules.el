@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! magit
 	     "It's Magit! A Git porcelain inside Emacs."
 	     magit)

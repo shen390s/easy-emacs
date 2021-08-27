@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (defvar QUILT (executable-find "quilt")
   "The executable file of quilt")
 

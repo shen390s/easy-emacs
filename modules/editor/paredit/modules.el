@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! paredit
 	     "Minor mode for editing parentheses"
 	     (paredit :type git

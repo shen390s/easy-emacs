@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package!  powerline
 	      "Emacs version of the VIM powerline"
 	      (powerline :type git

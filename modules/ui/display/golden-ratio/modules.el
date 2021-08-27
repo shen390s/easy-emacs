@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! golden-ratio
 	     "Automatic resizing of Emacs windows to the golden ratio "
 	     (golden-ratio :type git

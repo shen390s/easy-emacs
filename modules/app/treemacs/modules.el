@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package!  treemacs
 	      "Treemacs can be extended to display arbitrary nodes 
 as well as be used as a general rendering backend for any tree-like 

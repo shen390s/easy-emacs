@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package!  format-all
 	      "Auto-format c,c++,JS,Python and more"
               (format-all :type git

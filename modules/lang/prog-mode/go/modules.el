@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 
 (package! go-mode
 	     "A major Emacs mode for edit Go source code"

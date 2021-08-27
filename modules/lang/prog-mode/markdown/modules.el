@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 
 (package! markdown-mode
 	     "A major Emacs mode for edit markdown document"

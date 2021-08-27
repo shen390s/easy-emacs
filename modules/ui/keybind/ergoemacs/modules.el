@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! ergoemacs
 	     "ErgoEmacs"
              (ergoemacs :type git

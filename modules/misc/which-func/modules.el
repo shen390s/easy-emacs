@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 
 (defun activate-which-func (scope &optional phase options)
   (pcase scope

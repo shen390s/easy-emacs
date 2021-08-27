@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 ;;; modules.el --- description
 
 (package! google-c-style

@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! icicles
 	     "Minibuffer input completion and cycling"
 	     (icicles :type git

@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! lsp-java
 	     "LSP support for Java"
 	     (lsp-java :type git

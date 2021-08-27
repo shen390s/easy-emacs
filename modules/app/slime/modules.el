@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! slime
 	     "SLIME is the Superior Lisp Interaction Mode for Emacs."
 	     slime)

@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 
 (package! racket-mode
 	     "GNU Emacs major modes for Racket: Edit and REPL. "

@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! evil-surround
 	     "This package emulates surround.vim by Tim Pope. 
 The functionality is wrapped into a minor mode.

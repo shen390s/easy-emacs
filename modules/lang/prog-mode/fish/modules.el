@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 
 (package! fish-mode
 	     "A major Emacs mode for edit Fish source code"

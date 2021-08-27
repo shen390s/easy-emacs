@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (defun activate-rls (scope &optional phase options)
   (require 'lsp)
   (require 'lsp-diagnostics)

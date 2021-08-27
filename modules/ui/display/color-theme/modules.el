@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (defvar the-theme nil
   "The theme which activated by color-theme")
 

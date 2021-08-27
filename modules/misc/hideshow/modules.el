@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (defun activate-hideshow (scope &optional phase options)
   (require 'hideshow)
   (pcase scope

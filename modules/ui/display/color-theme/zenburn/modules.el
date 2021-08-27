@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! zenburn-emacs
 	     "The Zenburn colour theme ported to Emacs"
 	     (zenburn-emacs :type git

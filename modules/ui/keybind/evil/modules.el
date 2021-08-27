@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! evil
 	  "Evil is an extensible vi layer for Emacs. 
 It emulates the main features of Vim, and provides 

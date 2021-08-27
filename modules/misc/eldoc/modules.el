@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (defvar eldoc-pkgs-config
   (list :c '(c-eldoc)
 	:prog '(c-eldoc))

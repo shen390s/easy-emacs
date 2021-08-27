@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! adoc-mode
 	     "A major Emacs mode for edit ascii-doctor document"
 	     (adoc-mode :type git

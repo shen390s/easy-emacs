@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 
 (package! magic-latex-buffer
 	     "magical syntax highlighting for LaTeX-mode buffers"

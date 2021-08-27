@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (defvar custom-themes nil
   "A list of themes will be tried")
 

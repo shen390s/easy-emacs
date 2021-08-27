@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 (package! boon
 	     "An Ergonomic Command mode"
 	     (boon :type git
