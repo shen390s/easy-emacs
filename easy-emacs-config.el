@@ -7,6 +7,7 @@
        (setq b 20)
        (setq c-eldoc-includes
 	     "-I/usr/include -I/usr/local/include -I. -I..")
+       (setq cg-initial-max-depth 3)
        :core
        (best_git_mirrors)
        :modes
