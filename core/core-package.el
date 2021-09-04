@@ -23,7 +23,7 @@
             (goto-char (point-max))
             (eval-print-last-sexp)))))
     (progn 
-        (load bootstrap-file nil 'nomessage))))
+      (load bootstrap-file nil 'nomessage))))
 
 (defun install-pkg (pkg)
   (when pkg
@@ -79,12 +79,12 @@
 (defun pkg-dir (pkg)
   (let ((pkg-info (with-slots (pkg-info) (get-package pkg))))
     (let ((pkginfo (if (listp pkg-info)
-		       (cdr pkg-info)
-		     pkg-info)))
+                       (cdr pkg-info)
+                     pkg-info)))
       (if (and (listp pkginfo)
-	       pkginfo)
-	  (file-name-nondirectory (plist-get pkginfo :repo))
-	pkg))))
+               pkginfo)
+          (file-name-nondirectory (plist-get pkginfo :repo))
+        pkg))))
 
 (defun apply-package-patches (pkg patches)
   (DEBUG! "apply-package-patches pkg %s patches %s"
@@ -151,7 +151,7 @@
      (let ((package (make-instance 'Package
 				   :name ',name
 				   :docstring ',docstring
-				   :pkg-info ',pkginfo
+ 				   :pkg-info ',pkginfo
 				   :patches patches
 				   :mutex (make-mutex (format "%s/:mutex" ',name))
 				   :installed nil)))
@@ -164,12 +164,12 @@
     (when package
       (Package/install package))))
 
-(defun install-package (pkg)
+(defun install-package (pkg &optional deferred)
     (do-package-install pkg))
 
-(defun install-packages (pkgs)
-  (DEBUG! "install-packages %s"
-	  pkgs )
+(defun install-packages (pkgs &optional deferred)
+  (DEBUG! "install-packages %s deferred %s"
+	  pkgs deferred)
   (cl-loop for pkg in pkgs
 	   do (install-package pkg)))
 

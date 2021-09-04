@@ -251,6 +251,17 @@
 (cl-defmethod Scope/config-class ((_scope Mode-Scope))
   'Mode-Config)
 
+
+(cl-defmethod Scope/add-config ((scope Mode-Scope) config)
+  (cl-call-next-method)
+  (let ((mode (intern (format "%s-mode" (oref config name)))))
+    (let ((keybinds (plist-get (normalize-options (oref config config))
+			       :keybinds)))
+      (DEBUG! "Scope/add-config mode %s keybinds %s"
+	      mode keybinds)
+      (when keybinds
+	(mk-mode-keybinds mode keybinds)))))
+
 (defclass UI-Scope (Scope)
   ()
   "Scope for UI")
@@ -325,12 +336,65 @@
     (Config/make-init c scope)
     c))
 
+(defun merge-keybinds (c1 c2)
+  (let ((keybinds (plist-get (normalize-options c1) :keybinds))
+	(keybinds2 (plist-get (normalize-options c2) :keybinds)))
+    (setq key (pop keybinds2))
+    (while keybinds2
+      (setq def (pop keybinds2))
+      (unless (plist-get keybinds key)
+	(setq keybinds
+	      (plist-put keybinds
+			 key def)))
+      (setq key (pop keybinds2)))
+    keybinds))
+
+(defun inherit-config (c1 c2)
+  (let ((m1 (intern (format "%s-mode" (car c1))))
+	(m2 (intern (format "%s-mode" (car c2)))))
+    (if (eq m1 m2)
+	c1
+      (if (derived-from? m1 m2)
+	  (cons (car c1)
+		(un-normalize-options
+		 (plist-put (normalize-options (cdr c1))
+			    :keybinds
+			    (merge-keybinds c1 c2))))
+	c1))))
+
+(defun fixup-mode-configs (configs)
+  (DEBUG! "fixup-mode-configs = %s"
+	  configs)
+  (let ((sorted (sort configs #'(lambda (c1 c2)
+				  (let ((m1 (intern (format "%s-mode" (car c1))))
+					(m2 (intern (format "%s-mode" (car c2)))))
+				    (if (derived-from? m1 m2)
+					-1
+				      (if (derived-from? m2 m1)
+					  1
+					0)))))))
+    (cl-loop for config in sorted
+	     collect (let ((c config))
+		       (cl-loop for c1 in sorted
+				do (setq c (inherit-config c c1)))
+		       c))))
+
+(defun config/:fixup-configs (scope-name configs)
+  (DEBUG! "config/:fixup-configs scope %s configs %s"
+	  scope-name configs)
+  (let ((fixed-configs (pcase scope-name
+			 ('modes (fixup-mode-configs configs))
+			 (_ configs))))
+    (DEBUG! "config/:fixup-configs scope %s  fixed = %s"
+	    scope-name fixed-configs)
+    fixed-configs))
+
 (defun config/:make-scope (scope-name configs)
   `((DEBUG! "config/:make-%s %s"
 	    ',scope-name ',(pp-to-string configs))
     (scope! ,(intern (symbol-name scope-name)))
     (with-scope! ',(intern (symbol-name scope-name)) scope
-		 ,@(cl-loop for config in configs
+		 ,@(cl-loop for config in (config/:fixup-configs scope-name configs)
 			    collect `(let ((c (Scope/make-config scope ',config)))
 				       (when c
 					 (setf (oref c config) ',config)
