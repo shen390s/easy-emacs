@@ -8,17 +8,7 @@
 (defun config-mermaid (scope &optional phase options)
   (DEBUG! "config-mermaid scope %s phase %s options %s"
 	  scope phase options)
-  (pcase phase
-    (:check
-     (after-activate!
-      evil
-      (progn
-	(DEBUG! "config-mermaid for evil-leader")
-	(require 'evil-leader)
-	(evil-leader/set-key-for-mode 'mermaid-mode
-	  (kbd "mc") 'mermaid-compile
-	  (kbd "mv") 'mermaid-view))))
-    (_ t)))
+  t)
 
 (autoload-r! mermaid-mode
 	     (mermaid-mode)

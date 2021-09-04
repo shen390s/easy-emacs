@@ -45,17 +45,7 @@
 	     t)
 
 (defun config-poly-asciidoc-keybind (scope &optional phase options)
-  (pcase phase
-    (:check
-     (after-activate! evil
-		      (progn
-			(DEBUG! "config-poly-asciidoc-keybind")
-			(require 'evil-leader)
-			(evil-leader/set-key-for-mode 'poly-asciidoc-mode
-			  (kbd "mc") 'poly-asciidoc-compile
-			  (kbd "mv") 'poly-asciidoc-view
-			  (kbd "mf") 'poly-asciidoc-set-output-format))))
-    (_ t)))
+  t)
 
 (feature! poly-asciidoc-keybind
 	     "Bind keys for poly-asciidoc mode"

@@ -12,18 +12,7 @@
 		     :repo "emacs-lsp/lsp-ui"))
 
 (defun config-lsp (scope &optional phase options)
-  (pcase phase
-    (:check
-     (after-activate! evil
-		      (progn
-			(DEBUG! "config-lsp scope %s phase %s options %s"
-				scope phase options)
-			(evil-leader/set-key-for-mode (get-mode-from-options options)
-			  (kbd "mld") #'lsp-find-definition
-			  (kbd "mlr") #'lsp-find-references
-			  (kbd "mli") #'lsp-find-implemention
-			  (kbd "mlt") #'lsp-find-type-definition))))
-    (_ t)))
+  t)
 
 (defun bind-lsp-ui-keys ()
   (easy-emacs/define-key lsp-ui-peek-mode-map

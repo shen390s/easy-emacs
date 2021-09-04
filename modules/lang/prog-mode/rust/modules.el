@@ -10,4 +10,5 @@
 	     "rust-mode"
 	     t)
 
+(set-parent-mode 'rust-mode 'prog-mode)
 

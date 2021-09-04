@@ -7,19 +7,22 @@
        (setq b 20)
        (setq c-eldoc-includes
 	     "-I/usr/include -I/usr/local/include -I. -I..")
+       (setq cg-initial-max-depth 3)
        :core
        (best_git_mirrors)
        :modes
-       (prog :features +hlinum +ruler +rainbow-delimiters
-	     +rainbow-identifiers +smartparens -flymake
-	     +iedit)
        (c :suffix .c .cc .cpp .c++ .h .hpp
-	  :features +eldoc +ggtags +google-c-style +lsp +call-graph)
+	  :features +eldoc +ggtags +google-c-style +lsp +call-graph
+	  :keybinds
+	  (kbd "mcg") 'call-graph)
        (emacs-lisp :suffix .el .el.gz
 		   :features -parinfer)
        (lisp :suffix .cl .lisp
 	     :features -parinfer)
-       (mermaid :suffix .mmd)
+       (mermaid :suffix .mmd
+		:keybinds
+		(kbd "mc") 'mermaid-compile
+		(kbd "mv") 'mermaid-view)
        (plantuml :suffix .plantuml)
        (poly-markdown :suffix .md .markdown
 		      :features +vmd)
@@ -27,7 +30,11 @@
        (poly-org :suffix .org
 		 :features +livemarkup)
        (poly-asciidoc :suffix .adoc
-		      :features +livemarkup)
+		      :features +livemarkup
+		      :keybinds
+		       (kbd "mc") 'poly-asciidoc-compile
+		       (kbd "mv") 'poly-asciidoc-view
+		       (kbd "mf") 'poly-asciidoc-set-output-format)
        (fish :suffix .fish)
        (tex :suffix .tex .latex .sty
 	    :features +auctex +magic-latex)
@@ -35,6 +42,26 @@
 	       :features +eglot)
        (rust :suffix .rs
 	     :features +rls)
+       (prog :features +hlinum +ruler +rainbow-delimiters
+	     +rainbow-identifiers +smartparens -flymake
+	     +iedit
+	     :keybinds
+	     (kbd "mjfb") 'beginning-of-defun
+	     (kbd "mjfe") 'end-of-defun
+	     (kbd "mgd") 'ggtags-find-definition
+	     (kbd "mgr") 'ggtags-find-reference
+	     (kbd "mgtr") 'ggtags-find-tag-regexp
+	     (kbd "mgos") 'ggtags-find-other-symbol
+	     (kbd "mgf") 'ggtags-find-file
+	     (kbd "mld") #'lsp-find-definition
+	     (kbd "mlr") #'lsp-find-references
+	     (kbd "mli") #'lsp-find-implemention
+	     (kbd "mlt") #'lsp-find-type-definition)
+       (call-graph :keybinds
+		   (kbd "m+") 'cg-expand
+		   (kbd "m-") 'cg-collapse
+		   (kbd "mo") 'cg-goto-file-at-point
+		   (kbd "mg") 'cg-at-point)
        :ui
        (evil
 	:after-activate (progn

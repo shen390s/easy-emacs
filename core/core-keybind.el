@@ -8,14 +8,19 @@
     (setq key (pop bindings)
 	  def (pop bindings))))
 
-(defmacro bind-major-map (&rest args)
-  `(progn
-     (require 'bind-map)
-     (bind-map (current-local-map)
-	       ,@args)))
-
 (defmacro define-key-in-major-map (&rest args)
   `(easy-emacs/define-key evil-normal-state-local-map
 			  ,@args))
+
+(defun mk-mode-keybinds (mode keybinds)
+  (DEBUG! "mk-mode-keybinds %s %s"
+	  mode keybinds)
+  (funcall `(lambda ()
+	      (after-activate! evil
+			       (progn
+				 (DEBUG! "bind major keys mode %s keybinds %s"
+					 ',mode ',keybinds)
+				 (evil-leader/set-key-for-mode ',mode
+				   ,@keybinds))))))
 
 (provide 'core-keybind)

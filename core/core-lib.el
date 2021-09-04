@@ -23,7 +23,54 @@
        nil
      (pop ,lst)))
       
-(defun file-is-under-directory (file dir)
+(defvar parent-mode-list nil
+  "List of known (mode and parent mode) pairs")
+
+(defun set-parent-mode (mode parent)
+  (setq parent-mode-list
+	(plist-put parent-mode-list
+		   mode parent)))
+
+(progn
+  (cl-loop for mode in '(c-mode python-mode)
+	   do (set-parent-mode mode 'prog-mode)))
+
+(defun mode-parent (mode)
+  (let ((parent (plist-get parent-mode-list mode)))
+    (if parent
+	parent
+      (let ((parent (get mode 'derived-mode-parent)))
+	(progn
+	  (when parent
+	    (set-parent-mode mode parent))
+	  parent)))))
+
+(defun parent-mode (mode)
+  (let ((parent (mode-parent mode)))
+    (if parent
+	parent
+      (progn 
+	(unless (featurep mode)
+	  (condition-case err
+	      (require mode)
+	    (error (DEBUG! "%s" (error-message-string err))
+		   nil)))
+	(setq parent (mode-parent mode))
+	(if parent
+	    parent
+	  'fundamental-mode)))))
+
+(defun derived-from? (mode1 mode2)
+  (if (eq mode2 'fundamental-mode)
+      t
+    (if (eq mode1 mode2)
+       t
+      (if (eq mode1 'fundamental-mode)
+         nil
+       (derived-from? (parent-mode mode1)
+                        mode2)))))
+
+(defun under-directory? (file dir)
   (let ((full-name (expand-file-name file))
 	(full-dir (expand-file-name dir)))
     (progn
@@ -40,7 +87,7 @@
 
 (defun file-in-path-list (file l)
   (cond ((null l) nil)
-	((file-is-under-directory file (car l)) t)
+	((under-directory? file (car l)) t)
 	(t (file-in-path-list file (cdr l)))))
 
 (defmacro when-bind! (var exp &rest body)
@@ -202,6 +249,21 @@
 		     (normalize-non-keyword-options (plist-get z-options
 							       :default))))
     z-options))
+
+(defun un-normalize-options (options)
+  (let ((new-options nil))
+    (setq key (pop options))
+    (while options
+      (setq val
+	    (pop options))
+      (pcase key
+	(:default t)
+	(_ (setq new-options
+		 (append new-options
+			 (list key)
+			 val))))
+      (setq key (pop options)))
+    new-options))
 
 (defun indirect-buffer-p (&optional buffer)
   (buffer-base-buffer buffer))
