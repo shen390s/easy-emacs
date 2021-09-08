@@ -113,19 +113,16 @@
 	     :initform nil)
    (patches :initarg :patches
 	    :initform nil)
-   (mutex :initarg :mutex
-	  :initform nil)
    (installed :initarg :installed
 	      :initform nil))
   "Class to describe the package of Emacs")
 
 (cl-defmethod Package/install ((pkg Package))
-  (with-slots (name installed pkg-info mutex) pkg
+  (with-slots (name installed pkg-info) pkg
     (unless installed
       (when (fboundp 'install-pkg)
-	(with-mutex mutex
-	  (install-pkg pkg-info)
-	  (setf installed t))))))
+	(install-pkg pkg-info)
+	(setf installed t)))))
 
 (cl-defmethod Package/apply_patches ((pkg Package))
   (with-slots (name patches) pkg
@@ -153,7 +150,6 @@
 				   :docstring ',docstring
  				   :pkg-info ',pkginfo
 				   :patches patches
-				   :mutex (make-mutex (format "%s/:mutex" ',name))
 				   :installed nil)))
        (progn
 	 (puthash ',name package all-packages)))))

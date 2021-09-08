@@ -115,7 +115,9 @@
 	     (Feature/configure f scope phase options))
 	    ('activate
 	     (progn
-	       (install-packages (Feature/pkglist f scope options))
+	       (let ((pkgs (Feature/pkglist f scope options)))
+		 (when pkgs
+		   (install-packages pkgs)))
 	       ;; setup setting of buffer features
 	       (setq easy-emacs-buffer-features
 		     (plist-put easy-emacs-buffer-features

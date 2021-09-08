@@ -12,11 +12,11 @@
        (best_git_mirrors)
        :modes
        (c :suffix .c .cc .cpp .c++ .h .hpp
-	  :features +eldoc +ggtags +google-c-style +lsp +call-graph
+	  :features +eldoc +ggtags +google-c-style +call-graph
 	  :keybinds
 	  (kbd "mcg") 'call-graph)
        (emacs-lisp :suffix .el .el.gz
-		   :features -parinfer)
+		   :features -parinfer -lsp)
        (lisp :suffix .cl .lisp
 	     :features -parinfer)
        (mermaid :suffix .mmd
@@ -45,8 +45,9 @@
        (rst :suffix .rst .rest)
        (diff :suffix .diff)
        (prog :features +hlinum +ruler +rainbow-delimiters
-	     +rainbow-identifiers +smartparens -flymake
-	     +iedit
+	     +rainbow-identifiers +smartparens 
+	     +iedit +lsp -flymake
+	     ;;+eglot
 	     :keybinds
 	     (kbd "mjfb") 'beginning-of-defun
 	     (kbd "mjfe") 'end-of-defun
@@ -58,7 +59,8 @@
 	     (kbd "mld") #'lsp-find-definition
 	     (kbd "mlr") #'lsp-find-references
 	     (kbd "mli") #'lsp-find-implemention
-	     (kbd "mlt") #'lsp-find-type-definition)
+	     (kbd "mlt") #'lsp-find-type-definition
+	     )
        (call-graph :keybinds
 		   (kbd "m+") 'cg-expand
 		   (kbd "m-") 'cg-collapse

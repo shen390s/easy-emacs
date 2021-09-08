@@ -65,7 +65,8 @@
      (foreach-scope! scope-name scope
 		     (install-packages (Scope/get-pkgs scope)))
 
-     (install-packages remote-autoload-pkgs)
+     (when remote-autoload-pkgs
+       (install-packages remote-autoload-pkgs))
      ,@(cl-loop for phase in '(before primary after)
 		collect `(foreach-scope! scope-name
 					 scope

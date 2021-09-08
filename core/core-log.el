@@ -21,9 +21,6 @@
 (defvar log-file-name "/tmp/easy-emacs.log"
   "The file name of easy-emacs log")
 
-(defvar log-mutex (make-mutex "log-file")
-  "mutex to protect log file access")
-
 (defmacro log-levels! (&rest args)
   `(progn
      (if (fboundp 'gen_seq)
@@ -42,9 +39,8 @@
 	 (message "log-init!: unknown log level `%s'" ',loglvl)))))
 
 (defun log-msg (_lvl msg)
-  (with-mutex log-mutex
-    (with-file! log-file-name
-		(format "%s\n" msg))))
+  (with-file! log-file-name
+	      (format "%s\n" msg)))
 
 (defun set-time-fmt (fmt)
   (setq log-time-fmt fmt))

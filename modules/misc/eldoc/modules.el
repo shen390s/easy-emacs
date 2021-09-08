@@ -19,11 +19,16 @@
 (defun eldoc-pkgs (scope &optional options)
   (DEBUG! "eldoc-pkgs scope %s options %s"
 	  scope options)
-  (let ((mode (plist-get options :mode)))
-    (if mode
-	(plist-get eldoc-pkgs-config
-		   (mk-keyword (symbol-name mode)))
-      nil)))
+  (let ((mode (plist-get options :mode))
+	(pkgs nil))
+    (when mode
+      (setq pkgs 
+	    (append pkgs
+		    (plist-get eldoc-pkgs-config
+			       (mk-keyword (symbol-name mode))))))
+    (DEBUG! "eldoc-pkgs pkgs %s"
+	    pkgs)
+    pkgs))
 
 (defun eldoc-c/c++ (status)
   (DEBUG! "eldoc-c/c++ status %s"
@@ -33,7 +38,7 @@
       (c-turn-on-eldoc-mode)
     (c-turn-off-eldoc-mode)))
   
-(defun eldoc (global status)
+(defun do-eldoc (global status)
   (DEBUG! "eldoc global %s status %s major-mode %s"
 	  global status major-mode)
   (if global
@@ -47,9 +52,10 @@
 (defun activate-eldoc (scope &optional phase options)
   (DEBUG! "activate-eldoc scope %s phase %s options %s"
 	  scope phase options)
-  (if (>= (plist-get options :status) 0)
-      (eldoc (eq scope 'editor) 1)
-    (eldoc (eq scope 'editor) -1)))
+  (let ((global (eq scope 'editor)))
+    (if (>= (plist-get options :status) 0)
+	(do-eldoc global 1)
+      (do-eldoc global -1))))
 
 (feature! eldoc
 	     "eldoc"

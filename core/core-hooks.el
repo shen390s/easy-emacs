@@ -42,6 +42,17 @@
 	       `(,handler . (,args1 . ,args2))))
 
 
+(defun on-major-mode-changed (major)
+  (DEBUG! "on-major-mode-changed %s"
+	  major)
+  (let ((fn (intern (format "activate-features/:%s" major))))
+    (when (fboundp fn)
+      (funcall fn))))
+
+(add-hook 'after-change-major-mode-hook
+	  (lambda ()
+	    (on-major-mode-changed major-mode)))
+
 (after-boot! run-after-boot)
 
 (provide 'core-hooks)

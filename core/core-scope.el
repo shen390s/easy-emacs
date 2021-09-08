@@ -337,8 +337,8 @@
     c))
 
 (defun merge-keybinds (c1 c2)
-  (let ((keybinds (plist-get (normalize-options c1) :keybinds))
-	(keybinds2 (plist-get (normalize-options c2) :keybinds)))
+  (let ((keybinds (plist-get c1 :keybinds))
+	(keybinds2 (plist-get c2 :keybinds)))
     (setq key (pop keybinds2))
     (while keybinds2
       (setq def (pop keybinds2))
@@ -349,6 +349,15 @@
       (setq key (pop keybinds2)))
     keybinds))
 
+(defun merge-features (c1 c2)
+  (let ((features (parse-features (plist-get c1 :features)))
+	(features2 (parse-features (plist-get c2 :features))))
+    (cl-loop for feature in features2
+	     do (when (not (has-feature? features feature))
+		  (setq features
+			(append features (list feature)))))
+    (unparse-features features)))
+
 (defun inherit-config (c1 c2)
   (let ((m1 (intern (format "%s-mode" (car c1))))
 	(m2 (intern (format "%s-mode" (car c2)))))
@@ -357,9 +366,13 @@
       (if (derived-from? m1 m2)
 	  (cons (car c1)
 		(un-normalize-options
-		 (plist-put (normalize-options (cdr c1))
-			    :keybinds
-			    (merge-keybinds c1 c2))))
+		 (let ((c1-n (normalize-options (cdr c1)))
+		       (c2-n (normalize-options (cdr c2))))
+		   (plist-put (plist-put c1-n
+					 :keybinds
+					 (merge-keybinds c1-n c2-n))
+			      :features
+			      (merge-features c1-n c2-n)))))
 	c1))))
 
 (defun fixup-mode-configs (configs)
@@ -568,10 +581,10 @@
     (let ((features (plist-get config-options :features)))
       (DEBUG! "mode-feature-activate mode %s features %s config-options %s"
 	      mode features config-options)
-      (add-hook `,(intern (format "%s-mode-hook" mode))
-		`(lambda ()
-		   (call-mode-features ',mode 'activate
-				       ',phase ',features))))))
+      (fset (intern (format "activate-features/:%s-mode" mode))
+	    `(lambda ()
+	       (call-mode-features ',mode 'activate
+				   ',phase ',features))))))
 
 (defun mode-feature-pkgs (mode options)
   (let ((config-options (collect-keyword-values options)))
