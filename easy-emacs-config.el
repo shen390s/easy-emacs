@@ -8,60 +8,83 @@
        (setq c-eldoc-includes
 	     "-I/usr/include -I/usr/local/include -I. -I..")
        (setq cg-initial-max-depth 3)
+       
        :core
        (best_git_mirrors)
+
        :modes
-       (c :suffix .c .cc .cpp .c++ .h .hpp
-	  :features +eldoc +ggtags +google-c-style +call-graph
+       (c :inherit prog-ggtags
+	  :attach c-mode 
+	  :features +eldoc +google-c-style +call-graph
 	  :keybinds
 	  (kbd "mcg") 'call-graph)
-       (emacs-lisp :suffix .el .el.gz
+       (emacs-lisp :inherit prog
+		   :attach emacs-lisp-mode lisp-interactive-mode
 		   :features -parinfer -lsp)
-       (lisp :suffix .cl .lisp
+       (lisp :inherit prog
+	     :attach lisp-mode
 	     :features -parinfer)
-       (mermaid :suffix .mmd
+       (mermaid :inherit basic
+		:attach mermaid-mode
 		:keybinds
 		(kbd "mc") 'mermaid-compile
 		(kbd "mv") 'mermaid-view)
-       (plantuml :suffix .plantuml)
-       (poly-markdown :suffix .md .markdown
+       (plantuml :inherit basic
+		 :attach plantuml-mode)
+       (poly-markdown :inherit basic
+		      :attach markdown-mode poly-markdown-mode
 		      :features +vmd)
-       (poly-noweb+r :suffix .Rmd)
-       (poly-org :suffix .org
+       (poly-noweb+r :inherit basic
+		     :attach poly-noweb+r-mode)
+       (poly-org :inherit basic
+		 :attach org-mode
 		 :features +livemarkup)
-       (poly-asciidoc :suffix .adoc
+       (poly-asciidoc :inherit basic
+		      :attach poly-asciidoc-mode
 		      :features +livemarkup
 		      :keybinds
 		       (kbd "mc") 'poly-asciidoc-compile
 		       (kbd "mv") 'poly-asciidoc-view
 		       (kbd "mf") 'poly-asciidoc-set-output-format)
-       (fish :suffix .fish)
-       (tex :suffix .tex .latex .sty
+       (fish :inherit prog
+	     :attach fish-mode)
+       (tex :inherit prog
+	    :attach tex-mode
 	    :features +auctex +magic-latex)
-       (python :suffix .py
-	       :features +eglot)
-       (rust :suffix .rs
+       (python :inherit prog-lsp
+	       :attach python-mode)
+       (rust :inherit prog-lsp
+	     :attach rust-mode
 	     :features +rls)
-       (rst :suffix .rst .rest)
-       (diff :suffix .diff)
-       (prog :features +hlinum +ruler +rainbow-delimiters
-	     +rainbow-identifiers +smartparens 
-	     +iedit +lsp -flymake
+       (rst :inherit basic
+	    :attach rst-mode)
+       (diff :inherit basic
+	     :attach diff-mode)
+       (basic :features +hlinum +ruler +smartparens +iedit)
+       (prog :inherit basic
+	     :features +rainbow-delimiters +rainbow-identifiers 
+	     +iedit -flymake
 	     ;;+eglot
 	     :keybinds
 	     (kbd "mjfb") 'beginning-of-defun
-	     (kbd "mjfe") 'end-of-defun
-	     (kbd "mgd") 'ggtags-find-definition
-	     (kbd "mgr") 'ggtags-find-reference
-	     (kbd "mgtr") 'ggtags-find-tag-regexp
-	     (kbd "mgos") 'ggtags-find-other-symbol
-	     (kbd "mgf") 'ggtags-find-file
-	     (kbd "mld") #'lsp-find-definition
-	     (kbd "mlr") #'lsp-find-references
-	     (kbd "mli") #'lsp-find-implemention
-	     (kbd "mlt") #'lsp-find-type-definition
-	     )
-       (call-graph :keybinds
+	     (kbd "mjfe") 'end-of-defun)
+       (prog-ggtags :inherit prog
+		    :features +ggtags
+		    :keybinds
+		    (kbd "mgf") 'ggtags-find-file
+		    (kbd "mgd") 'ggtags-find-definition
+		    (kbd "mgr") 'ggtags-find-reference
+		    (kbd "mgtr") 'ggtags-find-tag-regexp
+		    (kbd "mgos") 'ggtags-find-other-symbol)
+       (prog-lsp :inherit prog
+		 :features +lsp
+		 :keybinds
+		 (kbd "mld") #'lsp-find-definition
+		 (kbd "mlr") #'lsp-find-references
+		 (kbd "mli") #'lsp-find-implemention
+		 (kbd "mlt") #'lsp-find-type-definition)
+       (call-graph :attach call-graph-mode
+		   :keybinds
 		   (kbd "m+") 'cg-expand
 		   (kbd "m-") 'cg-collapse
 		   (kbd "mo") 'cg-goto-file-at-point

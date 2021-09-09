@@ -52,7 +52,7 @@
 	c))))
 
 (defun easy-init ()
-  (setq auto-mode-alist nil))
+  t)
 
 (defmacro easy! (&rest args)
   `(progn

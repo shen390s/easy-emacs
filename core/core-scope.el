@@ -358,13 +358,31 @@
 			(append features (list feature)))))
     (unparse-features features)))
 
+(defun make-inherit-tree (configs)
+  (cl-loop for config in configs
+	   do (let ((inherit-from (plist-get (cdr config) :inherit)))
+		(when inherit-from
+		  (put (car config)
+		       'inherit-from
+		       inherit-from)))))
+
+(defun inherited-from? (c1-name c2-name)
+  (DEBUG! "inherited-from %s %s"
+	  c1-name c2-name)
+  (let ((inherit-from (get c1-name 'inherit-from)))
+    (if inherit-from
+	(if (eq inherit-from c2-name)
+	    t
+	  (inherited-from? inherit-from c2-name))
+	nil)))
+
 (defun inherit-config (c1 c2)
-  (let ((m1 (intern (format "%s-mode" (car c1))))
-	(m2 (intern (format "%s-mode" (car c2)))))
+  (let ((m1 (car c1))
+	(m2 (car c2)))
     (if (eq m1 m2)
 	c1
-      (if (derived-from? m1 m2)
-	  (cons (car c1)
+      (if (inherited-from? m1 m2)
+	  (cons m1
 		(un-normalize-options
 		 (let ((c1-n (normalize-options (cdr c1)))
 		       (c2-n (normalize-options (cdr c2))))
@@ -378,12 +396,13 @@
 (defun fixup-mode-configs (configs)
   (DEBUG! "fixup-mode-configs = %s"
 	  configs)
+  (make-inherit-tree configs)
   (let ((sorted (sort configs #'(lambda (c1 c2)
-				  (let ((m1 (intern (format "%s-mode" (car c1))))
-					(m2 (intern (format "%s-mode" (car c2)))))
-				    (if (derived-from? m1 m2)
+				  (let ((m1 (car c1))
+					(m2 (car c2)))
+				    (if (inherited-from? m1 m2)
 					-1
-				      (if (derived-from? m2 m1)
+				      (if (inherited-from? m2 m1)
 					  1
 					0)))))))
     (cl-loop for config in sorted
@@ -398,8 +417,8 @@
   (let ((fixed-configs (pcase scope-name
 			 ('modes (fixup-mode-configs configs))
 			 (_ configs))))
-    (DEBUG! "config/:fixup-configs scope %s  fixed = %s"
-	    scope-name fixed-configs)
+    (DEBUG! "config/:fixup-configs scope %s  fixed =\n %s"
+	    scope-name (pp-to-string fixed-configs))
     fixed-configs))
 
 (defun config/:make-scope (scope-name configs)
@@ -558,13 +577,13 @@
     (let ((features (plist-get config-options :features)))
       (DEBUG! "mode %s config-options %s features %s"
 	      mode config-options features)
-      (pcase phase
-	(:pre-check
-	 (progn
-	   (let ((suffixes (plist-get config-options :suffix)))
-	     (cl-loop for s in suffixes
-		      do (assoc-suffix-to-mode s mode)))))
-	(_ t))
+      ;; (pcase phase
+      ;; 	(:pre-check
+      ;; 	 (progn
+      ;; 	   (let ((suffixes (plist-get config-options :suffix)))
+      ;; 	     (cl-loop for s in suffixes
+      ;; 		      do (assoc-suffix-to-mode s mode)))))
+      ;; 	(_ t))
       (config-mode-features mode phase features))))
 
 (defun mode-feature-prepare (mode phase options)
@@ -578,13 +597,16 @@
   (DEBUG! "mode feature activate mode %s phase %s options %s"
 	  mode phase options)
   (let ((config-options (collect-keyword-values options)))
-    (let ((features (plist-get config-options :features)))
-      (DEBUG! "mode-feature-activate mode %s features %s config-options %s"
-	      mode features config-options)
-      (fset (intern (format "activate-features/:%s-mode" mode))
-	    `(lambda ()
-	       (call-mode-features ',mode 'activate
-				   ',phase ',features))))))
+    (let ((features (plist-get config-options :features))
+	  (attach (plist-get config-options :attach)))
+      (DEBUG! "mode-feature-activate mode %s features %s config-options %s attach %s"
+	      mode features config-options attach)
+      (let ((fn `(lambda ()
+		   (call-mode-features ',mode 'activate
+				       ',phase ',features))))
+	(cl-loop for m in attach
+		 do (fset (intern (format "activate-features/:%s" m))
+			  fn))))))
 
 (defun mode-feature-pkgs (mode options)
   (let ((config-options (collect-keyword-values options)))
