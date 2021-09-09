@@ -254,13 +254,16 @@
 
 (cl-defmethod Scope/add-config ((scope Mode-Scope) config)
   (cl-call-next-method)
-  (let ((mode (intern (format "%s-mode" (oref config name)))))
-    (let ((keybinds (plist-get (normalize-options (oref config config))
-			       :keybinds)))
-      (DEBUG! "Scope/add-config mode %s keybinds %s"
-	      mode keybinds)
-      (when keybinds
-	(mk-mode-keybinds mode keybinds)))))
+  (DEBUG! "Scope/add-config scope %s config %s"
+	  scope config)
+  (let ((n-config (normalize-options (oref config config))))
+    (let ((keybinds (plist-get n-config :keybinds))
+	  (modes (plist-get n-config :attach)))
+      (DEBUG! "Scope/add-config modes %s keybinds %s"
+	      modes keybinds)
+      (when (and keybinds modes)
+	(cl-loop for mode in modes
+		 do (mk-mode-keybinds mode keybinds))))))
 
 (defclass UI-Scope (Scope)
   ()
@@ -577,13 +580,6 @@
     (let ((features (plist-get config-options :features)))
       (DEBUG! "mode %s config-options %s features %s"
 	      mode config-options features)
-      ;; (pcase phase
-      ;; 	(:pre-check
-      ;; 	 (progn
-      ;; 	   (let ((suffixes (plist-get config-options :suffix)))
-      ;; 	     (cl-loop for s in suffixes
-      ;; 		      do (assoc-suffix-to-mode s mode)))))
-      ;; 	(_ t))
       (config-mode-features mode phase features))))
 
 (defun mode-feature-prepare (mode phase options)
