@@ -115,7 +115,8 @@
        (smex)
        (icicles)
        (powerline)
-       :completion ivy 
+       :completion
+       (ivy)
        :editor
        (undo-tree)
        (yasnippet)
