@@ -15,12 +15,9 @@
 (defun mk-mode-keybinds (mode keybinds)
   (DEBUG! "mk-mode-keybinds %s %s"
 	  mode keybinds)
-  (funcall `(lambda ()
-	      (after-activate! evil
-			       (progn
-				 (DEBUG! "bind major keys mode %s keybinds %s"
-					 ',mode ',keybinds)
-				 (evil-leader/set-key-for-mode ',mode
-				   ,@keybinds))))))
+  (when keybinds
+    `(evil-leader/set-key-for-mode
+       ',mode
+       ,@keybinds)))
 
 (provide 'core-keybind)

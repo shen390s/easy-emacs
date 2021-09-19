@@ -55,24 +55,26 @@
   t)
 
 (defmacro easy! (&rest args)
-  `(progn
-     (easy-init)
-     ,@(make-easy-config args)
-     ,@(cl-loop for phase in '(before primary after)
-		collect `(foreach-scope! scope-name scope
-					 (,(intern (format
-						    "Scope/Prepare:%s" phase)) scope)))
-     (foreach-scope! scope-name scope
-		     (install-packages (Scope/get-pkgs scope)))
-
-     (when remote-autoload-pkgs
-       (install-packages remote-autoload-pkgs))
-     ,@(cl-loop for phase in '(before primary after)
-		collect `(foreach-scope! scope-name
-					 scope
-					 (,(intern (format "Scope/Configure:%s" phase)) scope)))
-     (foreach-scope! scope-name scope
-		     (Scope/Activate scope))))
-
-
+  (let ((n-args (normalize-options args)))
+    (DEBUG! "easy! n-args = \n%s"
+	    (pp-to-string n-args))
+    (let ((scopes (mk-scopes n-args)))
+      ;; do something initial works
+      (cl-loop for scope in scopes
+	       do (Scope/init scope))
+      (DEBUG! "scopes = \n%s"
+	      (pp-to-string scopes))
+      (let ((c1 (cl-loop for action in '(prepare configure)
+			 append (cl-loop for phase in '(before primary after)
+					 append (cl-loop for scope in scopes
+							 append (Scope/mk-code scope action phase)))))
+	    (c2 (cl-loop for scope in scopes
+			 append (Scope/mk-code scope 'activate 'ignore))))
+	(let ((code (append c1 c2)))
+	  (DEBUG! "easy! code = \n%s"
+		  (pp-to-string code))
+	  `(progn
+	     t
+	     ,@code))))))
+	
 (provide 'core-config)

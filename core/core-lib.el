@@ -234,7 +234,7 @@
 				      (_ `(,(mk-keyword v) 0)))))))
 
 (defun normalize-options (options)
-  (let ((c-key :default)
+  (let ((c-key :options)
 	(z-options nil))
     (cl-loop for item in options
 	     do (if (keywordp item)
@@ -245,9 +245,9 @@
 						 item))))
     (setq z-options
 	  (plist-put z-options
-		     :default
+		     :options
 		     (normalize-non-keyword-options (plist-get z-options
-							       :default))))
+							       :options))))
     z-options))
 
 (defun un-normalize-options (options)

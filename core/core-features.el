@@ -13,9 +13,9 @@
 (defun parse-feature (feature)
   (let ((f-name (format "%s" feature)))
     (pcase (substring f-name 0 1)
-      ("+" (list (substring f-name 1) 1))
-      ("-" (list (substring f-name 1) -1))
-      (_ (list f-name 0)))))
+      ("+" (list (intern (substring f-name 1)) 1))
+      ("-" (list (intern (substring f-name 1)) -1))
+      (_ (list (intern f-name) 0)))))
 
 (defun unparse-feature (feature)
   (pcase (cadr feature)

@@ -8,7 +8,7 @@
 	  scope phase options)
   (let ((fancy-status (plist-get options :slime-fancy)))
     (when fancy-status
-      (when (>= fancy status 0)
+      (when (>= fancy-status 0)
 	(setq slime-contribs '(slime-fancy))))))
 
 (feature! slime
