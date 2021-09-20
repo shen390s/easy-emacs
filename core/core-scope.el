@@ -215,7 +215,9 @@
   (let ((fn (car feature))
 	(status (cadr feature)))
     (pcase action
-      ('activate `((setq z-options
+      ('activate `(;; FIXME: Following can NOT work correctly
+		   ;; (setq z-options ',(plist-put options :status status))
+		   (setq z-options
 			 (plist-put ',options
 				    :status
 				    ,status))
