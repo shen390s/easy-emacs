@@ -298,35 +298,34 @@
   (let ((options (plist-get config :options))
 	(cn (plist-get config :name))
 	(features (plist-get config :features)))
-    (when features
-      (setf options
-	    (plist-put options :mode cn))
+    (setf options
+	  (plist-put options :mode cn))
+    (cl-loop for feature in features
+	     do (setf options
+		      (plist-put options
+				 (mk-keyword (car feature))
+				 (cadr feature))))
+    (let ((code nil))
       (cl-loop for feature in features
-	       do (setf options
-			(plist-put options
-				   (mk-keyword (car feature))
-				   (cadr feature))))
-      (let ((code nil))
-	(cl-loop for feature in features
-		 do (setf code
-			  (append code
-				  (let ((z-options options))
-				    (make-mode-feature-call feature action phase z-options)))))
-	(DEBUG! "mk-code/:mode-config code =\n%s"
-		(pp-to-string code))
-	(if (eq action 'activate)
-	    (let ((c1 (cl-loop for mode in (plist-get config :attach)
-			       collect `(add-hook ',(intern (format "%s-hook" mode))
-						  ',(intern (format "call-%s/:activate" cn)))))
-		  (c2 (cl-remove nil
-				 (cl-loop for mode in (plist-get config :attach)
-					  append `(,(mk-mode-keybinds mode
-								      (plist-get config :keybinds)))))))
-	      `((progn
-		  (defun ,(intern (format "call-%s/:activate" cn)) ()
-		    ,@code)
-		  ,@(append c1 c2))))
-	  code)))))
+	       do (setf code
+			(append code
+				(let ((z-options options))
+				  (make-mode-feature-call feature action phase z-options)))))
+      (DEBUG! "mk-code/:mode-config code =\n%s"
+	      (pp-to-string code))
+      (if (eq action 'activate)
+	  (let ((c1 (cl-loop for mode in (plist-get config :attach)
+			     collect `(add-hook ',(intern (format "%s-hook" mode))
+						',(intern (format "call-%s/:activate" cn)))))
+		(c2 (cl-remove nil
+			       (cl-loop for mode in (plist-get config :attach)
+					append `(,(mk-mode-keybinds mode
+								    (plist-get config :keybinds)))))))
+	    `((progn
+		(defun ,(intern (format "call-%s/:activate" cn)) ()
+		  ,@code)
+		,@(append c1 c2))))
+	code))))
 
 (cl-defmethod Scope/init ((scope Mode-Scope))
   (with-slots (configs n-configs code) scope

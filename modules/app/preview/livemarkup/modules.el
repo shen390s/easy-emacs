@@ -7,7 +7,7 @@
 
 (defun livemarkup-config (scope &optional phase options)
   (pcase phase
-    (:check
+    ('primary
      (progn
        (setq livemarkup-output-directory nil
 	     livemarkup-close-buffer-delete-temp-files t

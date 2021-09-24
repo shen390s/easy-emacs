@@ -25,20 +25,6 @@
   (DEBUG! "config-call-graph scope %s phase %s options %s"
 	  scope phase options)
   (pcase phase
-    (:check (after-activate!
-	     evil
-	     (progn
-	       (require 'evil-leader)
-	       (require 'call-graph)
-	       (evil-leader/set-key-for-mode (get-mode-from-options options)
-		 (kbd "mcg") 'call-graph)
-	       (evil-leader/set-key-for-mode 'call-graph-mode
-		 (kbd "ce") 'cg-widget-expand-all
-		 (kbd "cc") 'cg-widget-collapse-all
-		 (kbd "c+") 'cg-expand
-		 (kbd "c_") 'cg-collapse
-		 (kbd "co") 'cg-goto-file-at-point
-		 (kbd "cg") 'cg-at-point))))
     (_ t)))
 
 (defun activate-call-graph (scope &optional phase options)

@@ -62,7 +62,7 @@
 
 (defun config-fix-poly-markdown (scope &optional phase options)
   (pcase phase
-    (:pre-check
+    ('before
      (progn
        (with-eval-after-load "markdown-mode"
 	 (DEBUG! "fix file assoc after markdown-mode.el loaded")

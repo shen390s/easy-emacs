@@ -27,7 +27,7 @@
     ('core (let ((status (plist-get options :status)))
 	     (when (and status
 			(>= status 0)
-			(eq phase :pre-check))
+			(eq phase 'before))
 	       (git_best_mirrors)
 	       (do-config-best-git-mirrors))))
     (_ t)))

@@ -14,7 +14,7 @@
 
 (defun config-parinfer (scope &optional phase options)
   (pcase phase
-    (:check
+    ('primary
      (progn
        (setq parinfer-extensions (list 'defaults
 				       'pretty-parens

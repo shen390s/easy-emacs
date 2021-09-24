@@ -24,7 +24,7 @@
 
 (defun config-load-custom (scope &optional phase options)
   (pcase phase
-    (:pre-check (setq sml/no-confirm-load-theme t))
+    ('before (setq sml/no-confirm-load-theme t))
     (_ t)))
 
 (defun activate-load-custom (scope &optional phase options)
