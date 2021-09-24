@@ -21,23 +21,23 @@
 	  scope)
   t)
 
-(cl-defmethod Scope/Pkgs:update ((scope Scope))
-  t)
-
-(cl-defmethod Scope/Pkgs:get ((scope Scope))
-  nil)
-
-(cl-defmethod Scope/mk-code ((scope Scope) action phase)
+(cl-defmethod Scope/Code:get ((scope Scope) action phase)
   (let ((key (intern (format ":%s-%s" action phase))))
     (with-slots (code) scope
-      (DEBUG! "Scope/mk-code action %s phase %s \n scope =\n%s \ncode=\n%s"
+      (DEBUG! "Scope/Code:get action %s phase %s \n scope =\n%s \ncode=\n%s"
 	      action phase
-	      (pp-to-string scope)
+	      (Scope/to-string scope)
 	      (pp-to-string code))
       (let ((c (plist-get code key)))
-	(DEBUG! "Scope/mk-code () =\n%s"
+	(DEBUG! "Scope/Code:get () =\n%s"
 		(pp-to-string c))
 	c))))
+
+(cl-defmethod Scope/to-string ((scope Scope))
+  (with-slots (name configs code) scope
+    (format "\n\nName: %s \nConfigs:\n %s \nCode:\n %s\n"
+	    name (pp-to-string configs)
+	    (pp-to-string code))))
 
 (defclass Initial-Scope (Scope)
   ()
@@ -50,55 +50,111 @@
 		     :prepare-before
 		     `,@configs))))
 
-(defclass Feature-Scope (Scope)
+(defclass Normalized-Scope (Scope)
   ((n-configs :initform nil))
+  "Scope with normalized configs")
+
+(cl-defmethod Scope/to-string ((scope Normalized-Scope))
+  (let ((s (cl-call-next-method)))
+    (with-slots (n-configs) scope
+      (format "%s\nn-configs:\n%s"
+	      s
+	      (pp-to-string n-configs)))))
+
+(defclass Feature-Scope (Normalized-Scope)
+  ()
   "Scope with list of features")
 
 (defun normalize-feature-config (config)
+  (DEBUG! "normalize-feature-config config=\n%s"
+	  (pp-to-string config))
   (let ((fn (car config))
-	(options (normalize-options (cdr config)))
-	(n-config nil))
+	(config1 (normalize-options (cdr config)))
+	(n-config nil)
+	(options nil))
+
+    (DEBUG! "normalize-feature-config config1 =\n%s"
+	    (pp-to-string config1))
     (setq n-config
-	  (plist-put 
-	   (plist-put options :name fn)
-	   :status 1))
+	  (plist-put n-config
+		     :name fn))
+
+    (setq options
+	  (plist-get config1 :options))
+    
+    (cl-loop for key in (filt-out-non-keywords config1)
+	     do (pcase key
+		  ;; exclude :options
+		  ;;  before/after-activate
+		  (:options t)
+		  (:after-activate t)
+		  (:before-activate t)
+		  (_ (setq options
+			   (plist-put options
+				      key
+				      (plist-get config1
+						 key))))))
+    (setq n-config
+	  (plist-put n-config
+		     :options options))
+
+    (cl-loop for key in '(:before-activate :after-activate)
+	     do (let ((v (plist-get config1 key)))
+		  (when v
+		    (setq n-config
+			  (plist-put n-config
+				     key
+				     v)))))
     n-config))
 
 (defun normalize-mode-config (config)
+  (DEBUG! "normalize-mode-config config =\n%s"
+	  (pp-to-string config))
   (let ((cn (car config))
-	(options (normalize-options (cdr config)))
+	(config1 (normalize-options (cdr config)))
 	(n-config nil))
+
+    (DEBUG! "normalize-mode-config config1 =\n%s"
+	    (pp-to-string config1))
     (setq n-config
-	  (plist-put options
+	  (plist-put nil
 		     :name cn))
-    ;; single inherit
-    (let ((inherit (plist-get n-config :inherit)))
-      (when inherit
-	(setq n-config
-	      (plist-put n-config
-			 :inherit (car inherit)))))
-    ;; pare features
-    (let ((features (plist-get n-config :features)))
-      (when features
-	(setq n-config
-	      (plist-put n-config
-			 :features
-			 (parse-features features)))))
+    (cl-loop for key in (filt-out-non-keywords config1)
+	     do (let ((v (plist-get config1 key)))
+		  (let ((nv (pcase key
+			      ;; single inherit
+			      (:inherit (car v))
+
+			      ;; normalize features
+			      (:features (parse-features v))
+			      (_ v))))
+		    (when nv
+		      (setq n-config
+			    (plist-put n-config
+				       key
+				       nv))))))
+    
+    (DEBUG! "normalize-mode-config n-config = \n%s"
+	    (pp-to-string n-config))
     n-config))
 
 (defun mk-code/:feature-config (config scope action phase)
-  (let ((options config)
+  (let ((options (plist-put (plist-get config :options)
+			    :status 1))
 	(fn (plist-get config :name)))
     (pcase action
-      ('activate `(,@(plist-get config :before-activate)
-		    (invoke-feature ',fn ',action
-				    ',scope 'ignore
-				    ',options)
-		    ,@(plist-get config :after-activate)))
+      ('activate `((install-packages (invoke-feature ',fn 'pkglist
+						     ',scope 'ignore
+						     ',options))
+		   ,@(plist-get config :before-activate)
+		   (invoke-feature ',fn ',action
+				   ',scope 'ignore
+				   ',options)
+		   ,@(plist-get config :after-activate)))
       (_ `((invoke-feature ',fn ',action
 			   ',scope ',phase
 			   ',options))))))
-  
+
 (cl-defmethod Scope/init ((scope Feature-Scope))
   (with-slots (configs n-configs code name) scope
     (setf n-configs
@@ -116,16 +172,17 @@
 											name
 											action
 											phase))))))
-      (setf c1
-	    (plist-put c1
-		       :activate-ignore
-		       (cl-loop for config in n-configs
-				append (mk-code/:feature-config config
-								name
-								'activate
-								'ignore))))
+      (cl-loop for action in '(pkglist activate)
+	       do (setf c1
+			(plist-put c1
+				   (intern (format ":%s-ignore" action))
+				   (cl-loop for config in n-configs
+					    append (mk-code/:feature-config config
+									    name
+									    action
+									    'ignore)))))
       (DEBUG! "Scope/init scope = \n%s c1 =\n%s"
-	      (pp-to-string scope)
+	      (Scope/to-string scope)
 	      (pp-to-string c1))
       (setf code c1))))
 
@@ -143,24 +200,24 @@
 
 (defun merge-keybinds (c1 c2)
   (let ((keybinds (plist-get c1 :keybinds))
-       (keybinds2 (plist-get c2 :keybinds)))
+	(keybinds2 (plist-get c2 :keybinds)))
     (setq key (pop keybinds2))
     (while keybinds2
       (setq def (pop keybinds2))
       (unless (plist-get keybinds key)
-       (setq keybinds
-             (plist-put keybinds
-                        key def)))
+	(setq keybinds
+	      (plist-put keybinds
+                         key def)))
       (setq key (pop keybinds2)))
     keybinds))
 
 (defun merge-features (c1 c2)
   (let ((features (plist-get c1 :features))
-       (features2 (plist-get c2 :features)))
+	(features2 (plist-get c2 :features)))
     (cl-loop for feature in features2
-            do (when (not (has-feature? features feature))
-                 (setq features
-                       (append features (list feature)))))
+             do (when (not (has-feature? features feature))
+                  (setq features
+			(append features (list feature)))))
     features))
 
 (defun do-merge-mode-configs (c1 c2)
@@ -179,7 +236,7 @@
 	    (do-inherit-mode-config (do-merge-mode-configs config parent-config)
 				    (plist-get parent-config :inherit)
 				    data)))
-      config))
+    config))
 
 (defun inherit-mode-config (config data)
   (if (plist-get config :attach)
@@ -204,9 +261,9 @@
       (DEBUG! "merge-mode-configs h-configs =\n%s"
 	      (pp-to-string h-configs))
       h-configs)))
-    
-(defclass Mode-Scope (Scope)
-  ((n-configs :initform nil))
+
+(defclass Mode-Scope (Normalized-Scope)
+  ()
   "Mode scope for easy-emacs")
 
 (defun make-mode-feature-call (feature action phase options)
@@ -222,16 +279,23 @@
 				    :status
 				    ,status))
 		   (invoke-feature ',fn 'activate 'modes 'ignore
-				    z-options)))
+				   z-options)))
+      ('pkglist `((progn
+		    (setq z-options
+			  (plist-put ',options
+				     :status
+				     ,status))
+		    (invoke-feature ',fn 'pkglist 'modes 'ignore
+				    z-options))))
       (_ `((setq z-options
 		 (plist-put ',options
 			    :status
 			    ,status))
 	   (invoke-feature ',fn ',action 'modes ',phase
-			    z-options))))))
+			   z-options))))))
 
 (defun mk-code/:mode-config (config action phase)
-  (let ((options nil)
+  (let ((options (plist-get config :options))
 	(cn (plist-get config :name))
 	(features (plist-get config :features)))
     (when features
@@ -270,6 +334,7 @@
 	  (merge-mode-configs
 	   (cl-loop for config in configs
 		    collect (normalize-mode-config config))))
+    
     (let ((c1 nil))
       (cl-loop for action in '(prepare configure)
 	       do (cl-loop for phase in '(before primary after)
@@ -280,18 +345,20 @@
 							append (mk-code/:mode-config config
 										     action
 										     phase))))))
-      (setf c1
-	    (plist-put c1
-		       :activate-ignore
-		       (cl-loop for config in n-configs
-				append (mk-code/:mode-config config
-							     'activate
-							     'ignore))))
+
+      (cl-loop for action in '(pkglist activate)
+	       do (setf c1
+			(plist-put c1
+				   (intern (format ":%s-ignore" action))
+				   (cl-loop for config in n-configs
+					    append (mk-code/:mode-config config
+									 action
+									 'ignore)))))
       (setf code c1)
       (DEBUG! "Scope/init code = \n%s"
 	      (pp-to-string code)))))
 
-    
+
 (defclass Completion-Scope (Feature-Scope)
   ()
   "Completion scope for easy-emacs")
@@ -326,8 +393,8 @@
 			 :name 'app
 			 :configs configs))
     (_ (make-instance 'Scope
-		 :name type
-		 :configs configs))))
+		      :name type
+		      :configs configs))))
 
 (defun mk-scopes (args)
   (cl-loop for type in '(:init :core :editor :ui :modes :completion :app)

@@ -63,18 +63,23 @@
       (cl-loop for scope in scopes
 	       do (Scope/init scope))
       (DEBUG! "scopes = \n%s"
-	      (pp-to-string scopes))
+	      (cl-loop for scope in scopes
+		       collect (Scope/to-string scope)))
       (let ((c1 (cl-loop for action in '(prepare configure)
 			 append (cl-loop for phase in '(before primary after)
 					 append (cl-loop for scope in scopes
-							 append (Scope/mk-code scope action phase)))))
-	    (c2 (cl-loop for scope in scopes
-			 append (Scope/mk-code scope 'activate 'ignore))))
-	(let ((code (append c1 c2)))
+							 append (Scope/Code:get scope action phase)))))
+	    (c2 `((setf actived-packages
+			(append ,@(cl-loop for scope in scopes
+					   append (Scope/Code:get scope 'pkglist 'ignore))))))
+	    (c3 (cl-loop for scope in scopes
+			 append (Scope/Code:get scope 'activate 'ignore))))
+	(let ((code (append c1 c2 c3)))
 	  (DEBUG! "easy! code = \n%s"
 		  (pp-to-string code))
 	  `(progn
-	     t
-	     ,@code))))))
+	     (easy-emacs-bootstrap-core)
+	     ,@code
+	     (easy-emacs-boot-done)))))))
 	
 (provide 'core-config)

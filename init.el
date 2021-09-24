@@ -41,15 +41,7 @@
 
 (require 'core)
 
-(let ((easy-emacs-config-file (concat easy-emacs-config-dir "/" easy-emacs-config)))
-  (progn
-    (unless (file-exists-p easy-emacs-config-file)
-      (copy-file (concat easy-emacs-dir "/" easy-emacs-config)
-                 easy-emacs-config-file))
-    (easy-emacs-bootstrap-core)
-    (easy-emacs-bootstrap easy-emacs-modules-dir
-                          easy-emacs-config-file)))
-
-(easy-emacs-boot-done)
+(easy-emacs-boot-start easy-emacs-modules-dir
+		       easy-emacs-config)
 
 ;;; init.el ends here

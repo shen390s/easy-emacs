@@ -39,7 +39,7 @@
 	  easy-emacs-version
 	  (my-branch)))
 
-(defun easy-emacs-boot-start ()
+(defun easy-emacs-boot-start (module-dir config)
   (setq gc-cons-threshold 402653184
 	gc-cons-percentage 0.6
 	file-name-handler-alist nil)
@@ -47,14 +47,16 @@
   ;;
   (log-init! DEBUG)
   (INFO! "Booting EasyEMACS[%s]..."
-	 (my-version)))
+	 (my-version))
 
-(add-hook 'easy-emacs-boot-done-hook
-	  (lambda ()
-	    (setq gc-cons-threshold 16777216
-		  gc-cons-percentage 0.1
-		  file-name-handler-alist easy-emacs-file-name-handler-alist
-		  easy-emacs-boot-ok t)))
+  (add-hook 'easy-emacs-boot-done-hook
+	    (lambda ()
+	      (setq gc-cons-threshold 16777216
+		    gc-cons-percentage 0.1
+		    file-name-handler-alist easy-emacs-file-name-handler-alist
+		    easy-emacs-boot-ok t)))
+  (load-modules module-dir)
+  (load-file config))
 
 (defun easy-emacs-boot-done ()
   (unless easy-emacs-boot-ok
@@ -65,20 +67,16 @@
 
 (defun easy-emacs-bootstrap-core ()
   (bootstrap-package "straight")
+  ;; enable package patches when enable/install
+  ;; packages
+  (add-hook 'straight-use-package-prepare-functions
+	    #'(lambda (pkg-name)
+		(DEBUG! "prepare pkg %s" pkg-name)
+		(let ((pkg (get-package pkg-name)))
+		  (when pkg
+		    (Package/apply_patches pkg)))))
+  
   (install-core-packages easy-emacs-core-packages))
-
-(defun easy-emacs-bootstrap (module-dir config)
-  (load-modules module-dir)
-
-  ;; load configuration of
-  ;; easy-emacs
-  (load-file config)
-  (add-hook 'easy-emacs-boot-done-hook
-	    ;; works to do after bootstrap
-	    (lambda ()
-	      t)))
-
-(easy-emacs-boot-start)
 
 (provide 'core)
 ;;; core.el ends here

@@ -8,6 +8,8 @@
        (setq c-eldoc-includes
 	     "-I/usr/include -I/usr/local/include -I. -I..")
        (setq cg-initial-max-depth 3)
+       ;; disable confirm of loading theme
+       (setq custom-safe-themes t)
        
        :core
        (best_git_mirrors)
@@ -114,7 +116,75 @@
        (load-custom :theme rshen)
        (smex)
        (icicles)
-       (powerline)
+       ;;(powerline)
+       (telephone-line
+	:before-activate (progn
+			   (require 'telephone-line)
+			   ;; (setq telephone-line-primary-left-separator 'telephone-line-abs-left
+			   ;; 	 telephone-line-primary-right-separator 'telephone-line-gradient
+			   ;; 	 telephone-line-secondary-left-separator 'telephone-line-nil
+			   ;; 	 telephone-line-secondary-right-separator 'telephone-line-nil)
+			   
+			   (defface my-red '((t (:foreground "white" :background "red"))) "")
+			   (defface my-orangered '((t (:foreground "white" :background "orange red"))) "")
+			   (defface my-orange '((t (:foreground "dim grey" :background "orange"))) "")
+			   (defface my-gold '((t (:foreground "dim grey" :background "gold"))) "")
+			   (defface my-yellow '((t (:foreground "dim grey" :background "yellow"))) "")
+			   (defface my-chartreuse '((t (:foreground "dim grey" :background "chartreuse"))) "")
+			   (defface my-green '((t (:foreground "dim grey" :background "green"))) "")
+			   (defface my-sgreen '((t (:foreground "dim grey" :background "spring green"))) "")
+			   (defface my-cyan '((t (:foreground "dim grey" :background "cyan"))) "")
+			   (defface my-blue '((t (:foreground "white" :background "blue"))) "")
+			   (defface my-dmagenta '((t (:foreground "white" :background "dark magenta"))) "")
+
+			   (setq telephone-line-faces
+				 '((red . (my-red . my-red))
+				   (ored . (my-orangered . my-orangered))
+				   (orange . (my-orange . my-orange))
+				   (gold . (my-gold . my-gold))
+				   (yellow . (my-yellow . my-yellow))
+				   (chartreuse . (my-chartreuse . my-chartreuse))
+				   (green . (my-green . my-green))
+				   (sgreen . (my-sgreen . my-sgreen))
+				   (cyan . (my-cyan . my-cyan))
+				   (blue . (my-blue . my-blue))
+				   (dmagenta . (my-dmagenta . my-dmagenta))
+				   (evil . telephone-line-evil-face)
+				   (accent . (telephone-line-accent-active . telephone-line-accent-inactive))
+				   (nil . (mode-line . mode-line-inactive))))
+
+			   ;; (setq telephone-line-lhs
+			   ;; 	 '((evil . (telephone-line-evil-tag-segment))
+			   ;; 	   (accent . (telephone-line-vc-segment
+			   ;; 		      telephone-line-process-segment))
+			   ;; 	   ;; (ored . (s2))
+			   ;; 	   ;; (orange . (s3))
+			   ;; 	   ;; (gold . (s4))
+			   ;; 	   ;; (yellow . (s5))
+			   ;; 	   ;; (chartreuse . (s6))
+			   ;; 	   ;; (green . (s7))
+			   ;; 	   ;; (sgreen . (s8))
+			   ;; 	   ;; (cyan . (s9))
+			   ;; 	   ;; (blue . (s10))
+			   ;; 	   ;; (dmagenta . (s11))
+			   ;; 	   (nil    . (telephone-line-minor-mode-segment
+			   ;; 		      telephone-line-buffer-segment))))
+
+			   (setq telephone-line-lhs
+				 '((red   . (telephone-line-evil-tag-segment))
+				   (ored . (telephone-line-vc-segment))
+				   ;;(orange .  (telephone-line-erc-modified-channels-segment))
+				   (gold .  (telephone-line-process-segment))
+				   (green    . (telephone-line-minor-mode-segment))
+				   (nil .   (telephone-line-buffer-segment))
+				   ;;(yellow . (mode-line-mule-info))
+				   ))
+
+			   (setq telephone-line-rhs
+				 '((blue    . (telephone-line-misc-info-segment))
+				   (orange . (telephone-line-major-mode-segment))
+				   (dmagenta   . (telephone-line-airline-position-segment))))))
+       
        :completion
        (ivy)
        :editor

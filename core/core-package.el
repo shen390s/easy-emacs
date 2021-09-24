@@ -142,6 +142,9 @@
 (defvar all-features (make-hash-table)
   "All defined features")
 
+(defvar actived-packages nil
+  "Activated packages for current configuration")
+
 (defmacro package! (name docstring pkginfo)
   (declare (doc-string 2))
   `(let ((patches (package-patches ',name)))
@@ -184,14 +187,6 @@
 	       (Object/to-string package))
       package)))
 
-;; enable package patches when enable/install
-;; packages
-(add-hook 'straight-use-package-prepare-functions
-	  #'(lambda (pkg-name)
-	      (DEBUG! "prepare pkg %s" pkg-name)
-	      (let ((pkg (get-package pkg-name)))
-		(when pkg
-		  (Package/apply_patches pkg)))))
 
 (provide 'core-package)
 ;;; core-package.el ends here
