@@ -1,9 +1,9 @@
-(deftheme rshen
-  "Created 2021-09-21.")
+(deftheme rshen-x3008
+  "Created 2019-12-21.")
 
 (custom-theme-set-faces
- 'rshen
- '(default ((t (:inherit nil :stipple nil :background "#002451" :foreground "#ffffff" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 150 :width normal :foundry "nil" :family "Fira Code"))))
+ 'rshen-x3008
+ '(default ((t (:family "Fira Code" :foundry "nil" :width normal :height 180 :weight normal :slant normal :underline nil :overline nil :strike-through nil :box nil :inverse-video nil :foreground "#ffffff" :background "#002451" :stipple nil :inherit nil))))
  '(cursor ((t (:background "#ff9da4"))))
  '(fixed-pitch ((t (:family "Monospace"))))
  '(variable-pitch ((((type w32)) (:foundry "outline" :family "Arial")) (t (:family "Sans Serif"))))
@@ -48,4 +48,4 @@
  '(next-error ((t (:inherit (region)))))
  '(query-replace ((t (:inherit (isearch))))))
 
-(provide-theme 'rshen)
+(provide-theme 'rshen-x3008)
