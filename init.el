@@ -19,7 +19,7 @@
 (defvar easy-emacs-modules-dir (concat easy-emacs-dir "/modules")
   "Directory of easy-emacs modules")
 
-(defvar easy-emacs-config "easy-emacs-config.el"
+(defvar easy-emacs-config (concat easy-emacs-dir "/easy-emacs-config.el")
   "Configuration filename(without directory part) for easy-emacs")
 
 (defvar easy-emacs-config-dir
