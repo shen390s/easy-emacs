@@ -15,7 +15,7 @@
        (best_git_mirrors)
 
        :modes
-       (c :inherit prog-ggtags
+       (c :inherit prog ggtags
 	  :attach c-mode 
 	  :features +eldoc +google-c-style +call-graph
 	  :keybinds
@@ -53,9 +53,9 @@
        (tex :inherit prog
 	    :attach tex-mode
 	    :features +auctex +magic-latex)
-       (python :inherit prog-lsp
+       (python :inherit prog lsp
 	       :attach python-mode)
-       (rust :inherit prog-lsp
+       (rust :inherit prog lsp
 	     :attach rust-mode
 	     :features +rls)
        (rst :inherit basic
@@ -70,21 +70,19 @@
 	     :keybinds
 	     (kbd "mjfb") 'beginning-of-defun
 	     (kbd "mjfe") 'end-of-defun)
-       (prog-ggtags :inherit prog
-		    :features +ggtags
-		    :keybinds
-		    (kbd "mgf") 'ggtags-find-file
-		    (kbd "mgd") 'ggtags-find-definition
-		    (kbd "mgr") 'ggtags-find-reference
-		    (kbd "mgtr") 'ggtags-find-tag-regexp
-		    (kbd "mgos") 'ggtags-find-other-symbol)
-       (prog-lsp :inherit prog
-		 :features +lsp
-		 :keybinds
-		 (kbd "mld") #'lsp-find-definition
-		 (kbd "mlr") #'lsp-find-references
-		 (kbd "mli") #'lsp-find-implemention
-		 (kbd "mlt") #'lsp-find-type-definition)
+       (ggtags :features +ggtags
+	       :keybinds
+	       (kbd "mgf") 'ggtags-find-file
+	       (kbd "mgd") 'ggtags-find-definition
+	       (kbd "mgr") 'ggtags-find-reference
+	       (kbd "mgtr") 'ggtags-find-tag-regexp
+	       (kbd "mgos") 'ggtags-find-other-symbol)
+       (lsp :features +lsp
+	    :keybinds
+	    (kbd "mld") #'lsp-find-definition
+	    (kbd "mlr") #'lsp-find-references
+	    (kbd "mli") #'lsp-find-implemention
+	    (kbd "mlt") #'lsp-find-type-definition)
        (call-graph :attach call-graph-mode
 		   :keybinds
 		   (kbd "m+") 'cg-expand

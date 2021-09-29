@@ -122,9 +122,6 @@
     (cl-loop for key in (filt-out-non-keywords config1)
 	     do (let ((v (plist-get config1 key)))
 		  (let ((nv (pcase key
-			      ;; single inherit
-			      (:inherit (car v))
-
 			      ;; normalize features
 			      (:features (parse-features v))
 			      (_ v))))
@@ -229,14 +226,21 @@
      :features
      features)))
 
+(defun do-inherit-mode-config1 (config parent data)
+  (let ((parent-config (plist-get data parent)))
+    (if parent-config
+	(do-inherit-mode-config (do-merge-mode-configs config parent-config)
+				(plist-get parent-config :inherit)
+				data)
+      config)))
+
 (defun do-inherit-mode-config (config inherit data)
-  (if inherit
-      (let ((parent-config (plist-get data inherit)))
-	(if parent-config
-	    (do-inherit-mode-config (do-merge-mode-configs config parent-config)
-				    (plist-get parent-config :inherit)
-				    data)))
-    config))
+  (let ((c config))
+    ;; multiple inherit in modes scope
+    (cl-loop for parent in inherit
+	     do (setf c
+		      (do-inherit-mode-config1 c parent data)))
+    c))
 
 (defun inherit-mode-config (config data)
   (if (plist-get config :attach)
