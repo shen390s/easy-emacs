@@ -65,8 +65,8 @@
 	(condition-case err
 	    (setf result (funcall on-fn scope-name phase config-options))
 	  (error (WARN! "activate feature %s error %s"
-			(Object/to-string feature) (error-message-string err))
-		 nil))))
+	    		(Object/to-string feature) (error-message-string err))
+	    	 nil))))
     (DEBUG2! "activate feature %s return %s in scope %s phase %s config options %s"
 	     (Object/to-string feature) result
 	     scope-name phase config-options)

@@ -316,13 +316,13 @@
       (if (eq action 'activate)
 	  (let ((c1 (cl-loop for mode in (plist-get config :attach)
 			     collect `(add-hook ',(intern (format "%s-hook" mode))
-						',(intern (format "call-%s/:activate" cn)))))
+						',(intern (format "call-%s-config/:activate" cn)))))
 		(c2 (cl-remove nil
 			       (cl-loop for mode in (plist-get config :attach)
 					append `(,(mk-mode-keybinds mode
 								    (plist-get config :keybinds)))))))
 	    `((progn
-		(defun ,(intern (format "call-%s/:activate" cn)) ()
+		(defun ,(intern (format "call-%s-config/:activate" cn)) ()
 		  ,@code)
 		,@(append c1 c2))))
 	code))))

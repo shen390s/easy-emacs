@@ -7,7 +7,7 @@
        (setq b 20)
        (setq c-eldoc-includes
 	     "-I/usr/include -I/usr/local/include -I. -I..")
-       (setq cg-initial-max-depth 3)
+       (setq cg-initial-max-depth 2)
        ;; disable confirm of loading theme
        (setq custom-safe-themes t)
        
